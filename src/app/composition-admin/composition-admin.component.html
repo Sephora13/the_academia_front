@@ -1,0 +1,61 @@
+<app-sidebar-admin></app-sidebar-admin>
+<div class="p-6" id="compose">
+  <h1 class="text-3xl font-bold mb-8 text-gray-800 dark:text-white">
+    📚 Gestion des compositions
+  </h1>
+
+  <!-- Bouton créer -->
+  <div class="flex justify-end mb-6">
+    <button
+      class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+      (click)="ouvrirCreationComposition()">
+      + Créer une nouvelle composition
+    </button>
+  </div>
+
+  <!-- Compositions Programmées -->
+  <div class="mb-10">
+    <h2 class="text-2xl font-semibold text-gray-700 dark:text-white mb-4">Programmées</h2>
+    <div *ngIf="programmedCompositions.length > 0" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div *ngFor="let compo of programmedCompositions" class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+        <h3 class="text-lg font-semibold mb-2 dark:text-white">{{ compo.titre }}</h3>
+        <p class="text-gray-600 dark:text-gray-400 mb-4">Prévue pour : {{ compo.date }}</p>
+        <button
+          class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded"
+          (click)="annulerComposition(compo.id)">
+          Annuler
+        </button>
+      </div>
+    </div>
+    <p *ngIf="programmedCompositions.length === 0" class="text-gray-500 dark:text-gray-400">Aucune composition programmée.</p>
+  </div>
+
+  <!-- Compositions en Cours -->
+  <div class="mb-10">
+    <h2 class="text-2xl font-semibold text-gray-700 dark:text-white mb-4">En cours</h2>
+    <div *ngIf="ongoingCompositions.length > 0" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div *ngFor="let compo of ongoingCompositions" class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+        <h3 class="text-lg font-semibold mb-2 dark:text-white">{{ compo.titre }}</h3>
+        <p class="text-gray-600 dark:text-gray-400">En cours depuis : {{ compo.dateDebut }}</p>
+      </div>
+    </div>
+    <p *ngIf="ongoingCompositions.length === 0" class="text-gray-500 dark:text-gray-400">Pas de composition en cours.</p>
+  </div>
+
+  <!-- Compositions terminées -->
+  <div class="mb-10">
+    <h2 class="text-2xl font-semibold text-gray-700 dark:text-white mb-4">Terminées</h2>
+    <div *ngIf="completedCompositions.length > 0" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div *ngFor="let compo of completedCompositions" class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+        <h3 class="text-lg font-semibold mb-2 dark:text-white">{{ compo.titre }}</h3>
+        <p class="text-gray-600 dark:text-gray-400">Terminée le : {{ compo.dateFin }}</p>
+        <button
+          class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded mt-4"
+          (click)="supprimerComposition(compo.id)">
+          Supprimer
+        </button>
+      </div>
+    </div>
+    <p *ngIf="completedCompositions.length === 0" class="text-gray-500 dark:text-gray-400">Pas de composition terminée.</p>
+  </div>
+</div>

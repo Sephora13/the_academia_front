@@ -1,0 +1,50 @@
+<!-- Sign in Form -->
+<section class="sign-in min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 via-purple-600 to-pink-500">
+  <div class="container max-w-4xl mx-auto px-6 py-10">
+      <div class="signin-content flex justify-center bg-black bg-opacity-80 p-8 rounded-lg shadow-xl">
+
+          <!-- Sign in Image -->
+          <div class="signin-image flex-1 hidden lg:block">
+              <figure><img src="assets/signin-image.jpg" alt="signin image" class="rounded-lg opacity-75" /></figure>
+              <a href="#" class="signup-image-link text-center mt-4 text-white hover:text-green-300 transition-all">Create an account</a>
+          </div>
+
+          <!-- Sign in Form -->
+          <div class="signin-form flex-1">
+              <h2 class="form-title text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-blue-500 to-purple-600 mb-6 text-center">
+                Sign up
+              </h2>
+              <form method="POST" class="register-form" id="login-form">
+                  <!-- Your Name -->
+                  <div class="form-group mb-6">
+                      <label for="your_name" class="text-white text-lg"><i class="zmdi zmdi-account text-lg"></i></label>
+                      <input type="text" name="your_name" id="your_name" placeholder="Your Name" class="w-full p-3 rounded-md bg-black text-white border-2 border-gray-500 focus:outline-none focus:border-green-400 placeholder-gray-300" />
+                  </div>
+                  <!-- Password -->
+                  <div class="form-group mb-6">
+                      <label for="your_pass" class="text-white text-lg"><i class="zmdi zmdi-lock text-lg"></i></label>
+                      <input type="password" name="your_pass" id="your_pass" placeholder="Password" class="w-full p-3 rounded-md bg-black text-white border-2 border-gray-500 focus:outline-none focus:border-green-400 placeholder-gray-300" />
+                  </div>
+                  <!-- Remember Me -->
+                  <div class="form-group flex items-center mb-6">
+                      <input type="checkbox" name="remember-me" id="remember-me" class="agree-term" />
+                      <label for="remember-me" class="label-agree-term text-white ml-2 text-sm"><span><span></span></span>Remember me</label>
+                  </div>
+                  <!-- Submit Button -->
+                  <div class="form-group form-button mb-6">
+                      <input type="submit" name="signin" id="signin" class="form-submit w-full py-3 rounded-md bg-gradient-to-r from-green-400 to-blue-500 text-white font-bold text-lg transition-transform transform hover:scale-105 hover:shadow-lg focus:outline-none" value="Log in" />
+                  </div>
+              </form>
+              <!-- Social Login -->
+              <div class="social-login text-center mt-4">
+                  <span (click)="sidebar()" class="social-label text-white text-sm">Or login with</span>
+                  <ul class="socials flex justify-center mt-4">
+                      <li><a href="#" class="text-2xl text-white hover:text-blue-600 transition-all"><i class="zmdi zmdi-facebook"></i></a></li>
+                      <li><a href="#" class="text-2xl text-white hover:text-blue-400 transition-all ml-6"><i class="zmdi zmdi-twitter"></i></a></li>
+                      <li><a href="#" class="text-2xl text-white hover:text-red-500 transition-all ml-6"><i class="zmdi zmdi-google"></i></a></li>
+                  </ul>
+              </div>
+          </div>
+      </div>
+  </div>
+</section>

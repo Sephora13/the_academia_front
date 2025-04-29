@@ -1,0 +1,89 @@
+
+/* global styles ou dashboard.component.css */
+:root {
+  --sidebar-width: 16rem;
+  --header-height: 4rem;
+}
+
+#main {
+  margin-left: 20rem;
+  margin-top: var(--header-height);
+  transition: margin 0.3s ease;
+}
+
+.dashboard-container {
+  display: flex;
+  height: 100vh;
+  background-color: #f4f6f8;
+}
+
+.main-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  height: 60px; /* Réduit */
+  background-color: #1a1d2e;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-content {
+  flex-grow: 1;
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-gap: 1.5rem;
+}
+
+.card {
+  background-color: #202638;
+  color: white;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.card h3 {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  color: #a0aec0;
+}
+
+.value {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-top: 0.5rem;
+}
+
+.progress-bar {
+  background-color: #394150;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 10px 0;
+  height: 10px;
+}
+
+.progress {
+  background-color: #48bb78;
+  height: 10px;
+}
+
+.large-card {
+  grid-column: span 2;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  margin-bottom: 8px;
+}

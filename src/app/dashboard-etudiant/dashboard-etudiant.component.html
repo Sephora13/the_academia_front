@@ -1,0 +1,76 @@
+<app-sidebar></app-sidebar>
+
+<!-- Conteneur principal du dashboard -->
+<div
+  id="main"
+  class="transition-all duration-300 pt-24 px-4 md:px-8 lg:px-10"
+  [ngClass]="{ 'pl-24': !isSidebarOpen, 'pl-64': isSidebarOpen }"
+>
+
+  <!-- Header d'accueil -->
+  <div class="mb-8 mt-8 mr-8 welcome">
+    <h1 class="text-2xl md:text-3xl font-bold text-gray-500">
+      Bienvenue, {{ studentName }} !
+    </h1>
+  </div>
+
+  <!-- Section cartes principales -->
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
+    <!-- Carte Photo + Infos -->
+    <div class="bg-white dark:bg-gray-800 shadow-md rounded-2xl p-2 flex flex-col items-center text-center">
+      <img [src]="profilePhoto" alt="Profile Photo" class="w-20 h-20 md:w-24 md:h-24 rounded-full mb-3">
+      <h2 class="text-lg md:text-xl font-semibold dark:text-white">{{ studentName }}</h2>
+      <p class="text-sm text-gray-500 dark:text-gray-400">{{ studentClass }}</p>
+    </div>
+
+    <!-- Carte Moyenne -->
+    <div class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-6 rounded-2xl shadow-md flex flex-col items-center justify-center">
+      <p class="text-xs md:text-sm uppercase">Moyenne générale</p>
+      <h2 class="text-2xl md:text-3xl font-bold mt-1">{{ averageGrade }}/20</h2>
+    </div>
+
+    <!-- Carte Progression -->
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md flex flex-col items-center justify-center">
+      <p class="text-xs md:text-sm uppercase text-gray-500 dark:text-gray-400">Progression de l'année</p>
+      <h2 class="text-2xl md:text-3xl font-bold mt-1 dark:text-white">{{ yearProgress }}%</h2>
+      <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-3">
+        <div class="bg-green-500 h-2 rounded-full" [style.width]="yearProgress + '%'"></div>
+      </div>
+    </div>
+
+    <!-- Carte Examens Passés -->
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md flex flex-col items-center justify-center">
+      <p class="text-xs md:text-sm uppercase text-gray-500 dark:text-gray-400">Examens passés</p>
+      <h2 class="text-2xl md:text-3xl font-bold mt-1 dark:text-white">{{ examsTaken }}</h2>
+    </div>
+
+  </div>
+
+  <!-- Section Activités et Examens à venir -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+    <!-- Carte Activités récentes -->
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md">
+      <h2 class="text-lg md:text-xl font-semibold mb-4 dark:text-white">Activités récentes</h2>
+      <ul class="space-y-4">
+        <li *ngFor="let activity of recentActivities" class="flex items-start gap-3">
+          <div class="w-2.5 h-2.5 bg-indigo-600 rounded-full mt-1"></div>
+          <p class="text-gray-700 dark:text-gray-300 text-sm">{{ activity }}</p>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Carte Prochains examens -->
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md">
+      <h2 class="text-lg md:text-xl font-semibold mb-4 dark:text-white">Prochains examens</h2>
+      <ul class="space-y-4">
+        <li *ngFor="let exam of upcomingExams" class="flex justify-between items-center text-gray-700 dark:text-gray-300 text-sm">
+          <span>{{ exam.name }}</span>
+          <span class="text-xs">{{ exam.date }}</span>
+        </li>
+      </ul>
+    </div>
+
+  </div>
+
+</div>

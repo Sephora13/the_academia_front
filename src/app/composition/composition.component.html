@@ -1,0 +1,16 @@
+<app-sidebar></app-sidebar>
+<!--=============== MAIN ===============-->
+<main class="main container " id="main">
+  <div class="container">
+    <h1 class="composition"> <strong>📚 Nouvelles Compositions</strong></h1>
+
+    <div *ngFor="let compo of compositions" class="composition-card">
+      <div class="infos">
+        <h3>{{ compo.titre }}</h3>
+        <p>Date prévue : {{ compo.date }}</p>
+      </div>
+      <button (click)="demarrerComposition(compo.id)">Démarrer</button>
+    </div>
+  </div>
+</main>
+

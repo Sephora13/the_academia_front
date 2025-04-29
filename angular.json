@@ -24,12 +24,19 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              }
+              },
+              { "glob": "**/*",
+               "input": "node_modules/monaco-editor/min/vs",
+                "output": "assets/monaco/vs"
+               }
             ],
             "styles": [
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+              "public/assets/js/main.js",
+              "node_modules/monaco-editor/min/vs/loader.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -92,5 +99,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }
