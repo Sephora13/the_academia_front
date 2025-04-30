@@ -13,6 +13,7 @@ import { SidebarAdminComponent } from './sidebar-admin/sidebar-admin.component';
 import { CompositionAdminComponent } from './composition-admin/composition-admin.component';
 import { RegisterAdminComponent } from './register-admin/register-admin.component';
 import { DashboardEtudiantComponents } from './dashboard-etudiant/dashboard-etudiant.component';
+import { VideoComponent } from './video/video.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -29,6 +30,7 @@ export const routes: Routes = [
   { path: 'composition', component: CompositionComponent },
   { path: 'composition_admin', component: CompositionAdminComponent },
   { path: 'new_composition', component: NewCompositionComponent },
+  { path: 'video', component: VideoComponent },
   { path: 'create_composition', component: CreateCompositionComponent },
   { path: '', redirectTo: 'signIn', pathMatch: 'full' }
 ];

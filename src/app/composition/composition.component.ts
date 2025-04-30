@@ -7,8 +7,6 @@ import { Component } from '@angular/core';
   selector: 'app-composition',
   standalone: true,
   imports: [
-    RouterOutlet,
-    RouterLink,
     SidebarComponent,
     CommonModule
   ],
