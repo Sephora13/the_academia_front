@@ -1,0 +1,9 @@
+video {
+    width: 100%;
+    max-width: 800px;
+    height: auto;
+    border: 2px solid #666;
+    border-radius: 8px;
+    background-color: black;
+  }
+  

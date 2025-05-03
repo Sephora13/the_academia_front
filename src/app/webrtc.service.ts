@@ -1,135 +1,83 @@
 import { Injectable, signal } from '@angular/core';
+import io from 'socket.io-client';
+
+type SocketType = ReturnType<typeof io>;
 
 @Injectable({ providedIn: 'root' })
 export class WebRTCService {
-  private peerConnection: RTCPeerConnection | null = null;
-  private localStream = signal<MediaStream | null>(null);
+  private socket!: SocketType;
+  private pc: RTCPeerConnection | null = null;
   private remoteStream = signal<MediaStream | null>(null);
-  private connectionState = signal<'disconnected' | 'connecting' | 'connected'>('disconnected');
-  private socket: WebSocket | null = null;
 
   private config: RTCConfiguration = {
-    iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+    iceServers: [
+      { urls: 'stun:stun.l.google.com:19302' },
+      // TURN si nécessaire
+    ]
   };
 
-  constructor() {}
+  /** Initialise et rejoint un room */
+  public connect(roomId: string) {
+    this.socket = io('http://localhost:3000');
+    this.socket.emit('join-room', roomId);
 
-  /**
-   * Démarre le flux local et initialise WebRTC si autorisé
-   */
-  async startLocalStream(): Promise<MediaStream> {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      this.localStream.set(stream);
-
-      this.initializePeerConnection(); // ✅ Initialise après autorisation
-      stream.getTracks().forEach(track => this.peerConnection?.addTrack(track, stream));
-
-      this.connectToSignalingServer(); // ✅ Connecte au serveur WebSocket
-
-      return stream;
-    } catch (err) {
-      console.error('Accès à la caméra refusé ou erreur :', err);
-      throw new Error('Camera access is required.');
-    }
+    this.socket.on('signal', async (data: any) => {
+      if (data.type === 'offer') {
+        await this.handleOffer(data);
+      } else if (data.type === 'answer') {
+        await this.handleAnswer(data);
+      } else if (data.candidate) {
+        await this.pc?.addIceCandidate(data.candidate);
+      }
+    });
   }
 
-  /**
-   * Initialise la connexion WebRTC
-   */
-  private initializePeerConnection() {
-    this.peerConnection = new RTCPeerConnection(this.config);
+  /** Pour l’émetteur : démarrer la caméra et créer l’offre */
+  public async startPublishing(roomId: string): Promise<MediaStream> {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });  
+    this.initPeerConnection(roomId);
+    stream.getTracks().forEach(t => this.pc!.addTrack(t, stream));
+    await this.createOffer(roomId);
+    return stream;
+  }
 
-    this.peerConnection.onicecandidate = (event) => {
-      if (event.candidate) {
-        console.log('🧊 ICE Candidate:', event.candidate);
-        this.sendMessage({ type: 'candidate', candidate: event.candidate });
+  /** Pour le récepteur : ne pas appeler getUserMedia */
+  public async startViewing(roomId: string) {
+    this.initPeerConnection(roomId);
+  }
+
+  private initPeerConnection(roomId: string) {
+    if (this.pc) return;
+    this.pc = new RTCPeerConnection(this.config);
+    this.pc.onicecandidate = e => {
+      if (e.candidate) {
+        this.socket.emit('signal', { roomId, data: { candidate: e.candidate } });
       }
     };
-
-    this.peerConnection.ontrack = (event) => {
-      const [remoteStream] = event.streams;
-      this.remoteStream.set(remoteStream);
+    this.pc.ontrack = e => {
+      this.remoteStream.set(e.streams[0]);
     };
-
-    this.peerConnection.onconnectionstatechange = () => {
-      this.connectionState.set(this.peerConnection!.connectionState as any);
-    };
+    this.connect(roomId);
   }
 
-  /**
-   * Connexion WebSocket au serveur de signalisation
-   */
-  connectToSignalingServer() {
-    this.socket = new WebSocket('ws://localhost:3000');
-
-    this.socket.onopen = () => {
-      console.log('✅ WebSocket connecté');
-    };
-
-    this.socket.onmessage = async (event) => {
-      const data = JSON.parse(event.data);
-
-      switch (data.type) {
-        case 'offer':
-          await this.handleOffer(data);
-          break;
-        case 'answer':
-          await this.handleAnswer(data);
-          break;
-        case 'candidate':
-          await this.addIceCandidate(data.candidate);
-          break;
-      }
-    };
-
-    this.socket.onerror = (err) => {
-      console.error(' WebSocket error:', err);
-    };
+  private async createOffer(roomId: string) {
+    const offer = await this.pc!.createOffer();
+    await this.pc!.setLocalDescription(offer);
+    this.socket.emit('signal', { roomId, data: offer });
   }
 
-  /**
-   * Envoie un message JSON via WebSocket
-   */
-  sendMessage(message: any) {
-    if (this.socket?.readyState === WebSocket.OPEN) {
-      this.socket.send(JSON.stringify(message));
-    }
+  private async handleOffer(offer: RTCSessionDescriptionInit) {
+    await this.pc!.setRemoteDescription(offer);
+    const answer = await this.pc!.createAnswer();
+    await this.pc!.setLocalDescription(answer);
+    this.socket.emit('signal', { roomId: offer.sdp!, data: answer });
   }
 
-  async createOffer() {
-    const offer = await this.peerConnection!.createOffer();
-    await this.peerConnection!.setLocalDescription(offer);
-    this.sendMessage(offer);
-    return offer;
+  private async handleAnswer(answer: RTCSessionDescriptionInit) {
+    await this.pc!.setRemoteDescription(answer);
   }
 
-  async handleOffer(offer: RTCSessionDescriptionInit) {
-    await this.peerConnection!.setRemoteDescription(offer);
-    const answer = await this.peerConnection!.createAnswer();
-    await this.peerConnection!.setLocalDescription(answer);
-    this.sendMessage(answer);
-  }
-
-  async handleAnswer(answer: RTCSessionDescriptionInit) {
-    await this.peerConnection!.setRemoteDescription(answer);
-  }
-
-  async addIceCandidate(candidate: RTCIceCandidateInit) {
-    await this.peerConnection!.addIceCandidate(candidate);
-  }
-
-  getLocalStream() {
-    return this.localStream();
-  }
-
-  getRemoteStream() {
+  public getRemoteStream() {
     return this.remoteStream();
   }
-
-  getConnectionState() {
-    return this.connectionState();
-  }
-
-  
 }
