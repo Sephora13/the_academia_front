@@ -4,9 +4,7 @@ import { Router, RouterOutlet } from '@angular/router';
 @Component({
   selector: 'app-register-admin',
   standalone: true,
-  imports: [
-    RouterOutlet
-  ],
+  imports: [],
   templateUrl: './register-admin.component.html',
   styleUrl: './register-admin.component.css'
 })

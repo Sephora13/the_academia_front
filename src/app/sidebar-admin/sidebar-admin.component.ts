@@ -4,10 +4,7 @@ import { RouterOutlet, Router, RouterLink } from '@angular/router';
 @Component({
   selector: 'app-sidebar-admin',
   standalone: true,
-  imports: [
-    RouterOutlet,
-    RouterLink
-  ],
+  imports: [],
   templateUrl: './sidebar-admin.component.html',
   styleUrl: './sidebar-admin.component.css'
 })

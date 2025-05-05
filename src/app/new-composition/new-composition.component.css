@@ -1,24 +1,4 @@
-
-.video-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  padding: 1rem;
-}
-
-video {
-  width: 25%;
-  border-radius: 8px;
-  background: #000;
-}
-
-.controls {
-  grid-column: 1 / -1;
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-}
-
-.bouton{
-  color:white,
+.app-ace-editor {
+  border: 2px solid #f8f9fa;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 }

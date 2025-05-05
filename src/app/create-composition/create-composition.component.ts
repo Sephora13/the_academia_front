@@ -7,10 +7,7 @@ import { RouterLink, RouterOutlet, Router } from '@angular/router';
   selector: 'app-create-composition',
   standalone: true,
   imports: [
-    RouterOutlet,
-    RouterLink,
-    SidebarComponent,
-    HeaderComponent
+    SidebarComponent
   ],
   templateUrl: './create-composition.component.html',
   styleUrl: './create-composition.component.css'

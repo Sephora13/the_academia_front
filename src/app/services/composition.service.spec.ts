@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { WebrtcService } from './webrtc.service';
+import { CompositionService } from './composition.service';
 
-describe('WebrtcService', () => {
-  let service: WebrtcService;
+describe('CompositionService', () => {
+  let service: CompositionService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(WebrtcService);
+    service = TestBed.inject(CompositionService);
   });
 
   it('should be created', () => {

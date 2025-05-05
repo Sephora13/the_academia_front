@@ -9,8 +9,7 @@ import { HeaderComponent } from "../header/header.component";
   standalone: true,
   imports: [
     CommonModule,
-    SidebarComponent,
-    HeaderComponent
+    SidebarComponent
 ],
   templateUrl: './dashboard-etudiant.component.html',
   styleUrl: './dashboard-etudiant.component.css'

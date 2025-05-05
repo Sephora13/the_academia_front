@@ -8,8 +8,6 @@ import { Router, RouterLink, RouterOutlet } from '@angular/router';
   selector: 'app-sidebar',
   standalone:true,
   imports:[
-    RouterOutlet,
-    RouterLink,
     HeaderComponent],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css']
@@ -78,6 +76,6 @@ export class SidebarComponent implements AfterViewInit {
     this.router.navigate(['/new_composition'])
   }
   dashboard(){
-    this.router.navigate(['/dashboard'])
+    this.router.navigate(['/student_side'])
   }
 }

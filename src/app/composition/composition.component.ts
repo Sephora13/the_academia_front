@@ -2,6 +2,7 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { CompositionService } from '../services/composition.service';
 
 @Component({
   selector: 'app-composition',
@@ -15,7 +16,9 @@ import { Component } from '@angular/core';
 })
 export class CompositionComponent {
 
-  constructor(private router: Router) {} // ✅ Injection du Router
+  constructor(private router: Router,
+    private service : CompositionService
+  ) {} 
 
   compositions = [
     { id: 1, titre: 'Composition de Mathématiques', date: '2025-04-25' },
@@ -23,8 +26,17 @@ export class CompositionComponent {
     { id: 3, titre: 'Composition d\'Anglais', date: '2025-04-27' }
   ];
 
-  demarrerComposition(id: number) {
-    this.router.navigate(['/new_composition', id]); // ✅ Navigation
+  isAble(){
+    this.service.isAble().subscribe(pass=>{
+      const validate = pass.status
+      if(validate){
+        this.demarrerComposition()
+      }
+    })
+    console.log ('validate')
+  }
+  demarrerComposition() {
+    this.router.navigate(['/new_composition']); // ✅ Navigation
   }
 
 

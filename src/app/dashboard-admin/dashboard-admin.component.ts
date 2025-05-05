@@ -11,8 +11,6 @@ import { SidebarAdminComponent } from "../sidebar-admin/sidebar-admin.component"
   standalone: true,
   imports: [
     CommonModule,
-    SidebarComponent,
-    HeaderComponent,
     SidebarAdminComponent
 ],
   templateUrl: './dashboard-admin.component.html',

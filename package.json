@@ -19,6 +19,7 @@
     "@angular/platform-browser-dynamic": "^19.2.9",
     "@angular/router": "^19.2.9",
     "@tailwindcss/postcss": "^4.1.4",
+    "ace-builds": "^1.41.0",
     "bootstrap": "^5.3.5",
     "tslib": "^2.8.1",
     "zone.js": "~0.15.0"
