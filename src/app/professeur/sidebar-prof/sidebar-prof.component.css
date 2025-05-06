@@ -1,0 +1,45 @@
+/* Styles pour le conteneur du sous-menu */
+.sidebar__submenu-container {
+  cursor: pointer;
+}
+
+/* Styles pour la flèche du sous-menu */
+.sidebar__submenu-arrow {
+  margin-left: auto;
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Styles pour le sous-menu */
+.sidebar__submenu {
+  margin-left: 1.5rem;
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.3s ease-in-out;
+}
+
+.sidebar__submenu.show-submenu {
+  max-height: 150px; /* Ajustez la hauteur maximale selon le nombre d'éléments */
+}
+
+/* Styles pour les liens du sous-menu */
+.sidebar__submenu-link {
+  display: flex;
+  align-items: center;
+  color: var(--text-color);
+  font-size: var(--small-font-size);
+  padding: 0.5rem 0;
+  transition: color 0.3s;
+}
+
+.sidebar__submenu-link i {
+  margin-right: 0.75rem;
+}
+
+.sidebar__submenu-link:hover {
+  color: var(--first-color-light);
+}
+
+.sidebar__link {
+  display: flex;
+}
+

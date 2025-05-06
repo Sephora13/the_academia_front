@@ -1,0 +1,76 @@
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar__container">
+    <div class="sidebar__user">
+      <div class="sidebar__img">
+        <img src="assets/img/professeur_default.png" alt="image">
+      </div>
+
+      <div class="sidebar__info">
+        <h3>Dr. Koffi ATA</h3>
+        <span>enseignant.ia&#64;univ.bj</span>
+      </div>
+    </div>
+
+    <div class="sidebar__content">
+      <div>
+        <div class="sidebar__list">
+          <a [routerLink]="['/professeur/dashboard']" routerLinkActive="active-link" class="sidebar__link">
+            <i class="ri-pie-chart-2-fill"></i>
+            <span>Dashboard</span>
+          </a>
+
+          <div class="sidebar__submenu-container" (click)="toggleEpreuveSubmenu()">
+            <a class="sidebar__link">
+              <i class="ri-pencil-fill"></i>
+              <span>Epreuve</span>
+              <i class="ri-arrow-down-s-line sidebar__submenu-arrow" [ngClass]="{'rotate-180': isEpreuveSubmenuOpen}"></i>
+            </a>
+            <div class="sidebar__submenu" [ngClass]="{'show-submenu': isEpreuveSubmenuOpen}">
+              <a [routerLink]="['/view-created-exams']" routerLinkActive="active-link" class="sidebar__submenu-link">
+                <i class="ri-eye-fill"></i>
+                <span>Voir mes épreuves</span>
+              </a>
+              <a [routerLink]="['/create-exam-ai']" routerLinkActive="active-link" class="sidebar__submenu-link">
+                <i class="ri-robot-2-fill"></i>
+                <span>Créer une épreuve avec IA</span>
+              </a>
+              <a [routerLink]="['/save-exam']" routerLinkActive="active-link" class="sidebar__submenu-link">
+                <i class="ri-save-fill"></i>
+                <span>Enregistrer mon épreuve</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="sidebar__title">SETTINGS</h3>
+
+        <div class="sidebar__list">
+          <a href="#" class="sidebar__link">
+            <i class="ri-settings-3-fill"></i>
+            <span>Paramètres</span>
+          </a>
+
+          <a href="#" class="sidebar__link">
+            <i class="ri-notification-2-fill"></i>
+            <span>Notifications</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar__actions">
+      <button>
+        <i class="ri-moon-clear-fill sidebar__link sidebar__theme" id="theme-button">
+          <span>Thème</span>
+        </i>
+      </button>
+
+      <button class="sidebar__link">
+        <i class="ri-logout-box-r-fill"></i>
+        <span>Se déconnecter</span>
+      </button>
+    </div>
+  </div>
+</nav>
