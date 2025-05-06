@@ -34,8 +34,8 @@ export const routes: Routes = [
   {
     path: 'professeur',
     loadChildren: () =>
-      import('./professeur/professeur.module').then(m => m.ProfesseurModule)
-  }
+      import('./professeur/professeur.routes').then(m => m.PROFESSEUR_ROUTES)
+  }  
   
 ];
 
