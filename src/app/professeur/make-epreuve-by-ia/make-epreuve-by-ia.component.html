@@ -1,0 +1,55 @@
+
+<div id="main"
+
+
+class="transition-all duration-300 pt-24 px-4 md:px-8 lg:px-10">
+  <h2 class="text-2xl font-bold mb-6 text-gray-600">Créer une épreuve avec IA</h2>
+
+  <form class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+    <input class="p-3 border rounded" type="text" placeholder="Matière" [(ngModel)]="matiere" name="matiere" required />
+    <input class="p-3 border rounded" type="text" placeholder="Niveau" [(ngModel)]="niveau" name="niveau" required />
+    <input class="p-3 border rounded" type="text" placeholder="Durée (ex: 1h30)" [(ngModel)]="duree" name="duree" required />
+    <input class="p-3 border rounded" type="number" placeholder="Nombre d'exercices" [(ngModel)]="nombreExercices" name="nbExercices" required />
+    
+    <textarea class="p-3 border rounded col-span-2" placeholder="Objectifs pédagogiques (séparés par des virgules)"
+      [(ngModel)]="objectifs" name="objectifs"></textarea>
+
+    <textarea class="p-3 border rounded col-span-2" placeholder="Prompt personnalisé pour l'IA"
+      [(ngModel)]="prompt" name="prompt"></textarea>
+
+    <input type="file" (change)="onFileChange($event)" class="col-span-2" />
+  </form>
+
+  <div class="mb-10">
+    <button class="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700" (click)="genererEpreuve()">Générer l’épreuve</button>
+  </div>
+
+  <div *ngIf="isLoading" class="text-center">
+    <p class="text-lg text-gray-500">Génération de l’épreuve en cours...</p>
+    <!-- Loader ici -->
+    <div class="loader mt-4"></div>
+  </div>
+
+  <div *ngIf="showResult" class="bg-white p-6 rounded shadow-md mb-8">
+    <h3 class="text-lg font-semibold mb-4 text-gray-700">Résultat de l'IA</h3>
+
+    <div class="mb-4">
+      <h4 class="font-semibold">Épreuve :</h4>
+      <p class="whitespace-pre-wrap">{{ epreuveGeneree }}</p>
+    </div>
+
+    <div class="mb-4">
+      <h4 class="font-semibold">Grille de correction :</h4>
+      <p class="whitespace-pre-wrap">{{ grilleCorrection }}</p>
+    </div>
+
+    <div class="mb-4">
+      <textarea class="w-full p-3 border rounded" placeholder="Modifier la demande à l'IA..." [(ngModel)]="nouvelleSuggestion" name="suggestion"></textarea>
+    </div>
+
+    <div class="flex gap-4">
+      <button class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600" (click)="modifierEpreuve()">Modifier</button>
+      <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700" (click)="enregistrerEpreuve()">Enregistrer</button>
+    </div>
+  </div>
+</div>

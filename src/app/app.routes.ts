@@ -16,20 +16,26 @@ import { NewCompositionComponent } from './new-composition/new-composition.compo
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'home',  component: HomeComponent },
-  { path: 'auth',  component: AuthentificationComponent },
-  { path: 'dashboard',  component: DashboardAdminComponent },
-  { path: 'student_side',  component: DashboardEtudiantComponents },
-  { path: 'admin_side',  component: SidebarAdminComponent },
-  { path: 'signIn',  component: SignInComponent },
-  { path: 'register',  component: RegisterAdminComponent },
-  { path: 'signUp',  component: SignUpComponent },
-  { path: 'header',  component: HeaderComponent },
+  { path: 'home', component: HomeComponent },
+  { path: 'auth', component: AuthentificationComponent },
+  { path: 'dashboard', component: DashboardAdminComponent },
+  { path: 'student_side', component: DashboardEtudiantComponents },
+  { path: 'admin_side', component: SidebarAdminComponent },
+  { path: 'signIn', component: SignInComponent },
+  { path: 'register', component: RegisterAdminComponent },
+  { path: 'signUp', component: SignUpComponent },
+  { path: 'header', component: HeaderComponent },
   { path: 'sidebar', component: SidebarComponent },
   { path: 'composition', component: CompositionComponent },
   { path: 'new_composition', component: NewCompositionComponent },
   { path: 'composition_admin', component: CompositionAdminComponent },
   { path: 'create_composition', component: CreateCompositionComponent },
-  { path: '', redirectTo: 'signIn', pathMatch: 'full' }
+  { path: '', redirectTo: 'signIn', pathMatch: 'full' },
+  {
+    path: 'professeur',
+    loadChildren: () =>
+      import('./professeur/professeur.routes').then(m => m.PROFESSEUR_ROUTES)
+  }  
+  
 ];
 

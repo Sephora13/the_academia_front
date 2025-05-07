@@ -1,4 +1,11 @@
 /* dans ton styles.css ou global.scss */
+
+
+
+
+
+
+
 .show-sidebar {
   transform: translateX(0) !important;
 }

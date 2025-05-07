@@ -1,0 +1,62 @@
+<div  id="main"
+
+
+
+  class="transition-all duration-300 "
+  >
+
+  <div class="mb-8 mt-8 mr-8 welcome">
+    <h1 class="text-2xl md:text-3xl font-bold text-gray-500">
+      Bonjour, {{ professorName }} !
+    </h1>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
+
+    <div class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-6 rounded-2xl shadow-md flex flex-col items-center justify-center cursor-pointer" (click)="consulterEpreuvesCrees()">
+      <p class="text-xs md:text-sm uppercase">Épreuves créées</p>
+      <h2 class="text-2xl md:text-3xl font-bold mt-1">{{ createdExamsCount }}</h2>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md flex flex-col items-center justify-center cursor-pointer" (click)="verifierCorrections()">
+      <p class="text-xs md:text-sm uppercase text-gray-500 dark:text-gray-400">Nombres de copies</p>
+      <h2 class="text-2xl md:text-3xl font-bold mt-1 dark:text-white">{{ nbrcopie }}</h2>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md flex flex-col items-center justify-center cursor-pointer" (click)="gererReclamations()">
+      <p class="text-xs md:text-sm uppercase text-gray-500 dark:text-gray-400">Notifications non lues </p>
+      <h2 class="text-2xl md:text-3xl font-bold mt-1 dark:text-white">{{ notifNonLues }}</h2>
+    </div>
+
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md">
+      <h2 class="text-lg md:text-xl font-semibold mb-4 dark:text-white">Notifications</h2>
+      <ul class="space-y-4">
+        <li *ngFor="let notification of notifications" class="flex items-start gap-3">
+          <div class="w-2.5 h-2.5 bg-red-500 rounded-full mt-1"></div>
+          <p class="text-gray-700 dark:text-gray-300 text-sm">{{ notification.message }}
+            <span class="text-xs text-gray-500 dark:text-gray-400">({{ notification.date | date:'shortTime' }})</span>
+          </p>
+        </li>
+        <li *ngIf="notifications.length === 0" class="text-gray-500 dark:text-gray-400 text-sm">
+          Aucune nouvelle notification.
+        </li>
+      </ul>
+    </div>
+
+    <!-- Carte Prochains sessions -->
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md">
+      <h2 class="text-lg md:text-xl font-semibold mb-4 dark:text-white">Prochaines sessions</h2>
+      <ul class="space-y-4">
+        <li *ngFor="let exam of upcomingExams" class="flex justify-between items-center text-gray-700 dark:text-gray-300 text-sm">
+          <span>{{ exam.name }}</span>
+          <span class="text-xs">{{ exam.date }}</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+</div>
