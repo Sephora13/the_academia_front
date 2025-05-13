@@ -13,24 +13,35 @@ import { CompositionAdminComponent } from './composition-admin/composition-admin
 import { RegisterAdminComponent } from './register-admin/register-admin.component';
 import { DashboardEtudiantComponents } from './dashboard-etudiant/dashboard-etudiant.component';
 import { NewCompositionComponent } from './new-composition/new-composition.component';
+import { UnauthorizedPageComponent } from './unauthorized-page/unauthorized-page.component'
+import { AuthGuard } from './guards/auth.guard';
+import { DecouvrirComponent } from './decouvrir/decouvrir.component';
+import { ResultatComponent } from './resultat/resultat.component';
+import { NotificationEtudiantComponent } from './notification-etudiant/notification-etudiant.component';
+import { ExamServiceComponent } from './exam-service/exam-service.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'home', component: HomeComponent },
   { path: 'auth', component: AuthentificationComponent },
   { path: 'dashboard', component: DashboardAdminComponent },
-  { path: 'student_side', component: DashboardEtudiantComponents },
+  { path: 'student_side', component: DashboardEtudiantComponents},
   { path: 'admin_side', component: SidebarAdminComponent },
   { path: 'signIn', component: SignInComponent },
   { path: 'register', component: RegisterAdminComponent },
   { path: 'signUp', component: SignUpComponent },
   { path: 'header', component: HeaderComponent },
   { path: 'sidebar', component: SidebarComponent },
-  { path: 'composition', component: CompositionComponent },
+  { path: 'composition', component: CompositionComponent},
   { path: 'new_composition', component: NewCompositionComponent },
   { path: 'composition_admin', component: CompositionAdminComponent },
   { path: 'create_composition', component: CreateCompositionComponent },
-  { path: '', redirectTo: 'signIn', pathMatch: 'full' },
+  {path: 'not-authorized', component: UnauthorizedPageComponent},
+  {path: 'resultats', component: ResultatComponent},
+  {path : 'decouvrir', component: DecouvrirComponent},
+  {path: 'notification_etudiant', component: NotificationEtudiantComponent},
+  {path: 'exam_service', component:ExamServiceComponent},
+  { path: '**', redirectTo: 'signIn', pathMatch: 'full' },
   {
     path: 'professeur',
     loadChildren: () =>

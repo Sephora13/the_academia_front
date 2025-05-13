@@ -1,7 +1,9 @@
-import { AfterViewInit, Component } from '@angular/core';
+import { AfterViewInit, Component, Inject } from '@angular/core';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from "../header/header.component";
+import { AuthentificationService } from '../services/authentification.service';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -17,23 +19,27 @@ import { HeaderComponent } from "../header/header.component";
 export class DashboardEtudiantComponents implements AfterViewInit {
   isSidebarOpen = true; // Détection si sidebar ouverte
 
-  studentName = 'Sephora DIDAVI';
-  profilePhoto = 'assets/img/sephora.JPG';
+  studentName = 'Stormi Jackson';
+  profilePhoto = 'assets/img/avatar.avif';
   studentClass = 'Licence 3 - Informatique';
   averageGrade = 15.2;
   yearProgress = 65;
   examsTaken = 12;
 
   recentActivities = [
-    'Composition en Mathématiques terminée',
-    'Résultats de Français publiés',
-    'Inscription au module IA validée'
+    'Composition en intelligence artificielle terminée',
+    'Résultats de php publiés'
   ];
 
   upcomingExams = [
-    { name: 'Projet Final d\'Informatique', date: '15 Mai 2025' },
+    { name: 'Examen de programmation Android', date: '15 Mai 2025' },
     { name: 'Examen d\'Anglais', date: '22 Mai 2025' }
   ];
+
+  constructor( @Inject(Router)
+    private auth : AuthentificationService,
+    private router : Router
+  ){}
 
   ngAfterViewInit(): void {
     const toggle = document.getElementById('header-toggle');
@@ -49,6 +55,11 @@ export class DashboardEtudiantComponents implements AfterViewInit {
       });
     }
 
-    // Dark/Light Theme handling déjà présent
+    
+  }
+
+  logout() {
+    this.auth.logout();
+    this.router.navigate(['/login']);
   }
 }

@@ -1,14 +1,13 @@
 import { Component } from '@angular/core';
-import { RouterOutlet, Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-sidebar-admin',
-  standalone: true,
+  selector: 'app-coordinateur-side',
   imports: [],
-  templateUrl: './sidebar-admin.component.html',
-  styleUrl: './sidebar-admin.component.css'
+  templateUrl: './coordinateur-side.component.html',
+  styleUrl: './coordinateur-side.component.css'
 })
-export class SidebarAdminComponent {
+export class CoordinateurSideComponent {
   constructor(
     private router : Router
   ){}
@@ -65,13 +64,8 @@ export class SidebarAdminComponent {
   composition(){
     this.router.navigate(['/composition_admin'])
   }
-  create_composition(){
-    this.router.navigate(['/create_composition'])
-  }
-  new_composition(){
-    this.router.navigate(['/'])
-  }
+  
   dashboard(){
-    this.router.navigate(['/dashboard'])
+    this.router.navigate(['/exam_service'])
   }
 }

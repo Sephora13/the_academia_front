@@ -1,0 +1,7 @@
+html { scroll-behavior: smooth; }
+
+.bg-rain-animation {
+  background-image: url('https://your-rain-animation-url.gif');
+  background-size: cover;
+  opacity: 0.2;
+}
