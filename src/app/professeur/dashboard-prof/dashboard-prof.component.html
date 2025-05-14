@@ -11,24 +11,70 @@
     </h1>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
+  <div class="flex flex-wrap -mx-4 mb-10">
 
-    <div class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-6 rounded-2xl shadow-md flex flex-col items-center justify-center cursor-pointer" (click)="consulterEpreuvesCrees()">
-      <p class="text-xs md:text-sm uppercase">Épreuves créées</p>
-      <h2 class="text-2xl md:text-3xl font-bold mt-1">{{ createdExamsCount }}</h2>
+    <!-- Épreuves créées -->
+    <div class="w-full lg:w-6/12 xl:w-3/12 px-4" (click)="consulterEpreuvesCrees()">
+      <div class="relative flex flex-col min-w-0 break-words bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg mb-6 xl:mb-0 shadow-lg cursor-pointer">
+        <div class="flex-auto p-4">
+          <div class="flex flex-wrap">
+            <div class="relative w-full pr-4 max-w-full flex-grow flex-1">
+              <h5 class="uppercase font-bold text-xs">Épreuves créées</h5>
+              <span class="font-bold text-xl">{{ createdExamsCount }}</span>
+            </div>
+            <div class="relative w-auto pl-4 flex-initial">
+              <div class="p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-white text-indigo-600">
+                <i class="fas fa-file-alt"></i>
+              </div>
+            </div>
+          </div>
+          <p class="text-sm text-white mt-4"><span class="text-white/80">Suivi des épreuves générées</span></p>
+        </div>
+      </div>
     </div>
-
-    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md flex flex-col items-center justify-center cursor-pointer" (click)="verifierCorrections()">
-      <p class="text-xs md:text-sm uppercase text-gray-500 dark:text-gray-400">Nombres de copies</p>
-      <h2 class="text-2xl md:text-3xl font-bold mt-1 dark:text-white">{{ nbrcopie }}</h2>
+  
+    <!-- Nombres de copies -->
+    <div class="w-full lg:w-6/12 xl:w-3/12 px-4" (click)="verifierCorrections()">
+      <div class="relative flex flex-col min-w-0 break-words bg-white dark:bg-gray-800 rounded-lg mb-6 xl:mb-0 shadow-lg cursor-pointer">
+        <div class="flex-auto p-4">
+          <div class="flex flex-wrap">
+            <div class="relative w-full pr-4 max-w-full flex-grow flex-1">
+              <h5 class="uppercase font-bold text-xs text-gray-500 dark:text-gray-400">Nombres de copies</h5>
+              <span class="font-bold text-xl dark:text-white">{{ nbrcopie }}</span>
+            </div>
+            <div class="relative w-auto pl-4 flex-initial">
+              <div class="p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-orange-500 text-white">
+                <i class="fas fa-copy"></i>
+              </div>
+            </div>
+          </div>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mt-4"><span class="text-green-500">Activité de correction</span></p>
+        </div>
+      </div>
     </div>
-
-    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md flex flex-col items-center justify-center cursor-pointer" (click)="gererReclamations()">
-      <p class="text-xs md:text-sm uppercase text-gray-500 dark:text-gray-400">Notifications non lues </p>
-      <h2 class="text-2xl md:text-3xl font-bold mt-1 dark:text-white">{{ notifNonLues }}</h2>
+  
+    <!-- Notifications non lues -->
+    <div class="w-full lg:w-6/12 xl:w-3/12 px-4" (click)="gererReclamations()">
+      <div class="relative flex flex-col min-w-0 break-words bg-white dark:bg-gray-800 rounded-lg mb-6 xl:mb-0 shadow-lg cursor-pointer">
+        <div class="flex-auto p-4">
+          <div class="flex flex-wrap">
+            <div class="relative w-full pr-4 max-w-full flex-grow flex-1">
+              <h5 class="uppercase font-bold text-xs text-gray-500 dark:text-gray-400">Notifications non lues</h5>
+              <span class="font-bold text-xl dark:text-white">{{ notifNonLues }}</span>
+            </div>
+            <div class="relative w-auto pl-4 flex-initial">
+              <div class="p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-red-500 text-white">
+                <i class="fas fa-bell"></i>
+              </div>
+            </div>
+          </div>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mt-4"><span class="text-red-400">Réclamations en attente</span></p>
+        </div>
+      </div>
     </div>
-
+  
   </div>
+  
 
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 

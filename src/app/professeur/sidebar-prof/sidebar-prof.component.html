@@ -26,17 +26,17 @@
               <i class="ri-arrow-down-s-line sidebar__submenu-arrow" [ngClass]="{'rotate-180': isEpreuveSubmenuOpen}"></i>
             </a>
             <div class="sidebar__submenu" [ngClass]="{'show-submenu': isEpreuveSubmenuOpen}">
-              <a [routerLink]="['/view-created-exams']" routerLinkActive="active-link" class="sidebar__submenu-link">
+              <a [routerLink]="['/professeur/show_epreuve']" routerLinkActive="active-link" class="sidebar__submenu-link">
                 <i class="ri-eye-fill"></i>
                 <span>Voir mes épreuves</span>
               </a>
-              <a [routerLink]="['/create-exam-ai']" routerLinkActive="active-link" class="sidebar__submenu-link">
+              <a [routerLink]="['/professeur/make_epreuve_by_ia']" routerLinkActive="active-link" class="sidebar__submenu-link">
                 <i class="ri-robot-2-fill"></i>
                 <span>Créer une épreuve avec IA</span>
               </a>
-              <a [routerLink]="['/save-exam']" routerLinkActive="active-link" class="sidebar__submenu-link">
-                <i class="ri-save-fill"></i>
-                <span>Enregistrer mon épreuve</span>
+              <a [routerLink]="['/professeur/make_epreuve_manually']" routerLinkActive="active-link" class="sidebar__submenu-link">
+                <i class="ri-file-text-fill"></i>
+                <span>Créer une épreuve manuellement</span>
               </a>
             </div>
           </div>
@@ -60,14 +60,14 @@
       </div>
     </div>
 
-    <div class="sidebar__actions">
+    <div class="sidebar__actions" >
       <button>
         <i class="ri-moon-clear-fill sidebar__link sidebar__theme" id="theme-button">
           <span>Thème</span>
         </i>
       </button>
 
-      <button class="sidebar__link">
+      <button class="sidebar__link" >
         <i class="ri-logout-box-r-fill"></i>
         <span>Se déconnecter</span>
       </button>

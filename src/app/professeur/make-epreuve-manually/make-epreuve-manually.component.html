@@ -1,0 +1,18 @@
+<div class="ia-epreuve-container">
+    <div class="ia-epreuve-form">
+      <h2>Créer une épreuve manuellement</h2>
+      <form (ngSubmit)="uploadEpreuve()">
+        <div class="form-group">
+          <label for="epreuveFile">Télécharger l'épreuve et la grille (PDF)</label>
+          <input type="file" id="epreuveFile" name="epreuveFile" (change)="handleFileInput($event)" accept=".pdf" required
+                 title="Téléchargez le fichier PDF contenant l'épreuve et sa grille de correction." />
+        </div>
+  
+        <button type="submit" [disabled]="loading">
+          <span *ngIf="!loading">Télécharger</span>
+          <span *ngIf="loading">Téléchargement...</span>
+        </button>
+      </form>
+      <div *ngIf="message" class="message">{{ message }}</div>
+    </div>
+  </div>

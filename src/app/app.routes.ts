@@ -40,10 +40,9 @@ export const routes: Routes = [
   {path: 'not-authorized', component: UnauthorizedPageComponent},
   {path: 'resultats', component: ResultatComponent,canActivate: [AuthGuard]},
   {path : 'decouvrir', component: DecouvrirComponent},
-  {path: 'notification_etudiant', component: NotificationEtudiantComponent,canActivate: [AuthGuard]},
-  {path:'activate_account', component:ActiveAccountComponent},
-  {path:'exam_service', component:ExamServiceComponent},
-  //{ path: '**', redirectTo: 'signIn', pathMatch: 'full' },
+  {path: 'notification_etudiant', component: NotificationEtudiantComponent},
+  {path: 'exam_service', component:ExamServiceComponent},
+  { path: '**', redirectTo: 'signIn', pathMatch: 'full' },
   {
     path: 'professeur',
     loadChildren: () =>
