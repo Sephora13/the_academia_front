@@ -1,0 +1,31 @@
+<div class="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-7xl">
+      <div *ngIf="loading" class="text-center">Chargement des épreuves...</div>
+      <div *ngIf="error" class="text-center text-red-500">Erreur : {{ error }}</div>
+      <div *ngFor="let epreuve of epreuves" class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
+        <div class="relative">
+          <img
+            src="assets/img/epreuve.svg"
+            alt="Épreuve"
+            class="w-full h-52 object-contain p-4"
+          />
+        </div>
+  
+        <div class="p-5 space-y-4">
+          <div>
+            <h3 class="text-xl font-bold text-gray-900">{{ epreuve.matiere }}</h3>
+            <p class="text-gray-500 mt-1">Niveau : {{ epreuve.niveau }}</p>
+          </div>
+  
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-600">
+              Statut : {{ getStatutComposition(epreuve.estComposee) }}
+            </span>
+             <a [routerLink]="['/epreuve', epreuve.id]" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+               Voir Détails
+             </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

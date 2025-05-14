@@ -1,19 +1,23 @@
+// src/app/sidebar/sidebar.component.ts
+
 import { AfterViewInit, Component } from '@angular/core';
 import { HeaderComponent } from '../header/header.component';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { AuthentificationService } from '../services/authentification.service';
 
 @Component({
   selector: 'app-sidebar',
-  standalone: true,
-  imports: [
+  standalone:true,
+  imports:[
     HeaderComponent],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent implements AfterViewInit {
   constructor(
-    private router: Router
-  ) { }
+    private router : Router,
+    private auth:  AuthentificationService
+  ){}
   ngAfterViewInit(): void {
     // Sidebar toggle (si jamais tu veux ajouter un bouton toggle plus tard)
     const toggle = document.getElementById('header-toggle');
@@ -64,16 +68,25 @@ export class SidebarComponent implements AfterViewInit {
     });
   }
 
-  composition() {
+  composition(){
     this.router.navigate(['/composition'])
   }
-  create_composition() {
+  create_composition(){
     this.router.navigate(['/create_composition'])
   }
-  new_composition() {
+  new_composition(){
     this.router.navigate(['/new_composition'])
   }
-  dashboard() {
+  dashboard(){
     this.router.navigate(['/student_side'])
+  }
+
+  resultats(){
+    this.router.navigate(['/resultats'])
+  }
+
+  logout() {
+    this.auth.logout();
+    this.router.navigate(['/signIn']);
   }
 }

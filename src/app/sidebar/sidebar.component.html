@@ -4,34 +4,34 @@
       <div class="sidebar__container">
          <div class="sidebar__user">
             <div class="sidebar__img">
-               <img src="assets/img/sephora.JPG" alt="image">
+               <img src="assets/img/avatar.avif" alt="image">
             </div>
 
             <div class="sidebar__info">
-               <h3>Sephora DIDAVI</h3>
-               <span>sephoradidavi6gmail.com</span>
+               <h3>Stormi Jackson</h3>
+               <span>stormijacksongmail.com</span>
             </div>
          </div>
 
          <div class="sidebar__content">
             <div>
 
-               <div class="sidebar__list">
+               <div class="sidebar__list mt-8">
                   <a (click)="dashboard()" class="sidebar__link active-link">
-                     <i class="ri-pie-chart-2-fill"></i>
-                     <span>Dashboard</span>
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
                   </a>
-
+          
                   <a (click)="composition()" class="sidebar__link">
-                     <i class="ri-wallet-3-fill"></i>
-                     <span>Compositions</span>
+                    <i class="fas fa-file-alt"></i>
+                    <span>Compositions</span>
                   </a>
-
-                  <a (click)="new_composition()" class="sidebar__link">
-                     <i class="ri-calendar-fill"></i>
-                     <span>Resultats</span>
+          
+                  <a (click)="resultats()" class="sidebar__link">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Resultats</span>
                   </a>
-               </div>
+                </div>
             </div>
 
             <div>
@@ -59,7 +59,7 @@
                </i>
             </button>
 
-            <button class="sidebar__link">
+            <button class="sidebar__link" (click)="logout()">
                <i class="ri-logout-box-r-fill"></i>
                <span>Se déconnecter</span>
             </button>

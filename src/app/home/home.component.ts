@@ -19,4 +19,7 @@ export class HomeComponent {
   authentificate(){
     this.router.navigate(['/auth'])
   }
+  decouvrir(){
+    this.router.navigate(['/decouvrir'])
+  }
 }

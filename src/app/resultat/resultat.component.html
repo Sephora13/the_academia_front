@@ -1,0 +1,32 @@
+<app-sidebar></app-sidebar>
+
+<section class="min-h-screen bg-gradient-to-r from-black via-gray-900 to-black text-white px-8 py-12">
+    <div class="max-w-4xl mx-auto">
+      <h1 class="text-4xl font-extrabold mb-8">📊 Résultats des Épreuves</h1>
+
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-white text-gray-900 rounded-lg overflow-hidden shadow-lg">
+          <thead class="bg-blue-800 text-white">
+            <tr>
+              <th class="p-4 text-left">Nom de l'Étudiant</th>
+              <th class="p-4 text-left">Matière</th>
+              <th class="p-4 text-left">Note</th>
+              <th class="p-4 text-left">Statut</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let result of results" class="odd:bg-white even:bg-gray-100 hover:bg-blue-50">
+              <td class="p-4">{{ result.name }}</td>
+              <td class="p-4">{{ result.subject }}</td>
+              <td class="p-4">{{ result.grade }}</td>
+              <td class="p-4">
+                <span [ngClass]="result.grade >= 50 ? 'text-green-600' : 'text-red-600'">
+                  {{ result.grade >= 50 ? 'Admis' : 'Échoué' }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>

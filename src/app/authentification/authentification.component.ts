@@ -26,4 +26,5 @@ export class AuthentificationComponent {
   register_admin(){
     this.router.navigate(['/register'])
   }
+  
 }
