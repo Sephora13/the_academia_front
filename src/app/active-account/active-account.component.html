@@ -1,0 +1,17 @@
+<div class="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+    <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
+      <h2 class="text-2xl font-semibold mb-4 text-center">Activation de compte</h2>
+      <input 
+        type="text" 
+        [(ngModel)]="activationCode" 
+        placeholder="Entrez votre code d'activation" 
+        class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+      <button 
+        (click)="onActivate()" 
+        class="w-full bg-blue-500 text-white p-3 rounded hover:bg-blue-600 transition">
+        <span *ngIf="!isLoading">Activer</span>
+        <span *ngIf="isLoading">Activation...</span>
+      </button>
+    </div>
+  </div>

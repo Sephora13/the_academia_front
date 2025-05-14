@@ -19,6 +19,38 @@ export class AuthentificationService {
   constructor(private http : HttpClient) {}
 
   private apiUrl = 'http://localhost:3000/auth/SignIn';
+  private apiUrl1 = 'http://localhost:3000/users/verify-activation-code';
+  private apiUrl2 = 'http://localhost:3000/users/register ';
+
+
+  signUp(
+    matricule: string,
+    email: string,
+    nom: string,
+    prenom: string,
+    filiere: string,
+    classe: string,
+    password: string,
+    confirmPassword: string): Observable<any>{
+      const body = {
+        matricule,
+        email,
+        nom,
+        prenom,
+        filiere,
+        classe,
+        password,
+        confirmPassword
+      };
+  
+      return this.http.post(this.apiUrl2, body);
+    }
+
+  // Méthode pour vérifier le code d'activation
+  verifyActivationCode(email: string, code: string): Observable<any> {
+    const body = { email, code };
+    return this.http.post(this.apiUrl, body);
+  }
 
   signIn(email: string, password: string): Observable<any> {
     return this.http.post(this.apiUrl, { email, password }).pipe(
@@ -79,6 +111,5 @@ export class AuthentificationService {
     localStorage.removeItem('role');
   }
   
-
 }
 

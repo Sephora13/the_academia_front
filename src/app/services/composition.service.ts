@@ -16,7 +16,7 @@ export class CompositionService {
   isAble():Observable<any>{
     return this.httpClient.get<any>(this.apiUrl, {
       headers:{
-        'X-Forwarded-For': '192.168.1.20'
+        'X-Forwarded-For': '192.168.42.152'
       }
     })
   }

@@ -1,40 +1,123 @@
+<body class="bg-gray-900 flex items-center justify-center min-h-screen p-4">
+  <form
+    class="bg-[#1e2128] text-[#d1d5db] rounded-lg shadow-lg w-full max-w-md p-8 space-y-6"
+    id="signUpForm"
+    (ngSubmit)="onRegister()"
+  >
+    <h2 class="text-2xl font-extrabold mb-6 text-center">Sign Up</h2>
 
-        <!-- Sign up form -->
-        <section class="signup min-h-screen flex items-center justify-center relative bg-[#fffff]">
-          <div class="container">
-              <div class="signup-content">
-                  <div class="signup-form">
-                      <h2 class="form-title">Sign up</h2>
-                      <form method="POST" class="register-form" id="register-form">
-                          <div class="form-group">
-                              <label for="name"><i class="zmdi zmdi-account material-icons-name"></i></label>
-                              <input type="text" name="name" id="name" placeholder="Matricule"/>
-                          </div>
-                          <div class="form-group">
-                              <label for="email"><i class="zmdi zmdi-email"></i></label>
-                              <input type="email" name="email" id="email" placeholder="Your Email"/>
-                          </div>
-                          <div class="form-group">
-                              <label for="pass"><i class="zmdi zmdi-lock"></i></label>
-                              <input type="password" name="pass" id="pass" placeholder="Password"/>
-                          </div>
-                          <div class="form-group">
-                              <label for="re-pass"><i class="zmdi zmdi-lock-outline"></i></label>
-                              <input type="password" name="re_pass" id="re_pass" placeholder="Repeat your password"/>
-                          </div>
-                          <div class="form-group">
-                              <input type="checkbox" name="agree-term" id="agree-term" class="agree-term" />
-                              <label for="agree-term" class="label-agree-term"><span><span></span></span>I agree all statements in  <a href="#" class="term-service">Terms of service</a></label>
-                          </div>
-                          <div class="form-group form-button">
-                              <input type="submit" name="signup" id="signup" class="form-submit" value="Register"/>
-                          </div>
-                      </form>
-                  </div>
-                  <div class="signup-image">
-                      <figure><img src="assets/img/signup-image.jpg" alt="sing up image"></figure>
-                      <a href="#" (click)="signIn()" class="signup-image-link">I am already member</a>
-                  </div>
-              </div>
-          </div>
-      </section>
+    <div class="flex flex-col">
+      <label for="matricule" class="mb-1 text-sm font-semibold">Matricule</label>
+      <input
+        type="text"
+        id="matricule"
+        name="matricule"
+        [(ngModel)]="matricule"
+        required
+        class="w-full rounded bg-[#121317] border border-[#374151] px-3 py-2 text-sm text-[#d1d5db] placeholder-[#6b7280] focus:outline-none focus:ring-2 focus:ring-[#6366f1]"
+        placeholder="Enter your matricule"
+      />
+    </div>
+
+    <div class="flex flex-col">
+      <label for="email" class="mb-1 text-sm font-semibold">Email</label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        [(ngModel)]="email"
+        required
+        class="w-full rounded bg-[#121317] border border-[#374151] px-3 py-2 text-sm text-[#d1d5db] placeholder-[#6b7280] focus:outline-none focus:ring-2 focus:ring-[#6366f1]"
+        placeholder="Enter your email"
+      />
+    </div>
+
+    <div class="flex space-x-4">
+      <div class="flex flex-col flex-1">
+        <label for="nom" class="mb-1 text-sm font-semibold">Nom</label>
+        <input
+          type="text"
+          id="nom"
+          name="nom"
+          [(ngModel)]="nom"
+          required
+          class="w-full rounded bg-[#121317] border border-[#374151] px-3 py-2 text-sm text-[#d1d5db] placeholder-[#6b7280] focus:outline-none focus:ring-2 focus:ring-[#6366f1]"
+          placeholder="Enter your nom"
+        />
+      </div>
+      <div class="flex flex-col flex-1">
+        <label for="prenom" class="mb-1 text-sm font-semibold">Prenom</label>
+        <input
+          type="text"
+          id="prenom"
+          name="prenom"
+          [(ngModel)]="prenom"
+          required
+          class="w-full rounded bg-[#121317] border border-[#374151] px-3 py-2 text-sm text-[#d1d5db] placeholder-[#6b7280] focus:outline-none focus:ring-2 focus:ring-[#6366f1]"
+          placeholder="Enter your prenom"
+        />
+      </div>
+    </div>
+
+    <div class="flex space-x-4">
+      <div class="flex flex-col flex-1">
+        <label for="filiere" class="mb-1 text-sm font-semibold">Filiere</label>
+        <input
+          type="text"
+          id="filiere"
+          name="filiere"
+          [(ngModel)]="filiere"
+          required
+          class="w-full rounded bg-[#121317] border border-[#374151] px-3 py-2 text-sm text-[#d1d5db] placeholder-[#6b7280] focus:outline-none focus:ring-2 focus:ring-[#6366f1]"
+          placeholder="Enter your filiere"
+        />
+      </div>
+      <div class="flex flex-col flex-1">
+        <label for="classe" class="mb-1 text-sm font-semibold">Classe</label>
+        <input
+          type="text"
+          id="classe"
+          name="classe"
+          [(ngModel)]="classe"
+          required
+          class="w-full rounded bg-[#121317] border border-[#374151] px-3 py-2 text-sm text-[#d1d5db] placeholder-[#6b7280] focus:outline-none focus:ring-2 focus:ring-[#6366f1]"
+          placeholder="Enter your classe"
+        />
+      </div>
+    </div>
+
+    <div class="flex flex-col">
+      <label for="password" class="mb-1 text-sm font-semibold">Password</label>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        [(ngModel)]="password"
+        required
+        class="w-full rounded bg-[#121317] border border-[#374151] px-3 py-2 text-sm text-[#d1d5db] placeholder-[#6b7280] focus:outline-none focus:ring-2 focus:ring-[#6366f1]"
+        placeholder="Enter your password"
+      />
+    </div>
+
+    <div class="flex flex-col">
+      <label for="confirmPassword" class="mb-1 text-sm font-semibold">Confirm Password</label>
+      <input
+        type="password"
+        id="confirmPassword"
+        name="confirmPassword"
+        [(ngModel)]="confirmPassword"
+        required
+        class="w-full rounded bg-[#121317] border border-[#374151] px-3 py-2 text-sm text-[#d1d5db] placeholder-[#6b7280] focus:outline-none focus:ring-2 focus:ring-[#6366f1]"
+        placeholder="Confirm your password"
+      />
+    </div>
+
+    <button
+      type="submit"
+      (click)="onRegister()"
+      class="w-38 bg-[#6366f1] hover:bg-[#4f46e5] transition text-white font-semibold py-2 px-4 rounded"
+    > Sign Up
+    </button>
+  </form>
+
+</body>

@@ -1,43 +1,75 @@
-    <!-- Sing in  Form -->
-    <section class="sign-in min-h-screen flex items-center justify-center relative bg-[#fffff]">
-      <div class="container">
-          <div class="signin-content">
-              <div class="signin-image">
-                  <figure><img src="assets/img/signin-image.jpg" alt="sing up image"></figure>
-                  <a href="#" (click)="signUp()" class="signup-image-link">Create an account</a>
+<body class="bg-[#121317] flex items-center justify-center min-h-screen p-6" ng-app="signInApp" ng-controller="SignInController">
+    <section class="sign-in w-full max-w-4xl bg-[#1e2128] rounded-lg shadow-lg overflow-hidden flex flex-col md:flex-row">
+        <!-- Left Image and Sign Up Link -->
+        <div class="signin-image md:w-1/2 relative bg-gradient-to-tr from-indigo-900 via-indigo-800 to-indigo-700 flex flex-col items-center justify-center p-8 text-white">
+          <figure class="mb-6 w-full max-w-sm">
+            <img alt="Dark mode sign in illustration" class="rounded-lg shadow-lg" src="https://storage.googleapis.com/a1aa/image/24f2b7c5-977f-40eb-899d-c778150c546b.jpg" />
+          </figure>
+          <a class="signup-image-link underline text-indigo-300 hover:text-indigo-100 font-semibold text-lg cursor-pointer" (click)="signUp()">
+            Create an account
+          </a>
+        </div>
+      
+        <!-- Sign In Form -->
+        <div class="signin-form md:w-1/2 p-10 flex flex-col justify-center text-[#d1d5db]">
+          <h2 class="form-title text-3xl font-extrabold mb-8 text-center text-white">
+            Se connecter
+          </h2>
+          <form (ngSubmit)="signIn()" method="POST" class="register-form" id="login-form" >
+            <div class="form-group flex flex-col mb-4">
+              <label class="mb-2 font-semibold text-indigo-300" for="email">Email</label>
+              <input
+                class="p-3 rounded border border-indigo-700 bg-[#121317] text-[#d1d5db] placeholder-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                id="email"
+                name="email"
+                [(ngModel)]="email"
+                placeholder="Votre email"
+                required
+                type="email"
+                #emailField="ngModel"
+              />
+              <div class="text-red-500 text-sm mt-1" *ngIf="emailField.invalid && emailField.touched">
+                Please enter a valid email.
               </div>
+            </div>
+      
+            <div class="form-group flex flex-col relative mb-4">
+              <label class="mb-2 font-semibold text-indigo-300" for="password">Mot de passe</label>
+              <input
+                [type]="showPassword ? 'text' : 'password'"
+                [(ngModel)]="password"
+                name="password"
+                id="password"
+                class="p-3 rounded border border-indigo-700 bg-[#121317] text-[#d1d5db] placeholder-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 pr-10"
+                placeholder="Mot de passe"
+                required
+                #passwordField="ngModel"
+              />
+              <button type="button" (click)="togglePassword()" class="absolute right-3 top-10 text-gray-500">
+                <i class="zmdi" [ngClass]="showPassword ? 'zmdi-eye-off' : 'zmdi-eye'"></i>
+              </button>
+              <div class="text-red-500 text-sm mt-1" *ngIf="passwordField.invalid && passwordField.touched">
+                Password is required.
+              </div>
+            </div>
+      
+            <div class="form-group flex items-center space-x-2 mb-4">
+              <input
+                type="checkbox"
+                name="rememberMe"
+                id="remember-me"
+                class="h-4 w-4 text-indigo-500 border-indigo-700 rounded focus:ring-indigo-500 bg-[#121317]"
+              />
+              <label for="remember-me" class="select-none text-indigo-300">Remember me</label>
+            </div>
+      
+            <div class="form-group form-button">
+                <input type="submit" (click)="signIn()" name="signin" id="signin" class="w-full bg-[#6366f1] hover:bg-[#4f46e5] transition text-white font-semibold py-2 rounded" value="Log in"/>
+            </div>
+          </form>
+        </div>
+      </section>
+    
+  </body>
+  
 
-              <div class="signin-form">
-                  <h2 class="form-title">Se connecter</h2>
-                  <form method="POST" class="register-form" id="login-form" (ngSubmit)="signIn()">
-                      <div class="form-group">
-                          <label for="email"><i class="zmdi zmdi-account material-icons-name"></i></label>
-                          <input type="email" [(ngModel)]="email" name="your_name" id="your_name" placeholder="Votre email"/>
-                      </div>
-                      <div class="form-group flex flex-col relative">
-                        <label for="password" class="text-gray-700 font-medium"></label>
-                        <input 
-                          [type]="showPassword ? 'text' : 'password'" 
-                          [(ngModel)]="password" 
-                          name="password" 
-                          class="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                          placeholder="Mot de passe" 
-                          required 
-                        />
-                        <button type="button" (click)="togglePassword()" class="absolute right-3 top-10 text-gray-500">
-                          <i class="zmdi" [ngClass]="showPassword ? 'zmdi-eye-off' : 'zmdi-eye'"></i>
-                        </button>
-                      </div>
-              
-                      <div class="form-group">
-                          <input type="checkbox" name="remember-me" id="remember-me" class="agree-term" />
-                          <label for="remember-me" class="label-agree-term"><span><span></span></span>Remember me</label>
-                      </div>
-                      <div class="form-group form-button">
-                          <input type="submit" (click)="sidebar()" name="signin" id="signin" class="form-submit" value="Log in"/>
-                      </div>
-                  </form>
-              </div>
-          </div>
-      </div>
-  </section>

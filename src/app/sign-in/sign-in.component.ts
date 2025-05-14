@@ -30,12 +30,12 @@ export class SignInComponent {
     this.showPassword = !this.showPassword;
   }
 
-  async signIn() {
+   signIn() {
     if (!this.email || !this.password) {
       alert("Veuillez remplir tous les champs.");
       return;
     }
-    await this.auth.signIn(this.email, this.password).subscribe({
+     this.auth.signIn(this.email, this.password).subscribe({
       next: (response) => {
         console.log('Connexion réussie:', response);
   
@@ -44,7 +44,7 @@ export class SignInComponent {
   
         // Rediriger l'utilisateur en fonction de son rôle
         if (userRole === 'etudiant') {
-          this.router.navigate(['/student-dashboard']);
+          this.router.navigate(['/student_side']);
         } else {
           this.router.navigate(['/home']);
         }
