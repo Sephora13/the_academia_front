@@ -42,7 +42,7 @@ export const routes: Routes = [
   {path : 'decouvrir', component: DecouvrirComponent},
   {path: 'notification_etudiant', component: NotificationEtudiantComponent},
   {path: 'exam_service', component:ExamServiceComponent},
-  { path: '**', redirectTo: 'signIn', pathMatch: 'full' },
+  //{ path: '**', redirectTo: 'signIn', pathMatch: 'full' },
   {
     path: 'professeur',
     loadChildren: () =>

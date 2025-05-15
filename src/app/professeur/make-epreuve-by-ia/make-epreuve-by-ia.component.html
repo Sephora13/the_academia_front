@@ -1,53 +1,81 @@
-<div id="main"  class="transition-all duration-300 ">
-  <h2 class="text-2xl font-bold mb-6 text-gray-600">Créer une épreuve avec IA</h2>
+<div class="page">
 
-  <form class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-    <input class="p-3 border rounded" type="text" placeholder="Matière" [(ngModel)]="matiere" name="matiere" required />
-    <input class="p-3 border rounded" type="text" placeholder="Niveau" [(ngModel)]="niveau" name="niveau" required />
-    <input class="p-3 border rounded" type="text" placeholder="Durée (ex: 1h30)" [(ngModel)]="duree" name="duree" required />
-    <input class="p-3 border rounded" type="number" placeholder="Nombre d'exercices" [(ngModel)]="nombreExercices" name="nbExercices" required />
-    
-    <textarea class="p-3 border rounded col-span-2" placeholder="Objectifs pédagogiques (séparés par des virgules)"
-      [(ngModel)]="objectifs" name="objectifs"></textarea>
+  <section class="form-and-result-wrapper">
+    <div class="form-wrapper">
+      <h1 class="form-title">Créer une épreuve a l’aide de l’IA</h1>
+      <p class="form-subtitle">
+        Veuillez remplir ce formulaire afin de me renseigner les informations nécessaires pour
+        la génération de votre épreuve
+      </p>
 
-    <textarea class="p-3 border rounded col-span-2" placeholder="Prompt personnalisé pour l'IA"
-      [(ngModel)]="prompt" name="prompt"></textarea>
+      <form class="form-grid">
+        <div class="field">
+          <label for="matiere">Matière</label>
+          <input id="matiere" type="text" placeholder="Matière" [(ngModel)]="matiere" name="matiere" />
+        </div>
 
-    <input type="file" (change)="onFileChange($event)" class="col-span-2" />
-  </form>
+        <div class="field">
+          <label for="niveau">Niveau</label>
+          <input id="niveau" type="text" placeholder="Niveau" [(ngModel)]="niveau" name="niveau" />
+        </div>
 
-  <div class="mb-10">
-    <button class="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700" (click)="genererEpreuve()">Générer l’épreuve</button>
-  </div>
+        <div class="field">
+          <label for="exercices">Nombres d’exercices</label>
+          <input id="exercices" type="number" min="1" placeholder="0" [(ngModel)]="nombreExercices" name="exercices" />
+        </div>
 
-  <div *ngIf="isLoading" class="text-center">
-    <p class="text-lg text-gray-500">Génération de l’épreuve en cours...</p>
-    <!-- Loader ici -->
-    <div class="loader mt-4"></div>
-  </div>
+        <div class="field">
+          <label for="duree">Durée</label>
+          <input id="duree" type="number" min="1" placeholder="min" [(ngModel)]="duree" name="duree" />
+        </div>
 
-  <div *ngIf="showResult" class="bg-white p-6 rounded shadow-md mb-8">
-    <h3 class="text-lg font-semibold mb-4 text-gray-700">Résultat de l'IA</h3>
+        <div class="field file-field">
+          <label for="cours">Uploader le document de cours (pdf)</label>
+          <input id="cours" type="file" accept=".pdf" (change)="onFileChange($event)" />
+        </div>
+      </form>
 
-    <div class="mb-4">
-      <h4 class="font-semibold">Épreuve :</h4>
-      <p class="whitespace-pre-wrap">{{ epreuveGeneree }}</p>
+      <button class="generate-btn" (click)="genererEpreuve()">
+         Générer l’épreuve
+      </button>
+
+      <div *ngIf="isLoading" class="loader-container">
+        <div class="loader"></div>
+        <p>Génération de l'épreuve en cours...</p>
+      </div>
+
+      <div *ngIf="showResult" class="generated-epreuve">
+        <h3>Épreuve Générée :</h3>
+        <pre>{{ epreuveGeneree }}</pre>
+
+        <h3>Grille de Correction :</h3>
+        <pre>{{ grilleCorrection }}</pre>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="chat-wrapper">
+
+    <header class="chat-header">
+      <span class="bot-sticker" aria-hidden="false"></span>
+      <h2>Créons ensemble votre épreuve</h2>
+    </header>
+
+    <div class="chat-body" #chatBody> <div class="bubble bot">Bonjour. Veuillez remplir le formulaire</div>
+      <div *ngFor="let message of messages" [ngClass]="{'bubble bot': message.sender === 'bot', 'bubble user': message.sender === 'user', 'long': message.isLong}">
+         {{ message.text }}
+       </div>
     </div>
 
-    <div class="mb-4">
-      <h4 class="font-semibold">Grille de correction :</h4>
-      <p class="whitespace-pre-wrap">{{ grilleCorrection }}</p>
+    <div class="chat-actions">
+       <div class="chat-input-container">
+          <input type="text" placeholder="Write your message…" [(ngModel)]="nouvelleSuggestion" (keyup.enter)="modifierEpreuve()" />
+          <button class="send-btn" aria-label="Envoyer" (click)="modifierEpreuve()">➤</button>
+       </div>
     </div>
 
-    <div class="mb-4">
-      <textarea class="w-full p-3 border rounded" placeholder="Modifier la demande à l'IA..." [(ngModel)]="nouvelleSuggestion" name="suggestion"></textarea>
-    </div>
+     <button class="save-btn-floating" (click)="enregistrerEpreuve()">Enregistrer Epreuve</button>
 
-    <div class="flex gap-4">
-      <button class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600" (click)="modifierEpreuve()">Modifier</button>
-      <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700" (click)="enregistrerEpreuve()">Enregistrer</button>
-    </div>
-  </div>
+  </section>
 </div>
-
-

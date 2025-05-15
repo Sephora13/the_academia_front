@@ -1,27 +1,483 @@
-#main {
-  transition: all 0.3s ease;
-  /* margin-left: var(--sidebar-width); */ /* À désactiver */
-  margin-left: 0;
+/* Styles pour make-epreuve-by-ia.component.css */
+/* Utilisant les variables globales de styles.css */
+
+/* ───────── Disposition générale du composant ───────── */
+.page {
+  display: flex;
+  /* Définir une hauteur pour le conteneur principal flex */
+  /* Cela permet aux enfants (formulaire/résultats et chat) de prendre une part de cette hauteur */
+  /* Tu peux ajuster cette hauteur en fonction de ton design global et de ton header */
+   height: calc(100vh - var(--header-height, 0px) - 4rem); /* Exemple: 100% de la hauteur de la vue moins le header et les padding verticaux du .page */
+  /* min-height: calc(100vh - var(--header-height)); */ /* Ceci n'est plus nécessaire avec une height définie */
+
+  padding: 2rem 3rem; /* Peut-être utiliser des variables globales d'espacement si disponibles */
+  gap: 2rem; /* Peut-être utiliser des variables globales d'espacement si disponibles */
+  font-family: var(--body-font); /* Hérité, mais pour être explicite */
+  overflow: hidden; /* Empêche le défilement du conteneur .page lui-même si les enfants dépassent */
+}
+
+/* Nouveau conteneur pour formulaire et résultats */
+.form-and-result-wrapper {
+    flex: 1 1 55%; /* Permet à cette section de prendre une proportion de l'espace disponible */
+    display: flex;
+    flex-direction: column;
+    gap: 2rem; /* Espace entre le formulaire et l'épreuve générée */
+     overflow-y: auto; /* Ajoute un défilement si le contenu (formulaire + épreuve) dépasse */
+}
+
+/* ==============  FORMULAIRE ============== */
+.form-wrapper {
+  flex: 0 0 auto; /* Permet au formulaire de ne pas prendre tout l'espace */
+  /* Utilise une variable globale pour la couleur de bordure si elle existe,
+     sinon, une nuance de text-color ou une couleur spécifique.
+     hsl(228, 8%, 85%) est le scrollbar bg, peut-être une bonne base pour les bordures claires. */
+  border: 1px solid hsl(228, 8%, 85%); /* Exemple, à remplacer par une variable globale si possible */
+  border-radius: .5rem; /* Exemple, à remplacer par une variable globale de rayon si possible */
+  padding: 2rem 2.5rem;
+  box-shadow: var(--shadow-color); /* Utilise la variable d'ombre globale */
+  background-color: var(--body-color); /* Pour s'assurer qu'il respecte le thème */
+  display: flex; /* Ajout pour aligner le contenu si nécessaire */
+  flex-direction: column; /* Ajout pour que le contenu du formulaire s'empile */
+}
+
+.form-title {
+  margin: 0 0 0.75rem;
+  font-size: 1.35rem; /* Vous pouvez créer une variable globale pour cette taille si réutilisée */
+  font-weight: var(--font-semi-bold); /* Utilise la variable de graisse globale */
+  color: var(--first-color); /* Couleur principale de votre thème */
+}
+
+.form-subtitle {
+  margin: 0 0 2rem;
+  font-size: var(--smaller-font-size); /* Utilise la variable de taille de police globale */
+  line-height: 1.4;
+  max-width: 32rem;
+  color: var(--text-color); /* Couleur de texte standard */
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.25rem 2rem;
+  margin-bottom: 2rem; /* Ajout espace avant le bouton de génération */
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.field label {
+  font-size: var(--smaller-font-size); /* Ou une autre variable de taille appropriée */
+  color: var(--title-color); /* Labels comme des petits titres */
+  font-weight: var(--font-semi-bold);
+}
+
+.field input[type="text"],
+.field input[type="number"],
+.field input[type="file"] {
+  padding: 0.55rem 0.75rem;
+  /* Utilisez une variable globale pour la couleur de bordure si elle existe */
+  border: 1px solid hsl(228, 8%, 75%); /* Exemple, scrollbar thumb color, ajustez */
+  border-radius: .375rem; /* 6px, exemple, à remplacer par une variable globale de rayon */
+  font-size: var(--normal-font-size);
+  background-color: var(--body-color); /* S'adapte au fond du thème */
+  color: var(--text-color); /* Pour que le texte saisi soit visible */
+  transition: border-color .3s, background-color .4s, color .4s; /* Transitions douces */
+}
+
+/* Styles spécifiques pour l'input file si nécessaire pour correspondre au design
+.field input[type="file"] {
+
+}
+*/
+
+/* Style pour le placeholder pour qu'il soit visible dans les deux thèmes */
+.field input::placeholder {
+  color: var(--text-color);
+  opacity: 0.6; /* Ajustez pour la visibilité */
+}
+
+/* Amélioration pour le focus sur les inputs */
+.field input[type="text"]:focus,
+.field input[type="number"]:focus {
+  outline: none;
+  border-color: var(--first-color);
+  box-shadow: 0 0 0 2px hsla(var(--first-color-hsl), 0.2); /* Adaptez HSL de --first-color */
 }
 
 
-textarea {
-  resize: vertical;
-  min-height: 100px;
+.file-field {
+  grid-column: 1 / -1;         /* pleine largeur */
 }
 
-/* Ex. de loader à remplacer par un vrai gif ou CSS animé */
+/* Bouton de génération d'épreuve */
+.generate-btn {
+  margin: 0 auto 0; /* Ajusté pour utiliser flexbox dans form-wrapper */
+  display: block; /* ou inline-block si vous préférez */
+  padding: 0.6rem 1.5rem; /* Espacement intérieur */
+  background-color: var(--first-color);
+  color: white; /* Assumant que --first-color est assez sombre pour un texte blanc */
+  border: none;
+  border-radius: .375rem; /* Exemple, à remplacer par une variable globale de rayon */
+  font-size: var(--normal-font-size);
+  font-weight: var(--font-semi-bold);
+  cursor: pointer;
+  text-align: center;
+  transition: background-color .3s, filter .3s;
+}
+
+.generate-btn:hover {
+  background-color: hsl(228, 85%, 55%); /* Légèrement plus clair/foncé que --first-color au survol */
+  /* ou utilisez filter: brightness(0.9) si --first-color est clair, brightness(1.1) s'il est foncé */
+}
+
+
+/* Loader styles */
+.loader-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    /* background-color: var(--body-color); */ /* Optionnel */
+    border-radius: .5rem; /* Optionnel */
+    margin-top: 1rem;
+}
+
 .loader {
-  border: 6px solid #f3f3f3;
-  border-top: 6px solid #3498db;
+  border: 4px solid #f3f3f3; /* Light grey */
+  border-top: 4px solid var(--first-color); /* Blue */
   border-radius: 50%;
   width: 40px;
   height: 40px;
-  margin: auto;
   animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
 }
 
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+.loader-container p {
+    font-size: var(--normal-font-size);
+    color: var(--text-color);
+}
+
+/* Styles pour l'épreuve générée */
+.generated-epreuve {
+    border: 1px solid hsl(228, 8%, 85%);
+    border-radius: .5rem;
+    padding: 2rem 2.5rem;
+    box-shadow: var(--shadow-color);
+    background-color: var(--body-color);
+    color: var(--text-color);
+    /* margin-top: 1rem; */ /* Géré par le gap du parent .form-and-result-wrapper */
+    flex-grow: 1; /* Permet à l'épreuve générée de prendre l'espace restant dans le conteneur flex */
+    overflow-y: auto; /* Ajoute un défilement si l'épreuve est très longue */
+}
+
+.generated-epreuve h3 {
+    font-size: 1.2rem;
+    font-weight: var(--font-semi-bold);
+    color: var(--title-color);
+    margin-top: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.generated-epreuve h3:first-child {
+    margin-top: 0; /* Pas de marge en haut pour le premier titre */
+}
+
+
+/* ==============  CHAT ============== */
+.chat-wrapper {
+  flex: 0 0 38%; /* Taille fixe ou proportionnelle mais pas flex-grow */
+  display: flex;
+  flex-direction: column;
+  /* gap: 1rem; */ /* Le gap sera géré par les padding et marges internes */
+  border: 1px solid hsl(228, 8%, 85%);
+  border-radius: .5rem;
+  box-shadow: var(--shadow-color);
+  /* padding: 1rem; */ /* Padding géré par les enfants directs */
+  height: 100%; /* Permet au chat de prendre toute la hauteur du conteneur .page */
+  flex-shrink: 0; /* Empêche le chat de rétrécir */
+  position: relative; /* Permet de positionner absolument les enfants flottants (bouton) */
+  overflow: hidden; /* Important pour masquer le contenu flottant lors du défilement du corps du chat */
+}
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  /* margin-bottom: 0.25rem; */ /* Géré par padding-bottom et border-bottom */
+  padding: 1rem 1rem 0.5rem 1rem; /* Padding supérieur, gauche, bas, droite */
+  border-bottom: 1px solid hsl(228, 8%, 90%); /* Ligne de séparation */
+   flex-shrink: 0; /* Empêche l'en-tête de rétrécir */
+}
+
+.chat-header h2 {
+  font-size: var(--normal-font-size); /* Ou une taille légèrement plus grande si c'est un titre important */
+  font-weight: var(--font-semi-bold);
+  margin: 0;
+  white-space: nowrap;
+  color: var(--title-color);
+}
+
+.bot-sticker {
+  width: 22px;
+  height: 32px;
+  background: var(--first-color); /* Couleur principale pour l'icône du bot */
+  mask: url('data:image/svg+xml,\
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox=\"0 0 24 24\" fill=\"white\">\
+  <path d=\"M12 2a3 3 0 0 0-3 3H7v2h2v3H7v2h2v3H7v2h2a3 3 0 0 0 6 0h2v-2h-2v-3h2v-2h-2V7h2V5h-2a3 3 0 0 0-3-3zm0 2a1 1 0 0 1 1 1h-2a1 1 0 0 1 1-1zm0 14a1 1 0 0 1-1-1h2a1 1 0 0 1 1 1z\"/>\
+  </svg>') center / contain no-repeat;
+}
+
+/* ─ Chat body ─ */
+.chat-body {
+  flex: 1 1 auto; /* Permet au corps du chat de prendre l'espace vertical disponible */
+  overflow-y: auto; /* ESSENTIEL : Ajoute une barre de défilement si le contenu dépasse */
+  padding: 1rem; /* Padding intérieur pour les messages */
+  display: flex;
+  flex-direction: column; /* Ordre normal */
+  gap: 1rem; /* Espace entre les bulles */
+  /* Pour le style de la scrollbar, cela est géré globalement dans votre styles.css pour .dark-theme */
+}
+
+.bubble {
+  max-width: 75%; /* Ajuste la largeur max des bulles */
+  padding: 0.65rem 0.85rem;
+  border-radius: 16px; /* Bulles bien arrondies par défaut */
+  line-height: 1.35;
+  font-size: var(--smaller-font-size);
+  box-shadow: var(--shadow-color);
+  word-wrap: break-word; /* Pour que les longs mots sans espace ne cassent pas le layout */
+}
+
+/* Bulles du bot (doivent être à droite) */
+.bubble.bot {
+  background-color: hsl(228, 25%, 95%); /* Mode clair - gris très clair */
+  color: var(--text-color); /* Devrait s'adapter, mais pour être sûr */
+  align-self: flex-end; /* **Bulles du bot à droite** */
+  /* **Réajuste les border-radius comme tu le souhaites** */
+  border-top-left-radius: 16px; /* Le coin supérieur gauche reste arrondi */
+  border-top-right-radius: 0;   /* Le coin supérieur droit est carré */
+  border-bottom-left-radius: 16px; /* Le coin inférieur gauche reste arrondi */
+  border-bottom-right-radius: 16px; /* Le coin inférieur droit reste arrondi */
+}
+
+.dark-theme .bubble.bot {
+  background-color: hsl(228, 15%, 25%); /* Mode sombre - un gris foncé pour la bulle du bot */
+  color: var(--text-color); /* S'assure que le texte reste lisible */
+}
+
+/* Bulles utilisateur (doivent être à gauche) */
+.bubble.user {
+  background: var(--first-color); /* Couleur principale pour les bulles utilisateur */
+  color: white; /* Texte blanc sur fond coloré */
+  align-self: flex-start; /* **Bulles utilisateur à gauche** */
+   /* **Réajuste les border-radius comme tu le souhaites** */
+  border-top-left-radius: 16px;    /* Le coin supérieur gauche reste arrondi */
+  border-top-right-radius: 16px;   /* Le coin supérieur droit reste arrondi */
+  border-bottom-left-radius: 16px; /* Le coin inférieur gauche reste arrondi */
+  border-bottom-right-radius: 0;   /* Le coin inférieur droit est carré */
+}
+
+
+/* Le style .bubble.long reste le même */
+.bubble.long {
+  max-width: 90%; /* Peut-être augmenter un peu pour les longs messages */
+}
+
+
+/* ─ Chat actions (zone de saisie et bouton d'enregistrement) ─ */
+.chat-actions {
+  display: flex;
+  flex-direction: column;
+  /* gap: 1rem; */ /* Le gap sera géré par le padding */
+  /* margin-top: auto; */ /* Plus nécessaire avec le bouton flottant */
+  padding: 1rem; /* Padding autour de la zone de saisie */
+  border-top: 1px solid hsl(228, 8%, 90%); /* Ligne de séparation */
+  flex-shrink: 0; /* Empêche les actions de rétrécir */
+  background-color: var(--body-color); /* Assure que le fond est correct */
+  z-index: 1; /* S'assure que la zone de saisie est au-dessus du contenu du chat */
+}
+
+.chat-input-container {
+    display: flex;
+    align-items: center;
+    /* gap: 0.4rem; */ /* Le gap sera géré par le padding de l'input */
+    position: relative; /* Permet de positionner le bouton d'envoi absolument à l'intérieur */
+}
+
+.chat-input-container input[type="text"] { /* **CORRECTION : Cible l'input à l'intérieur du chat-input-container** */
+  flex: 1 1 auto; /* L'input prend l'espace disponible */
+  padding: 0.75rem 3rem 0.75rem 1rem; /* Ajoute du padding à droite pour laisser de la place au bouton */
+  border: 1px solid hsl(228, 8%, 75%);
+  border-radius: 2rem; /* **ARRONDI : Rend l'input plus arrondi** */
+  font-size: var(--normal-font-size);
+  background-color: var(--body-color);
+  color: var(--text-color);
+  transition: border-color .3s, background-color .4s, color .4s;
+  width: 100%; /* S'assure que l'input prend toute la largeur disponible */
+}
+
+.chat-input-container input[type="text"]::placeholder { /* **CORRECTION : Cible le placeholder à l'intérieur du chat-input-container** */
+  color: var(--text-color);
+  opacity: 0.6;
+}
+
+.chat-input-container input[type="text"]:focus { /* **CORRECTION : Cible le focus à l'intérieur du chat-input-container** */
+  outline: none;
+  border-color: var(--first-color);
+  box-shadow: 0 0 0 2px hsla(var(--first-color-hsl), 0.2);
+}
+
+.send-btn {
+  position: absolute; /* **BOUTON INTÉGRÉ : Positionne le bouton d'envoi absolument** */
+  right: 0.5rem; /* Ajuste la position à droite de l'input */
+  top: 50%; /* Centre verticalement */
+  transform: translateY(-50%); /* Ajuste pour un centrage parfait */
+  flex: 0 0 auto; /* Taille fixe pour le bouton d'envoi */
+  background: hsl(228, 70%, 55%);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-color); /* Ajoute une ombre au bouton d'envoi */
+  transition: background-color .3s, filter .3s;
+}
+.dark-theme .send-btn {
+    background: hsl(228, 70%, 63%);
+}
+
+
+.send-btn:hover {
+  filter: brightness(1.1);
+}
+
+.send-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Bouton Enregistrer Epreuve flottant */
+.save-btn-floating {
+    position: absolute; /* **BOUTON FLOTTANT : Positionnement absolu** */
+    /* Positionne au-dessus de la zone de saisie (padding chat-actions + hauteur input/bouton + espace) */
+    bottom: calc(1rem + 40px + 1rem); /* Ajuste le calcul si la hauteur de l'input/bouton change */
+    left: 1rem; /* Ajuste la position à gauche */
+    padding: 0.5rem 1.4rem;
+    background: var(--first-color);
+    color: white;
+    border: none;
+    border-radius: .375rem;
+    font-size: var(--smaller-font-size);
+    font-weight: var(--font-semi-bold);
+    cursor: pointer;
+    box-shadow: var(--shadow-color); /* Ajoute une ombre au bouton flottant */
+    transition: background-color .3s, filter .3s;
+    z-index: 1; /* S'assure qu'il est au-dessus du corps du chat */
+}
+
+.save-btn-floating:hover {
+  background-color: hsl(228, 85%, 55%);
+}
+
+.save-btn-floating:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+/* ─ Responsive (styles pour petits écrans) ─ */
+@media (max-width: 900px) {
+  .page {
+    flex-direction: column;
+    padding: 1.5rem;
+    height: auto; /* Permet à la page de s'étirer sur mobile */
+    overflow: visible; /* Permet le défilement de la page entière sur mobile si nécessaire */
+  }
+  .form-and-result-wrapper, .chat-wrapper {
+    flex-basis: auto; /* Réinitialise la base flex pour qu'ils prennent la largeur nécessaire */
+    height: auto; /* Sur mobile, les deux sections peuvent s'étirer */
+    overflow-y: visible; /* Permet le défilement si nécessaire, mais pas de hauteur fixe */
+    position: static; /* Retire le positionnement absolu sur mobile */
+  }
+   .form-and-result-wrapper {
+       gap: 1.5rem;
+   }
+  .chat-wrapper {
+    order: -1; /* Place le chat en premier dans l'ordre visuel sur mobile */
+     padding: 1.5rem;
+  }
+   .generated-epreuve {
+       padding: 1.5rem;
+   }
+    .save-btn-floating {
+        position: static; /* Le bouton flottant devient statique sur mobile */
+        margin-top: 1rem; /* Ajoute un espace au-dessus */
+        margin-left: 0;
+    }
+    .chat-actions {
+        padding: 1rem 0; /* Ajuste le padding de la zone de saisie sur mobile */
+    }
+     .chat-input-container input[type="text"] {
+         padding: 0.75rem 2.5rem 0.75rem 0.75rem; /* Ajuste le padding de l'input */
+     }
+}
+
+@media (max-width: 600px) {
+  .page {
+    padding: 1rem;
+  }
+  .form-wrapper {
+    padding: 1.5rem;
+  }
+  .form-title {
+    font-size: 1.2rem;
+  }
+  .form-grid {
+      gap: 1rem 1.5rem;
+  }
+  .field input[type="text"],
+  .field input[type="number"],
+  .field input[type="file"],
+  .chat-input-box input[type="text"] {
+    padding: 0.5rem 0.6rem;
+    font-size: var(--smaller-font-size);
+  }
+  .generate-btn, .save-btn-floating { /* Applique le style pleine largeur au bouton flottant aussi */
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+   .chat-wrapper {
+       padding: 1rem;
+   }
+    .generated-epreuve {
+       padding: 1.5rem;
+   }
+     .chat-input-container input[type="text"] {
+         padding: 0.5rem 2.5rem 0.5rem 0.6rem; /* Ajuste le padding de l'input */
+     }
+}
+
+/* Style pour préserver le formatage du texte généré par l'IA */
+.generated-epreuve pre {
+    white-space: pre-wrap; /* Permet les retours à la ligne automatiques */
+    word-wrap: break-word; /* Assure que les mots très longs sont coupés */
+    font-family: inherit; /* Utilise la police du corps */
+    margin-top: 0.5rem; /* Un peu d'espace au-dessus du contenu généré */
+    padding: 0; /* Retire le padding par défaut des <pre> */
+    color: var(--text-color); /* Assure que le texte est lisible */
 }
