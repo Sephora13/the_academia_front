@@ -62,7 +62,8 @@
             <div *ngIf="parsedEpreuve" class="generated-epreuve">
               <h3>📄 Épreuve Générée :</h3>
 
-              <h4>{{ parsedEpreuve.titre }}</h4>
+              <p><strong>Matière :</strong> {{ matiere }}</p>
+              <p><strong>Niveau :</strong> {{ niveau }}</p>
               <p><strong>Durée :</strong> {{ parsedEpreuve.duree }}</p>
 
               <div *ngFor="let exercice of parsedEpreuve.exercices; let exoIndex = index" class="exercice">
@@ -101,18 +102,17 @@
                          <tr>
                              <th>Ex</th>
                              <th>Q</th>
-                             <th>Type</th>
-                             <th>Réponse / Attendu</th>
+                             <th>Réponse</th>
                              <th>Barème</th>
                          </tr>
                      </thead>
                      <tbody>
-                         <tr *ngFor="let reponse of parsedGrilleCorrection.reponses">
-                             <td>{{ reponse.ex }}</td>
-                             <td>{{ reponse.q }}</td>
-                             <td>{{ reponse.type }}</td>
-                             <td>{{ reponse.rep || reponse.attendu }}</td> <td>{{ reponse.bareme }}</td>
-                         </tr>
+                        <tr *ngFor="let reponse of parsedGrilleCorrection.reponses">
+                          <td>{{ reponse.ex }}</td>
+                          <td>{{ reponse.q }}</td>
+                          <td>{{ reponse.rep || reponse.attendu }}</td>
+                          <td>{{ reponse.bareme }}</td>
+                      </tr>
                      </tbody>
                  </table>
              </div>

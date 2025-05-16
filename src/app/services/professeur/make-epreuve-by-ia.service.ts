@@ -1,14 +1,22 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { AppConfig } from '../../config/config';
+import { AppConfig } from '../../config/config'; // Assuming AppConfig is used for apiUrl
+
+// Interface pour le corps de la requête de modification
+interface ModificationRequestBody {
+  epreuve_initiale: string;
+  nouveau_prompt: string;
+  contenu_pdf: string; // Supposons que le backend attend le contenu en string (ex: base64)
+}
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class MakeEpreuveByIaService {
 
-  private apiUrl = AppConfig.apiUrl;
+  private apiUrl = AppConfig.apiUrl; // Utilise AppConfig pour l'URL de l'API
 
   constructor(private http: HttpClient) { }
 
@@ -64,33 +72,33 @@ export class MakeEpreuveByIaService {
 
 
     // 6. Effectuer l'appel HTTP POST vers votre API avec le FormData
-    // Remplacez '/api/generate' par l'endpoint exact de votre API pour la génération
+    // Remplacez '/generer_epreuve/' par l'endpoint exact de votre API pour la génération
     // HttpClient gère automatiquement le type de contenu 'multipart/form-data' avec FormData
     return this.http.post<any>(`${this.apiUrl}/generer_epreuve/`, formData);
   }
 
   /**
    * Appelle l'API de modification d'épreuve.
-   * @param modificationData Les données nécessaires à la modification (suggestion, épreuve/grille actuelles).
+   * @param modificationData Les données nécessaires à la modification (épreuve brute, nouveau prompt, contenu PDF en base64).
    * @returns Un Observable contenant la réponse de l'API.
    */
-  modifyEpreuve(modificationData: any): Observable<any> {
-     // Remplacez '/api/modify' par l'endpoint exact de votre API pour la modification
-     // Utilisez .put() si votre API utilise le verbe PUT pour les modifications
-     return this.http.post<any>(`${this.apiUrl}/api/modify`, modificationData);
-     // return this.http.put<any>(`${this.apiUrl}/api/modify`, modificationData);
+  modifyEpreuve(modificationData: ModificationRequestBody): Observable<any> {
+     console.log('Appel modifyEpreuve avec données:', modificationData); // Log de débogage
+     // L'endpoint de personnalisation attend un objet JSON avec epreuve_initiale, nouveau_prompt, contenu_pdf
+     // Remplacez '/personnaliser_epreuve/' par l'endpoint exact de votre API pour la modification
+     return this.http.post<any>(`${this.apiUrl}/personnaliser_epreuve/`, modificationData);
   }
 
   /**
    * Appelle l'API de sauvegarde d'épreuve.
-   * @param saveData L'épreuve et la grille de correction à sauvegarder.
+   * @param saveData Un objet contenant la chaîne brute de l'épreuve et l'ID du professeur.
    * @returns Un Observable contenant la réponse de l'API.
    */
-  saveEpreuve(saveData: any): Observable<any> {
-     // Remplacez '/api/save' par l'endpoint exact de votre API pour la sauvegarde
-     // Utilisez .put() si votre API utilise le verbe PUT pour les sauvegardes
-     return this.http.post<any>(`${this.apiUrl}/api/save`, saveData);
-     // return this.http.put<any>(`${this.apiUrl}/api/save`, saveData);
+  saveEpreuve(saveData: { texte_epreuve: string; id_professeur: number | null }): Observable<any> {
+     console.log('Appel saveEpreuve avec données:', saveData); // Log de débogage
+     // L'endpoint d'enregistrement attend un objet JSON avec texte_epreuve et id_professeur
+     // Remplacez '/enregistrer_epreuve/' par l'endpoint exact de votre API pour la sauvegarde
+     return this.http.post<any>(`${this.apiUrl}/enregistrer_epreuve/`, saveData);
   }
 
   // Vous pouvez ajouter d'autres méthodes ici pour d'autres appels API liés aux épreuves

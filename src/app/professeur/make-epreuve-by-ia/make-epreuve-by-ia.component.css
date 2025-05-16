@@ -633,3 +633,22 @@
     padding: 0;
     color: var(--text-color);
 }
+
+/* Styles pour la section de la grille de correction */
+.generated-grille table {
+  width: 100%; /* Le tableau prend toute la largeur disponible */
+  border-collapse: collapse; /* Fusionne les bordures des cellules */
+  margin-top: 20px; /* Ajoute un espace au-dessus du tableau */
+}
+
+.generated-grille th,
+.generated-grille td {
+  border: 1px solid #ddd; /* Ajoute une bordure de 1px solide en gris clair */
+  padding: 8px; /* Ajoute de l'espace à l'intérieur des cellules */
+  text-align: left; /* Aligne le texte à gauche dans les cellules */
+}
+
+.generated-grille th {
+  font-weight: bold;
+}
+
