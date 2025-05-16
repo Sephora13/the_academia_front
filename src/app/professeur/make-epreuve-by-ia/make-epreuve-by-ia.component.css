@@ -400,7 +400,7 @@
 .bubble.user { /* Cible directement l'élément .bubble avec la classe .user */
   background: var(--first-color);
   color: white;
-  /* align-self: flex-start; */ /* Retiré car géré par .bubble.user */
+  align-self: flex-start; /* Retiré car géré par .bubble.user */
   border-top-left-radius: 0px;    /* Le coin supérieur gauche reste arrondi */
   border-top-right-radius: 16px;   /* Le coin supérieur droit reste arrondi */
   border-bottom-left-radius: 16px;
