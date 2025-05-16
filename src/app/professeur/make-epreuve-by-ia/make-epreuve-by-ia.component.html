@@ -1,81 +1,93 @@
 <div class="page">
 
   <section class="form-and-result-wrapper">
-    <div class="form-wrapper">
-      <h1 class="form-title">Créer une épreuve a l’aide de l’IA</h1>
-      <p class="form-subtitle">
-        Veuillez remplir ce formulaire afin de me renseigner les informations nécessaires pour
-        la génération de votre épreuve
-      </p>
-
-      <form class="form-grid">
-        <div class="field">
-          <label for="matiere">Matière</label>
-          <input id="matiere" type="text" placeholder="Matière" [(ngModel)]="matiere" name="matiere" />
-        </div>
-
-        <div class="field">
-          <label for="niveau">Niveau</label>
-          <input id="niveau" type="text" placeholder="Niveau" [(ngModel)]="niveau" name="niveau" />
-        </div>
-
-        <div class="field">
-          <label for="exercices">Nombres d’exercices</label>
-          <input id="exercices" type="number" min="1" placeholder="0" [(ngModel)]="nombreExercices" name="exercices" />
-        </div>
-
-        <div class="field">
-          <label for="duree">Durée</label>
-          <input id="duree" type="number" min="1" placeholder="min" [(ngModel)]="duree" name="duree" />
-        </div>
-
-        <div class="field file-field">
-          <label for="cours">Uploader le document de cours (pdf)</label>
-          <input id="cours" type="file" accept=".pdf" (change)="onFileChange($event)" />
-        </div>
-      </form>
-
-      <button class="generate-btn" (click)="genererEpreuve()">
-         Générer l’épreuve
-      </button>
-
-      <div *ngIf="isLoading" class="loader-container">
-        <div class="loader"></div>
-        <p>Génération de l'épreuve en cours...</p>
-      </div>
-
-      <div *ngIf="showResult" class="generated-epreuve">
-        <h3>Épreuve Générée :</h3>
-        <pre>{{ epreuveGeneree }}</pre>
-
-        <h3>Grille de Correction :</h3>
-        <pre>{{ grilleCorrection }}</pre>
-      </div>
-
+    <div class="form-title-container">
+      <h1 class="form-title">📘 Créer une épreuve avec l’IA</h1>
     </div>
+
+    <div class="form-content-scrollable">
+        <p class="form-subtitle">
+          Remplissez ce formulaire pour générer automatiquement une épreuve complète avec une grille de correction.
+        </p>
+
+        <form class="form-grid">
+          <div class="field">
+            <label for="matiere">📚 Matière</label>
+            <input id="matiere" type="text" placeholder="Ex: Mathématiques" [(ngModel)]="matiere" name="matiere" />
+          </div>
+
+          <div class="field">
+            <label for="niveau">🏷️ Niveau</label>
+            <input id="niveau" type="text" placeholder="Ex: Terminale" [(ngModel)]="niveau" name="niveau" />
+          </div>
+
+          <div class="field">
+            <label for="exercices">📝 Nombre d’exercices</label>
+            <input id="exercices" type="number" min="1" placeholder="0" [(ngModel)]="nombreExercices" name="exercices" />
+          </div>
+
+          <div class="field">
+            <label for="duree">⏳ Durée (Ex: 2h30min)</label>
+            <input id="duree" type="text" min="1" placeholder="Ex: 2h30min" [(ngModel)]="duree" name="duree" />
+          </div>
+
+          <div class="field full-width">
+            <label for="objectifs">🎯 Objectifs d'apprentissage (un par ligne)</label>
+            <textarea id="objectifs" placeholder="Ex: Comprendre les notions de base de l'ordinateur" [(ngModel)]="objectifsInput" name="objectifs"></textarea>
+          </div>
+
+           <div class="field full-width">
+            <label for="initialPrompt">✨ Instructions spécifiques pour la génération</label>
+            <textarea id="initialPrompt" placeholder="Ex: Pour l'exercice 1 je veux 10 qcms..." [(ngModel)]="initialPrompt" name="initialPrompt"></textarea>
+          </div>
+
+
+          <div class="field file-field full-width">
+            <label for="cours">📎 Document de cours (PDF)</label>
+            <input id="cours" type="file" accept=".pdf" (change)="onFileChange($event)" />
+          </div>
+        </form>
+
+        <button class="generate-btn" (click)="genererEpreuve()" [disabled]="generateButtonDisabled">
+          🚀 Générer l’épreuve
+        </button>
+
+        <div *ngIf="isLoading" class="loader-container">
+          <div class="loader"></div>
+          <p>⏳ Génération de l'épreuve en cours... Patientez un moment.</p>
+        </div>
+
+        <div *ngIf="showResult" class="generated-epreuve">
+          <h3>📄 Épreuve Générée :</h3>
+          <pre>{{ epreuveGeneree }}</pre>
+
+          <h3>🗒️ Grille de Correction :</h3>
+          <pre>{{ grilleCorrection }}</pre>
+        </div>
+    </div>
+
   </section>
 
   <section class="chat-wrapper">
-
     <header class="chat-header">
-      <span class="bot-sticker" aria-hidden="false"></span>
-      <h2>Créons ensemble votre épreuve</h2>
+      <span class="bot-sticker" aria-hidden="false">🤖</span>
+      <h2>Créons votre épreuve ensemble</h2>
     </header>
 
-    <div class="chat-body" #chatBody> <div class="bubble bot">Bonjour. Veuillez remplir le formulaire</div>
-      <div *ngFor="let message of messages" [ngClass]="{'bubble bot': message.sender === 'bot', 'bubble user': message.sender === 'user', 'long': message.isLong}">
+    <div class="chat-body" #chatBody>
+      <div *ngFor="let message of messages" class="bubble" [class.bot]="message.sender === 'bot'" [class.user]="message.sender === 'user'" [class.long]="message.isLong">
          {{ message.text }}
        </div>
     </div>
 
     <div class="chat-actions">
        <div class="chat-input-container">
-          <input type="text" placeholder="Write your message…" [(ngModel)]="nouvelleSuggestion" (keyup.enter)="modifierEpreuve()" />
-          <button class="send-btn" aria-label="Envoyer" (click)="modifierEpreuve()">➤</button>
+          <input type="text" placeholder="Envoyez un message ou une suggestion…" [(ngModel)]="nouvelleSuggestion" (keyup.enter)="modifierEpreuve()" />
+           <button class="send-btn" aria-label="Envoyer" (click)="modifierEpreuve()" [disabled]="!chatButtonsEnabled">➤</button>
        </div>
     </div>
 
-     <button class="save-btn-floating" (click)="enregistrerEpreuve()">Enregistrer Epreuve</button>
+     <button class="save-btn-floating" (click)="enregistrerEpreuve()" [disabled]="!chatButtonsEnabled">💾 Enregistrer l'épreuve</button>
 
   </section>
 </div>
