@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
+import { AuthentificationService } from '../../services/authentification.service';
 
 @Component({
   selector: 'app-professeur-dashboard',
@@ -14,6 +15,8 @@ import { Router } from '@angular/router';
   styleUrl: './dashboard-prof.component.css'
 })
 export class ProfesseurDashboardComponent implements OnInit {
+  user: { id: number, nom: string, prenom: string } | null = null;
+
   isSidebarOpen = true;
 
   professorName = 'Dr. Koffi ATA';
@@ -34,10 +37,10 @@ export class ProfesseurDashboardComponent implements OnInit {
     { name: 'Session 4', date: '22 Mai 2025' }
   ];
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private auth : AuthentificationService) { }
 
   ngOnInit(): void {
-
+    this.user = this.auth.getUserInfo();
   }
 
   toggleSidebar(): void {
@@ -68,4 +71,6 @@ export class ProfesseurDashboardComponent implements OnInit {
   gererReclamations(): void {
     this.router.navigate(['/handle-complaints']);
   }
+
+  
 }

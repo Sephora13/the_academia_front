@@ -1,16 +1,21 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { RouterOutlet, Router, RouterLink } from '@angular/router';
+import { AuthentificationService } from '../services/authentification.service';
 
 @Component({
   selector: 'app-sidebar-admin',
   standalone: true,
-  imports: [],
+  imports: [CommonModule, FormsModule],
   templateUrl: './sidebar-admin.component.html',
   styleUrl: './sidebar-admin.component.css'
 })
 export class SidebarAdminComponent {
+  activeLink: string = '';
   constructor(
-    private router : Router
+    private router : Router,
+    private auth : AuthentificationService
   ){}
   ngAfterViewInit(): void {
     // Sidebar toggle (si jamais tu veux ajouter un bouton toggle plus tard)
@@ -62,16 +67,29 @@ export class SidebarAdminComponent {
     });
   }
 
-  composition(){
-    this.router.navigate(['/composition_admin'])
+  navigateTo(link: string) {
+    this.activeLink = link;
+    this.router.navigate([`/${link}`]);
   }
-  create_composition(){
-    this.router.navigate(['/create_composition'])
+  
+  professor(){
+    this.router.navigate(['/professor'])
+  }
+  students(){
+    this.router.navigate(['students'])
+  }
+  coordinators(){
+    this.router.navigate(['/coordinator'])
   }
   new_composition(){
     this.router.navigate(['/'])
   }
   dashboard(){
     this.router.navigate(['/dashboard'])
+  }
+
+  logout() {
+    this.auth.logout();
+    this.router.navigate(['/signIn']);
   }
 }

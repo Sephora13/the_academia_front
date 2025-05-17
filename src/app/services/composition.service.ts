@@ -11,13 +11,10 @@ export class CompositionService {
     private httpClient : HttpClient  
   ) {}
 
-  private apiUrl = 'http://localhost:3000/composition';
+  private apiUrl = 'https://the-academia-nestapi.onrender.com/composition';
 
-  isAble():Observable<any>{
-    return this.httpClient.get<any>(this.apiUrl, {
-      headers:{
-        'X-Forwarded-For': '192.168.42.152'
-      }
-    })
+  isAble(): Observable<any> {
+    return this.httpClient.get<any>(this.apiUrl);
   }
+  
 }

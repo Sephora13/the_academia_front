@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AuthentificationService } from '../services/authentification.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-active-account',
@@ -18,9 +18,12 @@ export class ActiveAccountComponent {
   email = '';
   isLoading = false;
 
-  constructor(private auth: AuthentificationService, private router: Router) {}
-
+  constructor(private auth: AuthentificationService, private router: Router, private route: ActivatedRoute) {
+    this.email = this.route.snapshot.queryParamMap.get('email') || '';
+  }
+    
   onActivate() {
+    console.log(this.email)
     if (!this.activationCode || !this.email) {
       alert('Veuillez entrer votre email et votre code d\'activation.');
       return;
@@ -31,8 +34,9 @@ export class ActiveAccountComponent {
       next: (response) => {
         this.isLoading = false;
         if (response.status) {
+          console.log(this.email)
           alert('Compte activé avec succès.');
-          this.router.navigate(['/login']);
+          this.router.navigate(['/student_side']);
         } else {
           alert(response.message);
         }

@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { HeaderComponent } from "../header/header.component";
 import { ChartOptions, ChartType } from 'chart.js';
 import { SidebarAdminComponent } from "../sidebar-admin/sidebar-admin.component";
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -11,14 +13,38 @@ import { SidebarAdminComponent } from "../sidebar-admin/sidebar-admin.component"
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     SidebarAdminComponent
 ],
   templateUrl: './dashboard-admin.component.html',
   styleUrl: './dashboard-admin.component.css'
 })
 export class DashboardAdminComponent implements AfterViewInit {
+  constructor(
+    private router: Router
+  ){}
   isSidebarOpen = true; // Détection si sidebar ouverte
+  compositionName: string = '';
+  compositions: string[] = [];
+  results: any[] = [];
+  
+  
+  createComposition() {
+    if (this.compositionName) {
+      this.compositions.push(this.compositionName);
+      this.compositionName = '';
+    }
+  }
 
+  publishResults(result: string) {
+    if (result) {
+      this.results.push(result);
+    }
+  }
+
+  receiveResults(): any[] {
+    return this.results;
+  }
 
   professeurs: any;
 
@@ -39,4 +65,6 @@ export class DashboardAdminComponent implements AfterViewInit {
     const ctx = document.getElementById('compositionsChart') as HTMLCanvasElement;
     // Dark/Light Theme handling déjà présent
   }
+  
 }
+

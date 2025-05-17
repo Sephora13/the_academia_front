@@ -58,7 +58,7 @@ export class SignInComponent {
   }
 
   sidebar(){
-    this.router.navigate(['/professeur'])
+    this.router.navigate(['/student_side'])
   }
   signUp(){
     this.router.navigate(['/signUp'])

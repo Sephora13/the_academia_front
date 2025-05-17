@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
 import { SidebarAdminComponent } from '../sidebar-admin/sidebar-admin.component';
 import { CommonModule } from '@angular/common';
+import { DashboardExamServiceComponent } from '../dashboard-exam-service/dashboard-exam-service.component';
 
 @Component({
   selector: 'app-composition-admin',
   standalone: true,
   imports: [
     CommonModule,
-    SidebarAdminComponent
+    DashboardExamServiceComponent
   ],
   templateUrl: './composition-admin.component.html',
   styleUrl: './composition-admin.component.css'

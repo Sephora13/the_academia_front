@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, Inject, PLATFORM_ID } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
+import { AuthentificationService } from '../../services/authentification.service';
 
 @Component({
   selector: 'app-professeur-sidebar',
@@ -14,6 +15,7 @@ export class ProfesseurSidebarComponent implements AfterViewInit {
 
   constructor(
     private router: Router,
+    private auth : AuthentificationService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
@@ -109,5 +111,10 @@ export class ProfesseurSidebarComponent implements AfterViewInit {
 
   gererReclamations() {
     this.router.navigate(['/handle-complaints']);
+  }
+
+  logout() {
+    this.auth.logout();
+    this.router.navigate(['/signIn']);
   }
 }
