@@ -30,20 +30,20 @@ export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'home', component: HomeComponent },
   { path: 'auth', component: AuthentificationComponent },
-  { path: 'dashboard', component: DashboardAdminComponent, canActivate:[AuthGuard] },
-  { path: 'student_side', component: DashboardEtudiantComponents, canActivate: [AuthGuard] },
+  { path: 'dashboard', component: DashboardAdminComponent, canActivate:[AuthGuard], data: { roles: ['admin'] }},
+  { path: 'student_side', component: DashboardEtudiantComponents, canActivate: [AuthGuard], data: { roles: ['etudiant']} },
   { path: 'admin_side', component: SidebarAdminComponent },
   { path: 'signIn', component: SignInComponent },
   { path: 'register', component: RegisterAdminComponent },
   { path: 'signUp', component: SignUpComponent },
   { path: 'header', component: HeaderComponent },
   { path: 'sidebar', component: SidebarComponent },
-  { path: 'composition', component: CompositionComponent,canActivate: [AuthGuard] },
-  { path: 'new_composition', component: NewCompositionComponent, canActivate: [AuthGuard] },
+  { path: 'composition', component: CompositionComponent },
+  { path: 'new_composition', component: NewCompositionComponent },
   { path: 'composition_admin', component: CompositionAdminComponent },
   { path: 'create_composition', component: CreateCompositionComponent },
   {path: 'not-authorized', component: UnauthorizedPageComponent},
-  {path: 'resultats', component: ResultatComponent,canActivate: [AuthGuard]},
+  {path: 'resultats', component: ResultatComponent},
   {path : 'decouvrir', component: DecouvrirComponent},
   {path: 'notification_etudiant', component: NotificationEtudiantComponent},
   {path: 'exam_service', component:ExamServiceComponent},
@@ -57,6 +57,7 @@ export const routes: Routes = [
   {
     path: 'professeur',
     canActivate: [AuthGuard],
+    data: { roles: ['Professeur']},
     loadChildren: () =>
       import('./professeur/professeur.routes').then(m => m.PROFESSEUR_ROUTES)
   }  
