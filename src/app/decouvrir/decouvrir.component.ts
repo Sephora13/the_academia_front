@@ -13,6 +13,10 @@ export class DecouvrirComponent {
   searchQuery: string = '';
   constructor(private router : Router){}
 
+  openChatSupport() {
+    alert('Le support en direct sera bientôt disponible.');
+  }
+  
   authentificate(){
     this.router.navigate(['/auth'])
   }

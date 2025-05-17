@@ -1,32 +1,36 @@
 <app-sidebar></app-sidebar>
 
-<section class="min-h-screen bg-gradient-to-r from-black via-gray-900 to-black text-white px-8 py-12">
-    <div class="max-w-4xl mx-auto">
-      <h1 class="text-4xl font-extrabold mb-8">📊 Résultats des Épreuves</h1>
 
+  <body class=" text-gray-100  min-h-screen flex items-center justify-center" id="main">
+    <div class="w-full max-w-6xl bg-gray-800 p-6 rounded-lg shadow-lg ">
+      <h1 class="text-4xl text-gray-500 font-bold mb-8 text-center">Résultats des Examens</h1>
       <div class="overflow-x-auto">
-        <table class="min-w-full bg-white text-gray-900 rounded-lg overflow-hidden shadow-lg">
-          <thead class="bg-blue-800 text-white">
-            <tr>
-              <th class="p-4 text-left">Nom de l'Étudiant</th>
-              <th class="p-4 text-left">Matière</th>
-              <th class="p-4 text-left">Note</th>
-              <th class="p-4 text-left">Statut</th>
+        <table class="min-w-full border-collapse border border-gray-700 rounded-lg">
+          <thead>
+            <tr class="bg-indigo-500" >
+              <th class="p-4 text-left text-gray-100 font-semibold border border-gray-600">Matière</th>
+              <th class="p-4 text-left text-gray-100 font-semibold border border-gray-600">Date</th>
+              <th class="p-4 text-left text-gray-100 font-semibold border border-gray-600">Note</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let result of results" class="odd:bg-white even:bg-gray-100 hover:bg-blue-50">
-              <td class="p-4">{{ result.name }}</td>
-              <td class="p-4">{{ result.subject }}</td>
-              <td class="p-4">{{ result.grade }}</td>
+            <tr ng-repeat="result in results" *ngFor="let result of results" class="border border-gray-700 hover:bg-indigo-200 transition">
+              <td class="p-4 border text-gray-500 border-gray-600">{{ result.subject }}</td>
+              <td class="p-4 border text-gray-500 border-gray-600">{{ result.grade | date:'dd/MM/yyyy' }}</td>
               <td class="p-4">
-                <span [ngClass]="result.grade >= 50 ? 'text-green-600' : 'text-red-600'">
+                <span ng-class="{
+                  'bg-green-600 text-green-100 px-3 py-1 rounded-full font-semibold': result.passed,
+                  'bg-red-600 text-red-100 px-3 py-1 rounded-full font-semibold': !result.passed
+                }" [ngClass]="result.grade >= 50 ? 'text-green-600' : 'text-red-600'">
                   {{ result.grade >= 50 ? 'Admis' : 'Échoué' }}
                 </span>
               </td>
+            </tr>
+            <tr ng-if="results.length === 0">
+              <td colspan="5" class="p-4 text-center text-gray-400">Aucun résultat disponible.</td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
-  </section>
+  
