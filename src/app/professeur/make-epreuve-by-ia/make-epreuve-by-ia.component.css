@@ -1,27 +1,747 @@
-#main {
-  transition: all 0.3s ease;
-  /* margin-left: var(--sidebar-width); */ /* À désactiver */
-  margin-left: 0;
+/* Styles pour make-epreuve-by-ia.component.css */
+/* Utilisant les variables globales de styles.css */
+
+/* ───────── Disposition générale du composant ───────── */
+.page {
+  display: flex;
+  /* Définir une hauteur pour le conteneur principal flex */
+  /* Cela permet aux enfants (formulaire/r\u00E9sultats et chat) de prendre une part de cette hauteur */
+  /* Tu peux ajuster cette hauteur en fonction de ton design global et de ton header */
+   height: calc(100vh - var(--header-height, 0px) - 2rem); /* Réduit le padding vertical dans le calcul de la hauteur */
+
+  padding: 2.5rem 1.5rem 1rem 1.5rem; /* Réduit les padding horizontaux et verticaux du .page */
+  gap: 1rem; /* Réduit le gap entre les colonnes */
+  font-family: var(--body-font); /* Hérité, mais pour être explicite */
+  overflow: hidden; /* Empêche le défilement du conteneur .page lui-m\u00EAme si les enfants dépassent */
+
+  /* **AJUSTEMENT POUR LE DÉCALAGE DE LA BARRE LATÉRALE** */
+  margin-left: 17rem; /* Décalage vers la droite pour laisser de la place à la barre latérale (ajuste 17rem si nécessaire) */
+  width: calc(100% - 17rem - 1.5rem); /* Réduit la largeur pour compenser le décalage ET le padding droit du .page */
+  box-sizing: border-box; /* Inclure padding et border dans la largeur */
+}
+
+/* Nouveau conteneur pour formulaire et résultats */
+.form-and-result-wrapper {
+    flex: 1 1 auto; /* Permet à cette colonne de prendre l'espace horizontal restant */
+    display: flex;
+    flex-direction: column; /* **ESSENTIEL : Les enfants (titre fixe et contenu scrollable) s'empilent verticalement** */
+    gap: 0; /* Pas de gap entre le titre fixe et la zone scrollable */
+     /* overflow-y: auto; */ /* RETIRE : Le défilement sera sur .form-content-scrollable */
+     /* **AJOUT : Bordure et rayon pour un aspect uniforme** */
+    box-shadow: var(--shadow-color);
+    /* padding: 1rem; */ /* RETIRE : Le padding sera sur les enfants directs pour un meilleur contrôle */
+    background-color: var(--body-color); /* S'assure du fond correct */
+    height: 100%; /* **ESSENTIEL : Permet à ce conteneur de prendre toute la hauteur disponible du parent (.page)** */
+    overflow: hidden; /* **ESSENTIEL : Cache le contenu qui dépasse, le défilement est géré par l'enfant** */
+
+}
+
+.dark-theme .form-and-result-wrapper {
+     border-color: hsl(228, 8%, 85%); /* Bordure opaque en mode sombre */
 }
 
 
-textarea {
-  resize: vertical;
-  min-height: 100px;
+/* ==============  TITRE PRINCIPAL FIXE ============== */
+.form-title-container {
+    padding: 1rem 1.5rem 0.5rem 1.5rem; /* Ajuste le padding pour correspondre au padding horizontal du .page */
+    margin-bottom: 0; /* Retire la marge basse ici */
+    flex-shrink: 0; /* **ESSENTIEL : Empêche cette div de rétrécir** */
+    background-color: var(--body-color); /* **ESSENTIEL : Assure que le fond est correct derrière le titre** */
+    z-index: 1; /* S'assure qu'il est au-dessus du contenu scrollable */
+    /* position: sticky; */ /* Optionnel: si tu veux qu'il reste collé en haut lors du défilement */
+    /* top: 0; */ /* Si position: sticky */
 }
 
-/* Ex. de loader à remplacer par un vrai gif ou CSS animé */
+.dark-theme .form-title-container {
+    border-bottom-color: hsl(228, 8%, 90%); /* Ligne de s\u00E9paration opaque en mode sombre */
+}
+
+.form-title {
+  margin: 0; /* Retire les marges du titre lui-même */
+  font-size: 1.35rem;
+  font-weight: var(--font-semi-bold);
+  color: var(--first-color); /* Couleur principale de votre th\u00E8me */
+}
+
+/* ==============  CONTENU SCROLLABLE (FORMULAIRE, BOUTON, ÉPREUVE) ============== */
+.form-content-scrollable {
+    overflow-y: auto; /* **ESSENTIEL : Permet le défilement du contenu de cette div** */
+    padding: 0.5rem 1.5rem; /* **AJOUT : Ajoute un padding intérieur au contenu scrollable pour l'espace autour** */
+    flex-grow: 1; /* **ESSENTIEL : Permet à cette div de prendre tout l'espace vertical restant dans son parent (.form-and-result-wrapper)** */
+    display: flex; /* **AJOUT : Utilise flexbox pour organiser les éléments à l'intérieur** */
+    flex-direction: column; /* **AJOUT : Empile les éléments verticalement** */
+    gap: 1rem; /* Ajoute un gap entre les éléments scrollables (sous-titre, form, bouton, épreuve) */
+    /* **AJOUT : S'assure que le fond est correct même si le parent a un background** */
+    background-color: var(--body-color);
+}
+
+
+.form-subtitle {
+  margin: 0; /* Retire toutes les marges */
+  font-size: var(--smaller-font-size);
+  line-height: 1.4;
+  max-width: 32rem;
+  color: var(--text-color);
+   /* padding: 0 1rem; */ /* Retiré car géré par le padding de .form-content-scrollable */
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem 1.5rem;
+  margin-bottom: 0; /* Retire la marge basse */
+   /* **RETIRE : Padding ici car géré par .form-content-scrollable** */
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+/* Style pour les champs qui doivent prendre toute la largeur dans la grille */
+.field.full-width {
+    grid-column: 1 / -1; /* Prend toute la largeur de la grille */
+}
+
+
+.field label {
+  font-size: var(--smaller-font-size);
+  color: var(--title-color);
+  font-weight: var(--font-semi-bold);
+}
+
+/* Styles pour les inputs (text, number, file) - hauteur plus standard */
+.field input[type="text"],
+.field input[type="number"],
+.field input[type="file"] {
+  padding: 0.5rem 0.75rem; /* Padding standard */
+  border: 1px solid hsl(228, 8%, 75%);
+  border-radius: .375rem;
+  font-size: var(--normal-font-size);
+  background-color: var(--body-color);
+  color: var(--text-color);
+  transition: border-color .3s, background-color .4s, color .4s;
+   /* **BORDURE EN MODE CLAIR :** Rendre la bordure moins visible */
+   border-color: hsla(228, 8%, 75%, 0.5);
+   width: 100%; /* S'assure que l'input prend la largeur de son conteneur */
+   box-sizing: border-box; /* Inclure padding et border dans la largeur */
+   /* Pas de min-height ou de hauteur fixe ici, la hauteur est définie par le padding et la taille de la police */
+}
+
+/* Styles pour les textareas - conserve la hauteur minimale */
+.field textarea {
+  padding: 0.5rem 0.75rem; /* Padding standard */
+  border: 1px solid hsl(228, 8%, 75%);
+  border-radius: .375rem;
+  font-size: var(--normal-font-size);
+  background-color: var(--body-color);
+  color: var(--text-color);
+  transition: border-color .3s, background-color .4s, color .4s;
+   /* **BORDURE EN MODE CLAIR :** Rendre la bordure moins visible */
+   border-color: hsla(228, 8%, 75%, 0.5);
+   width: 100%; /* S'assure que le textarea prend la largeur de son conteneur */
+   box-sizing: border-box; /* Inclure padding et border dans la largeur */
+   resize: vertical; /* Permet le redimensionnement vertical */
+   min-height: 80px; /* Hauteur minimale conservée pour les textareas */
+}
+
+
+.dark-theme .field input[type="text"],
+.dark-theme .field input[type="number"],
+.dark-theme .field input[type="file"],
+.dark-theme .field textarea { /* Applique le style de bordure sombre aux inputs et textareas */
+     border-color: hsl(228, 8%, 75%);
+}
+
+
+/* Styles spécifiques pour l'input file si nécessaire pour correspondre au design
+.field input[type="file"] {
+
+}
+*/
+
+/* Style pour le placeholder pour qu'il soit visible dans les deux thèmes */
+.field input::placeholder,
+.field textarea::placeholder { /* Applique le style aux placeholders des inputs et textareas */
+  color: var(--text-color);
+  opacity: 0.6;
+}
+
+/* Amélioration pour le focus sur les inputs et textareas */
+.field input[type="text"]:focus,
+.field input[type="number"]:focus,
+.field textarea:focus { /* Applique le style focus aux inputs et textareas */
+  outline: none;
+  border-color: var(--first-color);
+  box-shadow: 0 0 0 2px hsla(var(--first-color-hsl), 0.2);
+}
+
+
+.file-field {
+  grid-column: 1 / -1;
+}
+
+/* Bouton de génération d'épreuve */
+.generate-btn {
+  margin: 0 auto; /* Retire la marge supérieure et basse fixe, utilise gap du parent */
+  display: block;
+  padding: 0.6rem 1.5rem;
+  background-color: var(--first-color);
+  color: white;
+  border: none;
+  border-radius: .50rem;
+  font-size: var(--normal-font-size);
+  font-weight: var(--font-semi-bold);
+  cursor: pointer;
+  text-align: center;
+  transition: background-color .3s, filter .3s;
+}
+
+.generate-btn:hover {
+  background-color: hsl(228, 85%, 55%);
+}
+
+
+/* Loader styles */
+.loader-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    /* background-color: var(--body-color); */ /* Optionnel */
+    border-radius: .5rem; /* Optionnel */
+    margin: 0; /* Retire la marge supérieure, utilise gap du parent */
+    color: var(--secondary-text-color);
+    text-align: center;
+}
+
 .loader {
-  border: 6px solid #f3f3f3;
-  border-top: 6px solid #3498db;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid var(--first-color);
   border-radius: 50%;
   width: 40px;
   height: 40px;
-  margin: auto;
   animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
 }
 
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+.loader-container p {
+    font-size: var(--normal-font-size);
+    color: var(--text-color);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+
+  position: relative;
+  margin: 5px auto;
+}
+
+.double-bounce1, .double-bounce2 {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: var(--first-color);
+  opacity: 0.6;
+  position: absolute;
+  top: 0;
+  left: 0;
+  
+  -webkit-animation: sk-bounce 2.0s infinite ease-in-out;
+  animation: sk-bounce 2.0s infinite ease-in-out;
+}
+
+.double-bounce2 {
+  -webkit-animation-delay: -1.0s;
+  animation-delay: -1.0s;
+}
+
+@-webkit-keyframes sk-bounce {
+  0%, 100% { -webkit-transform: scale(0.0) }
+  50% { -webkit-transform: scale(1.0) }
+}
+
+@keyframes sk-bounce {
+  0%, 100% { 
+    transform: scale(0.0);
+    -webkit-transform: scale(0.0);
+  } 50% { 
+    transform: scale(1.0);
+    -webkit-transform: scale(1.0);
+  }
+}
+
+/* Styles pour l\'\u00E9preuve g\u00E9n\u00E9r\u00E9e */
+.generated-epreuve {
+    /* **RETIRE : Bordure, rayon, box-shadow, background car gérés par form-and-result-wrapper** */
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    background-color: transparent;
+
+    padding: 0; /* Retire le padding interne de l'épreuve elle-même, l'espace est géré par le padding de .form-content-scrollable et le gap */
+    color: var(--text-color);
+    margin: 0; /* Retire les marges, utilise gap du parent */
+    overflow-y: auto; /* Ajoute un défilement si l'épreuve est très longue */
+}
+
+.generated-epreuve h3 {
+    font-size: 1.2rem;
+    font-weight: var(--font-semi-bold);
+    color: var(--title-color);
+    margin-top: 0; /* Retire la marge supérieure des titres de l'épreuve */
+    margin-bottom: 0.75rem;
+}
+
+/* Le premier h3 de l'épreuve n'a pas de marge en haut */
+.generated-epreuve h3:first-child {
+    margin-top: 0;
+}
+
+
+/* ==============  CHAT ============== */
+.chat-wrapper {
+  flex: 0 0 40%; /* Largeur définie à 40% comme demandé */
+  display: flex;
+  flex-direction: column;
+  /* gap: 1rem; */ /* Le gap sera géré par les padding et marges internes */
+  border: 1px solid hsl(228, 8%, 85%); /* Bordure : Couleur claire par défaut */
+  border-radius: .5rem;
+  box-shadow: var(--shadow-color);
+  /* padding: 1rem; */ /* Padding géré par les enfants directs */
+  height: 100%; /* Permet au chat de prendre toute la hauteur du conteneur .page */
+  flex-shrink: 0; /* Empêche le chat de rétrécir */
+  position: relative; /* Permet de positionner absolument les enfants flottants (bouton) */
+  overflow: hidden; /* Important pour masquer le contenu flottant lors du d\u00E9filement du corps du chat */
+   /* PAS DE MARGES EXCESSIVES ICI : La largeur et le positionnement sont gérés par flexbox et le padding interne */
+}
+
+/* **BORDURE EN MODE CLAIR :** Rendre la bordure moins visible */
+.chat-wrapper {
+    border-color: hsla(228, 8%, 85%, 0.5); /* Ajoute de la transparence à la bordure en mode clair */
+}
+
+.dark-theme .chat-wrapper {
+     border-color: hsl(228, 8%, 85%); /* La bordure redevient opaque en mode sombre si souhaité */
+}
+
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1rem 0.5rem 1rem; /* Réduit légèrement le padding supérieur de l'en-tête */
+  border-bottom: 1px solid hsl(228, 8%, 90%); /* Ligne de s\u00E9paration */
+   flex-shrink: 0;
+  background-color: var(--body-color); /* **AJOUT : Assure que le fond est correct derrière l'en-tête** */
+   /* **BORDURE EN MODE CLAIR :** Rendre la ligne de s\u00E9paration moins visible */
+   border-bottom-color: hsla(228, 8%, 90%, 0.5);
+}
+
+.dark-theme .chat-header {
+    border-bottom-color: hsl(228, 8%, 90%);
+}
+
+/* Style pour le sticker IA dans l'en-tête du chat */
+/* .ai-sticker {
+    width: 24px;
+    height: 24px;
+    color: var(--first-color);
+    margin-right: 0.5rem;
+} */
+
+
+.chat-header h2 {
+  font-size: var(--normal-font-size);
+  font-weight: var(--font-semi-bold);
+  margin: 0;
+  white-space: nowrap;
+  color: var(--title-color);
+}
+
+/* Le bot-sticker d'origine (emoji) */
+.bot-sticker {
+  font-size: 1.5rem; /* Ajuste la taille de l'emoji si nécessaire */
+  margin-right: 0.5rem; /* Espace entre l'emoji et le texte */
+}
+
+
+/* ─ Chat body ─ */
+.chat-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  /* Pour le style de la scrollbar, cela est g\u00E9r\u00E9 globalement dans votre styles.css pour .dark-theme */
+}
+
+/* Conteneur pour chaque bulle de message (retiré) */
+/* .bubble-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    max-width: 85%;
+} */
+
+/* Ajustement pour aligner les bulles utilisateur à droite (maintenant sur .bubble.user) */
+.bubble.user { /* Cible directement l'élément .bubble avec la classe .user */
+    align-self: flex-end; /* Aligne la bulle utilisateur à droite */
+}
+
+/* Ajustement pour aligner les bulles bot à gauche (maintenant sur .bubble.bot) */
+.bubble.bot { /* Cible directement l'élément .bubble avec la classe .bot */
+    align-self: flex-start; /* Aligne la bulle bot à gauche */
+}
+
+
+.bubble {
+  max-width: 85%; /* Remis ici car .bubble-container est retiré */
+  padding: 0.6rem 0.8rem;
+  border-radius: 16px;
+  line-height: 1.35;
+  font-size: var(--smaller-font-size);
+  box-shadow: var(--shadow-color);
+  word-wrap: break-word;
+}
+
+/* Sticker pour les messages de l'IA dans le chat body (retiré) */
+/* .message-ai-sticker {
+    width: 20px;
+    height: 20px;
+    color: var(--first-color);
+    flex-shrink: 0;
+    margin-top: 0.3rem;
+} */
+
+
+/* Bulles du bot (doivent être à gauche) */
+.bubble.bot { /* Cible directement l'élément .bubble avec la classe .bot */
+  background-color: hsl(228, 25%, 95%); /* Mode clair - gris très clair */
+  color: var(--text-color);
+  align-self: flex-end; /* Retiré car géré par .bubble.bot */
+  border-top-left-radius: 16px;
+  border-top-right-radius: 0;   /* Le coin supérieur droit est carré */
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+}
+
+.dark-theme .bubble.bot { /* Cible directement l'élément .bubble avec la classe .bot en mode sombre */
+  background-color: hsl(228, 15%, 25%);
+  color: var(--text-color);
+}
+
+/* Bulles utilisateur (doivent être à droite) */
+.bubble.user { /* Cible directement l'élément .bubble avec la classe .user */
+  background: var(--first-color);
+  color: white;
+  align-self: flex-start; /* Retiré car géré par .bubble.user */
+  border-top-left-radius: 0px;    /* Le coin supérieur gauche reste arrondi */
+  border-top-right-radius: 16px;   /* Le coin supérieur droit reste arrondi */
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16;   /* Le coin inférieur droit est carré */
+}
+
+
+/* Le style .bubble.long reste le m\u00EAme */
+.bubble.long {
+  max-width: 95%;
+}
+
+
+/* ─ Chat actions (zone de saisie et bouton d\'enregistrement) ─ */
+.chat-actions {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem 1rem 1rem 1rem;
+  flex-shrink: 0;
+  background-color: var(--body-color);
+  z-index: 1;
+   /* **BORDURE EN MODE CLAIR :** Rendre la ligne de s\u00E9paration moins visible */
+  border-top-color: hsla(228, 8%, 90%, 0.5);
+}
+
+.dark-theme .chat-actions {
+     border-top-color: hsl(228, 8%, 90%);
+}
+
+
+.chat-input-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.chat-input-container input[type="text"] {
+  flex: 1 1 auto;
+  padding: 0.6rem 3rem 0.6rem 2rem;
+  border: 1px solid hsl(228, 8%, 75%);
+  border-radius: 2rem;
+  font-size: var(--normal-font-size);
+  background-color: var(--body-color);
+  color: var(--text-color);
+  transition: border-color .3s, background-color .4s, color .4s;
+  width: 100%;
+  /* **BORDURE EN MODE CLAIR :** Rendre la bordure moins visible */
+   border-color: hsla(228, 8%, 75%, 0.5);
+}
+
+.dark-theme .chat-input-container input[type="text"] {
+    border-color: hsl(228, 8%, 75%);
+}
+
+
+.chat-input-container input[type="text"]:focus {
+  outline: none;
+  border-color: var(--first-color);
+  box-shadow: 0 0 0 2px hsla(var(--first-color-hsl), 0.2);
+}
+
+.send-btn {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  flex: 0 0 auto;
+  background: hsl(228, 70%, 55%);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-color);
+  transition: background-color .3s, filter .3s;
+}
+.dark-theme .send-btn {
+    background: hsl(228, 70%, 63%);
+}
+
+
+.send-btn:hover {
+  filter: brightness(1.1);
+}
+
+.send-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Styles pour le loader dans l'input du chat */
+.chat-input-loader {
+  position: absolute;
+  left: 10px; /* Ajuste la position à gauche */
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2; /* S'assure qu'il est au-dessus de l'input */
+}
+
+/* Styles pour le spinner dans l'input (plus petit) */
+.spinner-small {
+width: 20px; /* Taille réduite */
+height: 20px; /* Taille réduite */
+position: relative;
+}
+
+/* Styles pour le spinner (double-bounce) dans l'input */
+/* Réutilise l'animation déjà définie pour .spinner */
+.chat-input-loader .double-bounce1,
+.chat-input-loader .double-bounce2 {
+width: 100%;
+height: 100%;
+border-radius: 50%;
+background-color: var(--first-color); /* Utilise la couleur principale */
+opacity: 0.6;
+position: absolute;
+top: 0;
+left: 0;
+
+-webkit-animation: sk-bounce 2.0s infinite ease-in-out;
+animation: sk-bounce 2.0s infinite ease-in-out;
+}
+
+.chat-input-loader .double-bounce2 {
+-webkit-animation-delay: -1.0s;
+animation-delay: -1.0s;
+}
+
+
+/* Bouton Enregistrer Epreuve flottant */
+.save-btn-floating {
+    position: absolute;
+    bottom: calc(1rem + 40px + 1rem);
+    left: 1rem;
+    padding: 0.5rem 1.4rem;
+    background: var(--first-color);
+    color: white;
+    border: none;
+    border-radius: .375rem;
+    font-size: var(--smaller-font-size);
+    font-weight: var(--font-semi-bold);
+    cursor: pointer;
+    box-shadow: var(--shadow-color);
+    transition: background-color .3s, filter .3s;
+    z-index: 1;
+}
+
+.save-btn-floating:hover {
+  background-color: hsl(228, 85%, 55%);
+}
+
+.save-btn-floating:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+/* ─ Responsive (styles pour petits écrans) ─ */
+@media (max-width: 900px) {
+  .page {
+    flex-direction: column;
+    padding: 1.5rem;
+    height: auto;
+    overflow: visible;
+    margin-left: 0;
+    width: auto;
+  }
+  .form-and-result-wrapper, .chat-wrapper {
+    flex-basis: auto;
+    height: auto; /* Sur mobile, permet à la boîte du formulaire/épreuve de s'étirer */
+    overflow-y: visible; /* Le défilement global de la page gère le contenu */
+    position: static;
+  }
+   .form-and-result-wrapper {
+       gap: 1.5rem;
+        /* Retire les styles spécifiques de défilement et de flexbox en colonne sur mobile */
+        display: block;
+        overflow: visible;
+        height: auto;
+   }
+
+    /* Sur mobile, le titre n'a plus besoin d'être fixe par rapport à son parent */
+    .form-title-container {
+        padding: 0 0 1rem 0; /* Ajuste le padding pour le mobile */
+        border-bottom: none; /* Retire la ligne de s\u00E9paration */
+         background-color: transparent; /* Retire le fond */
+         margin-bottom: 0; /* Retire la marge */
+    }
+
+     /* Sur mobile, le contenu scrollable n'a plus besoin d'être scrollable ou de prendre tout l'espace restant */
+     .form-content-scrollable {
+         overflow-y: visible; /* Le défilement global de la page gère le contenu */
+         padding: 0; /* Retire le padding */
+         flex-grow: 0; /* Ne prend plus l'espace restant */
+         display: block; /* Reviens à un affichage normal */
+          gap: 0; /* Retire le gap */
+         background-color: transparent; /* Retire le fond */
+     }
+
+
+  .chat-wrapper {
+    order: -1;
+     padding: 1.5rem;
+  }
+   .generated-epreuve {
+       padding: 1.5rem;
+   }
+    .save-btn-floating {
+        position: static;
+        margin-top: 1rem;
+        margin-left: 0;
+    }
+    .chat-actions {
+        padding: 1rem 0;
+    }
+    .chat-input-container input[type="text"] {
+      flex: 1 1 auto;
+      /* Ajuste le padding gauche pour laisser de la place au loader */
+      /* Environ 20px pour le loader + 10px de marge gauche + 5px de sécurité = 35px */
+      padding: 0.6rem 3rem 0.6rem 35px; /* <-- Modifiez cette ligne */
+      border: 1px solid var(--input-border-color);
+      border-radius: 2rem;
+      font-size: var(--normal-font-size);
+      background-color: var(--input-background-color);
+      color: var(--text-color);
+      transition: border-color .3s, background-color .4s, color .4s;
+      width: 100%;
+      box-sizing: border-box;
+    }
+}
+
+@media (max-width: 600px) {
+  .page {
+    padding: 1rem;
+  }
+  .form-wrapper {
+    padding: 1.5rem;
+  }
+  .form-title {
+    font-size: 1.2rem;
+  }
+  .form-grid {
+      gap: 1rem 1.5rem;
+  }
+  .field input[type="text"],
+  .field input[type="number"],
+  .field input[type="file"],
+  .chat-input-box input[type="text"] {
+    padding: 0.5rem 0.6rem;
+    font-size: var(--smaller-font-size);
+  }
+  .generate-btn, .save-btn-floating {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+   .chat-wrapper {
+       padding: 1rem;
+   }
+    .generated-epreuve {
+       padding: 1.5rem;
+   }
+     .chat-input-container input[type="text"] {
+         padding: 0.5rem 2.5rem 0.5rem 0.6rem;
+     }
+}
+
+/* Style pour pr\u00E9server le formatage du texte g\u00E9n\u00E9r\u00E9 par l\'IA */
+.generated-epreuve pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: inherit;
+    margin-top: 0.5rem;
+    padding: 0;
+    color: var(--text-color);
+}
+
+/* Styles pour la section de la grille de correction */
+.generated-grille table {
+  width: 100%; /* Le tableau prend toute la largeur disponible */
+  border-collapse: collapse; /* Fusionne les bordures des cellules */
+  margin-top: 20px; /* Ajoute un espace au-dessus du tableau */
+}
+
+.generated-grille th,
+.generated-grille td {
+  border: 1px solid #ddd; /* Ajoute une bordure de 1px solide en gris clair */
+  padding: 8px; /* Ajoute de l'espace à l'intérieur des cellules */
+  text-align: left; /* Aligne le texte à gauche dans les cellules */
+}
+
+.generated-grille th {
+  font-weight: bold;
+}
+

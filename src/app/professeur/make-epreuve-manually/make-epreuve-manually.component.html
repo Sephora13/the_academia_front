@@ -1,18 +1,33 @@
-<div class="ia-epreuve-container">
-    <div class="ia-epreuve-form">
-      <h2>Créer une épreuve manuellement</h2>
-      <form (ngSubmit)="uploadEpreuve()">
-        <div class="form-group">
-          <label for="epreuveFile">Télécharger l'épreuve et la grille (PDF)</label>
-          <input type="file" id="epreuveFile" name="epreuveFile" (change)="handleFileInput($event)" accept=".pdf" required
-                 title="Téléchargez le fichier PDF contenant l'épreuve et sa grille de correction." />
-        </div>
-  
-        <button type="submit" [disabled]="loading">
-          <span *ngIf="!loading">Télécharger</span>
-          <span *ngIf="loading">Téléchargement...</span>
-        </button>
-      </form>
-      <div *ngIf="message" class="message">{{ message }}</div>
+<div class="page">
+
+  <section class="form-and-result-wrapper">
+    <div class="form-title-container">
+      <h1 class="form-title">📘 Créer une épreuve avec l’IA</h1>
     </div>
-  </div>
+
+    <div class="form-content-scrollable">
+        <p class="form-subtitle">
+          Uploader votre fichier pdf qui contient déj.
+        </p>
+
+        <form class="form-grid">
+          <div class="field file-field full-width">
+            <label for="cours">📎 Document contenant l'épreuve et la grille(PDF)</label>
+            <input id="cours" type="file" accept=".pdf" />
+          </div>
+        </form>
+
+        <button class="generate-btn" [disabled]="">
+          🚀 Générer l’épreuve
+        </button>
+
+        <div class="loader-container">
+          <div  class="spinner">
+            <div class="double-bounce1"></div>
+            <div class="double-bounce2"></div>
+          </div>
+          <p>⏳ Enregistrement en cours... Patientez un moment.</p>
+        </div>
+    </div>
+  </section>
+</div>

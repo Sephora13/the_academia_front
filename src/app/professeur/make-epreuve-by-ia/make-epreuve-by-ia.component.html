@@ -1,53 +1,162 @@
-<div id="main"  class="transition-all duration-300 ">
-  <h2 class="text-2xl font-bold mb-6 text-gray-600">Créer une épreuve avec IA</h2>
+<div class="page">
 
-  <form class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-    <input class="p-3 border rounded" type="text" placeholder="Matière" [(ngModel)]="matiere" name="matiere" required />
-    <input class="p-3 border rounded" type="text" placeholder="Niveau" [(ngModel)]="niveau" name="niveau" required />
-    <input class="p-3 border rounded" type="text" placeholder="Durée (ex: 1h30)" [(ngModel)]="duree" name="duree" required />
-    <input class="p-3 border rounded" type="number" placeholder="Nombre d'exercices" [(ngModel)]="nombreExercices" name="nbExercices" required />
-    
-    <textarea class="p-3 border rounded col-span-2" placeholder="Objectifs pédagogiques (séparés par des virgules)"
-      [(ngModel)]="objectifs" name="objectifs"></textarea>
-
-    <textarea class="p-3 border rounded col-span-2" placeholder="Prompt personnalisé pour l'IA"
-      [(ngModel)]="prompt" name="prompt"></textarea>
-
-    <input type="file" (change)="onFileChange($event)" class="col-span-2" />
-  </form>
-
-  <div class="mb-10">
-    <button class="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700" (click)="genererEpreuve()">Générer l’épreuve</button>
-  </div>
-
-  <div *ngIf="isLoading" class="text-center">
-    <p class="text-lg text-gray-500">Génération de l’épreuve en cours...</p>
-    <!-- Loader ici -->
-    <div class="loader mt-4"></div>
-  </div>
-
-  <div *ngIf="showResult" class="bg-white p-6 rounded shadow-md mb-8">
-    <h3 class="text-lg font-semibold mb-4 text-gray-700">Résultat de l'IA</h3>
-
-    <div class="mb-4">
-      <h4 class="font-semibold">Épreuve :</h4>
-      <p class="whitespace-pre-wrap">{{ epreuveGeneree }}</p>
+  <section class="form-and-result-wrapper">
+    <div class="form-title-container">
+      <h1 class="form-title">📘 Créer une épreuve avec l’IA</h1>
     </div>
 
-    <div class="mb-4">
-      <h4 class="font-semibold">Grille de correction :</h4>
-      <p class="whitespace-pre-wrap">{{ grilleCorrection }}</p>
+    <div class="form-content-scrollable">
+        <p class="form-subtitle">
+          Remplissez ce formulaire pour générer automatiquement une épreuve complète avec une grille de correction.
+        </p>
+
+        <form class="form-grid">
+          <div class="field">
+            <label for="matiere">📚 Matière</label>
+            <input id="matiere" type="text" placeholder="Ex: Mathématiques" [(ngModel)]="matiere" name="matiere" />
+          </div>
+
+          <div class="field">
+            <label for="niveau">🏷️ Niveau</label>
+            <input id="niveau" type="text" placeholder="Ex: Terminale" [(ngModel)]="niveau" name="niveau" />
+          </div>
+
+          <div class="field">
+            <label for="exercices">📝 Nombre d’exercices</label>
+            <input id="exercices" type="number" min="1" placeholder="0" [(ngModel)]="nombreExercices" name="exercices" />
+          </div>
+
+          <div class="field">
+            <label for="duree">⏳ Durée (Ex: 2h30min)</label>
+            <input id="duree" type="text" placeholder="Ex: 2h30min" [(ngModel)]="duree" name="duree" />
+          </div>
+
+          <div class="field full-width">
+            <label for="objectifs">🎯 Objectifs d'apprentissage (un par ligne)</label>
+            <textarea id="objectifs" placeholder="Ex: Comprendre les notions de base de l'ordinateur" [(ngModel)]="objectifsInput" name="objectifs"></textarea>
+          </div>
+
+           <div class="field full-width">
+            <label for="initialPrompt">✨ Instructions spécifiques pour la génération</label>
+            <textarea id="initialPrompt" placeholder="Ex: Pour l'exercice 1 je veux 10 qcms..." [(ngModel)]="initialPrompt" name="initialPrompt"></textarea>
+          </div>
+
+
+          <div class="field file-field full-width">
+            <label for="cours">📎 Document de cours (PDF)</label>
+            <input id="cours" type="file" accept=".pdf" (change)="onFileChange($event)" />
+          </div>
+        </form>
+
+        <button class="generate-btn" (click)="genererEpreuve()" [disabled]="generateButtonDisabled">
+          🚀 Générer l’épreuve
+        </button>
+
+        <div *ngIf="isLoading" class="loader-container">
+          <div  class="spinner">
+            <div class="double-bounce1"></div>
+            <div class="double-bounce2"></div>
+          </div>
+          <p>⏳ Génération de l'épreuve en cours... Patientez un moment.</p>
+        </div>
+
+        <div *ngIf="showResult">
+
+            <div *ngIf="parsedEpreuve" class="generated-epreuve">
+              <h3>📄 Épreuve Générée :</h3>
+
+              <p><strong>Matière :</strong> {{ matiere }}</p>
+              <p><strong>Niveau :</strong> {{ niveau }}</p>
+              <p><strong>Durée :</strong> {{ parsedEpreuve.duree }}</p>
+
+              <div *ngFor="let exercice of parsedEpreuve.exercices; let exoIndex = index" class="exercice">
+                <h4>Exercice {{ exoIndex + 1 }} : {{ exercice.titre }}</h4>
+                <p *ngIf="exercice.consigne"><em>Consigne :</em> {{ exercice.consigne }}</p>
+
+                <div *ngFor="let question of exercice.questions; let qIndex = index" class="question">
+                  <p><strong>Question {{ qIndex + 1 }}:</strong></p>
+
+                  <div [ngSwitch]="question.type.toLowerCase()">
+                    <div *ngSwitchCase="'qcm'">
+                       <p>{{ question.contenu }}</p>
+                       <ul *ngIf="question.options && question.options.length > 0">
+                         <li *ngFor="let option of question.options">{{ option }}</li>
+                       </ul>
+                    </div>
+                    <div *ngSwitchCase="'ouverte'">
+                       <p>{{ question.contenu }}</p>
+                    </div>
+                    <div *ngSwitchCase="'code'">
+                       <pre>{{ question.contenu }}</pre>
+                    </div>
+                     <div *ngSwitchDefault>
+                        <p>{{ question.contenu }}</p>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+             <div *ngIf="parsedGrilleCorrection" class="generated-grille">
+                 <h3>🗒️ Grille de Correction :</h3>
+                 <table>
+                     <thead>
+                         <tr>
+                             <th>Ex</th>
+                             <th>Q</th>
+                             <th>Réponse attendu</th>
+                             <th>Barème</th>
+                         </tr>
+                     </thead>
+                     <tbody>
+                        <tr *ngFor="let reponse of parsedGrilleCorrection.reponses">
+                          <td>{{ reponse.ex }}</td>
+                          <td>{{ reponse.q }}</td>
+                          <td>{{ reponse.rep || reponse.attendu }}</td>
+                          <td>{{ reponse.bareme }}</td>
+                      </tr>
+                     </tbody>
+                 </table>
+             </div>
+
+             <div *ngIf="!parsedEpreuve || !parsedGrilleCorrection">
+                 <p>Impossible d'afficher l'épreuve ou la grille de correction de manière structurée. Le format de la réponse de l'API est peut-être inattendu.</p>
+                 </div>
+
+        </div>
+
+
     </div>
 
-    <div class="mb-4">
-      <textarea class="w-full p-3 border rounded" placeholder="Modifier la demande à l'IA..." [(ngModel)]="nouvelleSuggestion" name="suggestion"></textarea>
+  </section>
+
+  <section class="chat-wrapper">
+    <header class="chat-header">
+      <span class="bot-sticker" aria-hidden="false">🤖</span>
+      <h2>Créons votre épreuve ensemble</h2>
+    </header>
+
+    <div class="chat-body" #chatBody>
+      <div *ngFor="let message of messages" class="bubble" [class.bot]="message.sender === 'bot'" [class.user]="message.sender === 'user'" [class.long]="message.isLong">
+         {{ message.text }}
+       </div>
     </div>
 
-    <div class="flex gap-4">
-      <button class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600" (click)="modifierEpreuve()">Modifier</button>
-      <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700" (click)="enregistrerEpreuve()">Enregistrer</button>
+    <div class="chat-actions">
+       <div class="chat-input-container">
+          <div *ngIf="isLoading" class="chat-input-loader">
+            <div class="spinner-small">
+              <div class="double-bounce1"></div>
+              <div class="double-bounce2"></div>
+            </div>
+          </div>
+          <input type="text" placeholder="Envoyez un message…" [(ngModel)]="nouvelleSuggestion" (keyup.enter)="modifierEpreuve()" [disabled]="isLoading" />
+           <button class="send-btn" aria-label="Envoyer" (click)="modifierEpreuve()" [disabled]="!chatButtonsEnabled || isLoading">➤</button>
+       </div>
     </div>
-  </div>
+
+     <button class="save-btn-floating" (click)="enregistrerEpreuve()" [disabled]="!chatButtonsEnabled || !rawEpreuveGeneree">💾 Enregistrer l'épreuve</button>
+
+  </section>
 </div>
-
-
