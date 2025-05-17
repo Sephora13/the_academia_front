@@ -1,17 +1,61 @@
-<div class="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-    <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
-      <h2 class="text-2xl font-semibold mb-4 text-center">Activation de compte</h2>
-      <input 
-        type="text" 
-        [(ngModel)]="activationCode" 
-        placeholder="Entrez votre code d'activation" 
-        class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
-
-      <button 
-        (click)="onActivate()" 
-        class="w-full bg-blue-500 text-white p-3 rounded hover:bg-blue-600 transition">
+  <body class="bg-[#121317] flex items-center justify-center min-h-screen p-6" ng-controller="ConfirmCodeController">
+    <section class="w-full max-w-md bg-[#1e2128] rounded-lg shadow-lg p-8 text-[#d1d5db]">
+      <h2 class="text-xl font-extrabold mb-6 text-center text-white">
+        Entrer le code envoyé par mail pour activer votre compte
+      </h2>
+      <form name="confirmCodeForm" ngClass="" class="space-y-6">
+        <div class="flex flex-col">
+          <label for="code" class="mb-2 font-semibold text-indigo-300">Code de confirmation</label>
+          <input
+            id="code"
+            name="code"
+            type="text"
+            [(ngModel)]="activationCode"
+            required
+            maxlength="6"
+            minlength="6"
+            pattern="^[0-9]{6}$"
+            placeholder="Entrez le code à 6 chiffres"
+            class="p-3 rounded border border-indigo-700 bg-[#121317] text-[#d1d5db] placeholder-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-center tracking-widest text-lg font-mono"
+          />
+          <div class="text-red-500 text-sm mt-1" ng-show="confirmCodeForm.code.$touched && confirmCodeForm.code.$invalid">
+            Veuillez entrer le code envoyé par mail
+          </div>
+        </div>
+        <button 
+        (click)="onActivate()"
+          type="submit"
+          class="w-full bg-indigo-600 hover:bg-indigo-700 transition text-white font-semibold py-3 rounded-md focus:outline-none focus:ring-4 focus:ring-indigo-400 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
         <span *ngIf="!isLoading">Activer</span>
         <span *ngIf="isLoading">Activation...</span>
-      </button>
-    </div>
-  </div>
+          Confirmer
+        </button>
+      </form>
+    </section>
+  
+    <script>
+      angular.module('confirmCodeApp', []).controller('ConfirmCodeController', function () {
+        const vm = this;
+        const $scope = this;
+  
+        this.code = '';
+  
+        this.confirmCode = () => {
+          if ($scope.confirmCodeForm.$valid) {
+            alert('Code confirmé avec succès !');
+            this.code = '';
+            $scope.confirmCodeForm.$setPristine();
+            $scope.confirmCodeForm.$setUntouched();
+          } else {
+            alert('Veuillez entrer un code valide.');
+          }
+        };
+  
+        Object.assign($scope, {
+          code: this.code,
+          confirmCode: this.confirmCode,
+        });
+      });
+    </script>
+  </body>

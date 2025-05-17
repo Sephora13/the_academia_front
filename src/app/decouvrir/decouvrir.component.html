@@ -1,58 +1,56 @@
+<section class="relative min-h-screen bg-gradient-to-r from-black via-gray-900 to-black text-white px-8 py-12 overflow-hidden">
+  <div class="absolute inset-0 pointer-events-none bg-rain-animation"></div>
+  <div class="absolute top-6 right-6" (click)="authentificate()">
+    <a href="#" class="px-6 py-3 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 text-gray-900 rounded-full font-bold hover:bg-cyan-300 transition">
+      S'authentifier
+    </a>
+  </div>
+  <div class="max-w-6xl mx-auto transition-all duration-500 relative z-10">
+    <div class="flex items-center justify-between mb-10">
+      <h1 class="text-5xl font-extrabold tracking-wide text-white">Academia Documentation</h1>
+      <input type="text" placeholder="🔍 Rechercher..." [(ngModel)]="searchQuery" class="px-4 py-2 rounded-md bg-white text-gray-800 outline-none shadow-md transition duration-300 focus:ring-2 focus:ring-blue-500" />
+    </div>
 
-    <section class="relative min-h-screen bg-gradient-to-r from-black via-gray-900 to-black text-white px-8 py-12 overflow-hidden">
-      <div class="absolute inset-0 pointer-events-none bg-rain-animation"></div>
-      <div class="max-w-6xl mx-auto transition-all duration-500 relative z-10">
-        <div class="flex items-center justify-between mb-10">
-          <h1 class="text-5xl font-extrabold tracking-wide text-white">Academia Documentation</h1>
-          <input type="text" placeholder="🔍 Rechercher..." v-model="searchQuery" class="px-4 py-2 rounded-md bg-white text-gray-800 outline-none shadow-md transition duration-300 focus:ring-2 focus:ring-blue-500" />
-        </div>
-  
-        <nav class="flex gap-6 text-lg mb-12 sticky top-0 bg-gray-900/80 backdrop-blur-md py-2">
-          <a href="#introduction" class="hover:underline">Introduction</a>
-          <a href="#features" class="hover:underline">Fonctionnalités</a>
-          <a href="#guide" class="hover:underline">Guide</a>
-          <a href="#faq" class="hover:underline">FAQ</a>
-        </nav>
-  
-        <div class="space-y-16">
-          <div id="introduction" class="bg-white/10 text-white p-8 rounded-lg shadow-lg transition-all duration-500 hover:scale-105">
-            <h2 class="text-3xl font-semibold mb-4">Introduction</h2>
-            <p>Academia est une application de digitalisation des examens scolaires, offrant une passation sécurisée et individualisée des épreuves.</p>
-          </div>
-  
-          <div id="features" class="bg-white/10 text-white p-8 rounded-lg shadow-lg transition-all duration-500 hover:scale-105">
-            <h2 class="text-3xl font-semibold mb-4">Fonctionnalités</h2>
-            <ul class="list-disc list-inside space-y-2">
-              <li>📅 Planification des examens de manière centralisée.</li>
-              <li>⚡ Lancement instantané des épreuves.</li>
-              <li>🔒 Surveillance en temps réel avec WebRTC.</li>
-              <li>✅ Correction automatisée.</li>
-              <li>📊 Publication rapide des résultats.</li>
-            </ul>
-          </div>
-  
-          <div id="guide" class="bg-white/10 text-white p-8 rounded-lg shadow-lg transition-all duration-500 hover:scale-105">
-            <h2 class="text-3xl font-semibold mb-4">Guide d'utilisation</h2>
-            <p>Connectez-vous avec vos identifiants et accédez à toutes les fonctionnalités disponibles.</p>
-          </div>
-  
-          <div id="faq" class="bg-white/10 text-white p-8 rounded-lg shadow-lg transition-all duration-500 hover:scale-105">
-            <h2 class="text-3xl font-semibold mb-4">FAQ</h2>
-            <details class="mb-2 group">
-              <summary class="font-semibold group-hover:text-blue-500 transition">❓ Comment créer un examen ?</summary>
-              <p class="mt-2 transition-all duration-300 opacity-0 group-open:opacity-100">Accédez à la section "Créer un examen" et suivez les instructions.</p>
-            </details>
-            <details class="group">
-              <summary class="font-semibold group-hover:text-blue-500 transition">❓ Comment surveiller les épreuves ?</summary>
-              <p class="mt-2 transition-all duration-300 opacity-0 group-open:opacity-100">Utilisez la section "Surveillance" pour accéder au flux vidéo en temps réel.</p>
-            </details>
-          </div>
-        </div>
+    <nav class="flex gap-6 text-lg mb-12 sticky top-0 bg-gray-900/80 backdrop-blur-md py-2">
+      <a href="#introduction" class="hover:underline">Introduction</a>
+      <a href="#features" class="hover:underline">Fonctionnalités</a>
+      <a href="#guide" class="hover:underline">Guide</a>
+      <a href="#faq" class="hover:underline">FAQ</a>
+    </nav>
+
+    <div class="space-y-16">
+      <div id="introduction" class="bg-white/10 text-white p-8 rounded-lg shadow-lg transition-all duration-500 hover:scale-105">
+        <h2 class="text-3xl font-semibold mb-4">Introduction</h2>
+        <p>Academia est une application de digitalisation des examens scolaires, offrant une passation sécurisée et individualisée des épreuves.</p>
       </div>
-    </section>
 
-  
-  <script setup>
-  import { ref } from 'vue';
-  const searchQuery = ref('');
-  </script>
+      <div id="features" class="bg-white/10 text-white p-8 rounded-lg shadow-lg transition-all duration-500 hover:scale-105">
+        <h2 class="text-3xl font-semibold mb-4">Fonctionnalités</h2>
+        <ul class="list-disc list-inside space-y-2">
+          <li>📅 Planification des examens de manière centralisée.</li>
+          <li>⚡ Lancement instantané des épreuves.</li>
+          <li>🔒 Surveillance en temps réel avec WebRTC.</li>
+          <li>✅ Correction automatisée.</li>
+          <li>📊 Publication rapide des résultats.</li>
+        </ul>
+      </div>
+
+      <div id="guide" class="bg-white/10 text-white p-8 rounded-lg shadow-lg transition-all duration-500 hover:scale-105">
+        <h2 class="text-3xl font-semibold mb-4">Guide d'utilisation</h2>
+        <p>Connectez-vous avec vos identifiants et accédez à toutes les fonctionnalités disponibles.</p>
+      </div>
+
+      <div id="faq" class="bg-white/10 text-white p-8 rounded-lg shadow-lg transition-all duration-500 hover:scale-105">
+        <h2 class="text-3xl font-semibold mb-4">FAQ</h2>
+        <details class="mb-2 group">
+          <summary class="font-semibold group-hover:text-blue-500 transition">❓ Comment créer un examen ?</summary>
+          <p class="mt-2 transition-all duration-300 opacity-0 group-open:opacity-100">Accédez à la section "Créer un examen" et suivez les instructions.</p>
+        </details>
+        <details class="group">
+          <summary class="font-semibold group-hover:text-blue-500 transition">❓ Comment surveiller les épreuves ?</summary>
+          <p class="mt-2 transition-all duration-300 opacity-0 group-open:opacity-100">Utilisez la section "Surveillance" pour accéder au flux vidéo en temps réel.</p>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>

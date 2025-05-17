@@ -4,16 +4,21 @@ import { AfterViewInit, Component } from '@angular/core';
 import { HeaderComponent } from '../header/header.component';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { AuthentificationService } from '../services/authentification.service';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-sidebar',
   standalone:true,
   imports:[
+    FormsModule,
+    CommonModule,
     HeaderComponent],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent implements AfterViewInit {
+  activeLink: string = '';
   constructor(
     private router : Router,
     private auth:  AuthentificationService
@@ -66,6 +71,11 @@ export class SidebarComponent implements AfterViewInit {
       localStorage.setItem('selected-theme', getCurrentTheme());
       localStorage.setItem('selected-icon', getCurrentIcon());
     });
+  }
+
+  navigateTo(link: string) {
+    this.activeLink = link;
+    this.router.navigate([`/${link}`]);
   }
 
   composition(){

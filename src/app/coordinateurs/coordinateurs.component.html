@@ -1,0 +1,19 @@
+<app-sidebar-admin></app-sidebar-admin>
+            <!-- Coordinators Section -->
+            <div *ngIf="currentSection === 'coordinators'" class="mt-6" id="main">
+                <h2 class="text-xl font-semibold mb-4">Liste des Coordinateurs</h2>
+                <table class="min-w-full bg-white">
+                  <thead class="bg-gray-200">
+                    <tr>
+                      <th class="p-2">Nom</th>
+                      <th class="p-2">Centre</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let coordinator of coordinators">
+                      <td class="p-2">{{ coordinator.name }}</td>
+                      <td class="p-2">{{ coordinator.center }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>

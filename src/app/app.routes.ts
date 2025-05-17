@@ -20,12 +20,17 @@ import { ResultatComponent } from './resultat/resultat.component';
 import { NotificationEtudiantComponent } from './notification-etudiant/notification-etudiant.component';
 import { ExamServiceComponent } from './exam-service/exam-service.component';
 import { ActiveAccountComponent } from './active-account/active-account.component';
+import { SignThemComponent } from './sign-them/sign-them.component';
+import { ProfessorComponent } from './professor/professor.component';
+import { EtudiantComponent } from './etudiant/etudiant.component';
+import { CoordinateursComponent } from './coordinateurs/coordinateurs.component';
+import { SignProfComponent } from './sign-prof/sign-prof.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'home', component: HomeComponent },
   { path: 'auth', component: AuthentificationComponent },
-  { path: 'dashboard', component: DashboardAdminComponent },
+  { path: 'dashboard', component: DashboardAdminComponent, canActivate:[AuthGuard] },
   { path: 'student_side', component: DashboardEtudiantComponents, canActivate: [AuthGuard] },
   { path: 'admin_side', component: SidebarAdminComponent },
   { path: 'signIn', component: SignInComponent },
@@ -42,9 +47,16 @@ export const routes: Routes = [
   {path : 'decouvrir', component: DecouvrirComponent},
   {path: 'notification_etudiant', component: NotificationEtudiantComponent},
   {path: 'exam_service', component:ExamServiceComponent},
-  { path: '**', redirectTo: 'signIn', pathMatch: 'full' },
+  {path:'activate_account',component:ActiveAccountComponent},
+  {path:'sign_them', component:SignThemComponent},
+  {path:'professor', component:ProfessorComponent},
+  {path:'students', component:EtudiantComponent},
+  {path: 'signProf', component: SignProfComponent},
+  {path:'coordinator', component:CoordinateursComponent},
+  //{ path: '**', redirectTo: 'signIn', pathMatch: 'full' },
   {
     path: 'professeur',
+    canActivate: [AuthGuard],
     loadChildren: () =>
       import('./professeur/professeur.routes').then(m => m.PROFESSEUR_ROUTES)
   }  

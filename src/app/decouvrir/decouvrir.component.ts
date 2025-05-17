@@ -1,11 +1,20 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-decouvrir',
-  imports: [],
+  imports: [FormsModule, CommonModule],
   templateUrl: './decouvrir.component.html',
   styleUrl: './decouvrir.component.css'
 })
 export class DecouvrirComponent {
+  searchQuery: string = '';
+  constructor(private router : Router){}
+
+  authentificate(){
+    this.router.navigate(['/auth'])
+  }
 
 }

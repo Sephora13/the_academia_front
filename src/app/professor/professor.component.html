@@ -1,0 +1,29 @@
+ <app-sidebar-admin></app-sidebar-admin>
+ <!-- Main Content -->
+ <main id="main">
+          <!-- Main Content -->
+          <div class="flex-1 p-6">   
+            <!-- Professors Section -->
+            <div *ngIf="currentSection === 'professors'" class="mt-6">
+              <h2 class="text-xl font-semibold mb-4">Liste des Professeurs</h2>
+              <table class="min-w-full bg-white">
+                <thead class="bg-gray-200">
+                  <tr>
+                    <th class="p-2">Nom</th>
+                    <th class="p-2">Matière</th>
+                    <th class="p-2">Classe</th>
+                  </tr>
+                </thead>
+                <tbody class="bg-gray-400">
+                  <tr *ngFor="let professor of professors">
+                    <td  class="p-2 text-white">{{ professor.name }}</td>
+                    <td class="p-2 text-white">{{ professor.subject }}</td>
+                    <td class="p-2 text-white">{{ professor.class }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>    
+          </div>
+ </main>
+  
+  

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Inject } from '@angular/core';
+import { AfterViewInit, Component, Inject, OnInit } from '@angular/core';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from "../header/header.component";
@@ -16,7 +16,8 @@ import { Router } from '@angular/router';
   templateUrl: './dashboard-etudiant.component.html',
   styleUrl: './dashboard-etudiant.component.css'
 })
-export class DashboardEtudiantComponents implements AfterViewInit {
+export class DashboardEtudiantComponents implements AfterViewInit, OnInit {
+  user: { id: number, nom: string, prenom: string } | null = null;
   isSidebarOpen = true; // Détection si sidebar ouverte
 
   studentName = 'Stormi Jackson';
@@ -40,6 +41,11 @@ export class DashboardEtudiantComponents implements AfterViewInit {
     private auth : AuthentificationService,
     private router : Router
   ){}
+
+  ngOnInit(): void{
+    this.user = this.auth.getUserInfo2();
+    console.log(this.user)
+  }
 
   ngAfterViewInit(): void {
     const toggle = document.getElementById('header-toggle');

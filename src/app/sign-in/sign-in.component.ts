@@ -44,15 +44,8 @@ export class SignInComponent {
   
         // Rediriger l'utilisateur en fonction de son rôle
         if (userRole === 'etudiant') {
-<<<<<<< HEAD
           this.router.navigate(['/student_side']);
         } else {
-=======
-          this.router.navigate(['/student-dashboard']);
-        } else if(userRole === 'professeur'){
-          this.router.navigate(['/professeur']);
-        }else {
->>>>>>> origin/mendel
           this.router.navigate(['/home']);
         }
       },
@@ -65,7 +58,7 @@ export class SignInComponent {
   }
 
   sidebar(){
-    this.router.navigate(['/professeur'])
+    this.router.navigate(['/student_side'])
   }
   signUp(){
     this.router.navigate(['/signUp'])

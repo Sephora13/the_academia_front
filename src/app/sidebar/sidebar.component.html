@@ -1,68 +1,75 @@
-     <app-header></app-header>
-     <!--=============== SIDEBAR ===============-->
-     <nav class="sidebar" id="sidebar">
-      <div class="sidebar__container">
-         <div class="sidebar__user">
-            <div class="sidebar__img">
-               <img src="assets/img/avatar.avif" alt="image">
-            </div>
-
-            <div class="sidebar__info">
-               <h3>Stormi Jackson</h3>
-               <span>stormijacksongmail.com</span>
-            </div>
-         </div>
-
-         <div class="sidebar__content">
-            <div>
-
-               <div class="sidebar__list mt-8">
-                  <a (click)="dashboard()" class="sidebar__link active-link">
-                    <i class="fas fa-chart-line"></i>
-                    <span>Dashboard</span>
-                  </a>
-          
-                  <a (click)="composition()" class="sidebar__link">
-                    <i class="fas fa-file-alt"></i>
-                    <span>Compositions</span>
-                  </a>
-          
-                  <a (click)="resultats()" class="sidebar__link">
-                    <i class="fas fa-graduation-cap"></i>
-                    <span>Resultats</span>
-                  </a>
-                </div>
-            </div>
-
-            <div>
-               <h3 class="sidebar__title">SETTINGS</h3>
-
-               <div class="sidebar__list">
-                  <a href="#" class="sidebar__link">
-                     <i class="ri-settings-3-fill"></i>
-                     <span>Parametres</span>
-                  </a>
-
-
-                  <a href="#" class="sidebar__link">
-                     <i class="ri-notification-2-fill"></i>
-                     <span>Notifications</span>
-                  </a>
-               </div>
-            </div>
-         </div>
-
-         <div class="sidebar__actions">
-            <button>
-               <i class="ri-moon-clear-fill sidebar__link sidebar__theme" id="theme-button">
-                  <span>Theme</span>
-               </i>
-            </button>
-
-            <button class="sidebar__link" (click)="logout()">
-               <i class="ri-logout-box-r-fill"></i>
-               <span>Se déconnecter</span>
-            </button>
-         </div>
+<app-header></app-header>
+<!--=============== SIDEBAR ===============-->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar__container">
+    <div class="sidebar__user">
+      <div class="sidebar__img">
+        <img src="assets/img/avatar.avif" alt="image">
       </div>
-   </nav>
+
+      <div class="sidebar__info">
+        <h3>Stormi Jackson</h3>
+        <span>stormijacksongmail.com</span>
+      </div>
+    </div>
+
+    <div class="sidebar__content">
+      <div>
+        <div class="sidebar__list mt-8">
+          <a 
+            (click)="navigateTo('dashboard')" 
+            class="sidebar__link" 
+            [ngClass]="{'bg-indigo-600 text-white': activeLink === 'dashboard'}">
+            <i class="fas fa-chart-line"></i>
+            <span>Dashboard</span>
+          </a>
+
+          <a 
+            (click)="navigateTo('composition')" 
+            class="sidebar__link" 
+            [ngClass]="{'bg-indigo-600 text-white': activeLink === 'composition'}">
+            <i class="fas fa-file-alt"></i>
+            <span>Compositions</span>
+          </a>
+
+          <a 
+            (click)="navigateTo('resultats')" 
+            class="sidebar__link" 
+            [ngClass]="{'bg-indigo-600 text-white': activeLink === 'resultats'}">
+            <i class="fas fa-graduation-cap"></i>
+            <span>Resultats</span>
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="sidebar__title">SETTINGS</h3>
+
+        <div class="sidebar__list">
+          <a href="#" class="sidebar__link">
+            <i class="ri-settings-3-fill"></i>
+            <span>Parametres</span>
+          </a>
+
+          <a href="#" class="sidebar__link">
+            <i class="ri-notification-2-fill"></i>
+            <span>Notifications</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar__actions">
+      <button>
+        <i class="ri-moon-clear-fill sidebar__link sidebar__theme" id="theme-button">
+          <span>Theme</span>
+        </i>
+      </button>
+
+      <button class="sidebar__link" (click)="logout()">
+        <i class="ri-logout-box-r-fill"></i>
+        <span>Se déconnecter</span>
+      </button>
+    </div>
+  </div>
+</nav>

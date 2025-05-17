@@ -1,73 +1,98 @@
 <!--=============== SIDEBAR ===============-->
 <nav class="sidebar" id="sidebar">
-  <div class="sidebar__container">
+   <div class="sidebar__container">
      <div class="sidebar__user">
-        <div class="sidebar__img">
-           <img src="assets/img/academia.png" alt="image">
-        </div>
-
-        <div class="sidebar__info">
-           <h3>Admin</h3>
-           <span></span>
-        </div>
+       <div class="sidebar__img">
+         <img src="assets/img/academia.png" alt="image">
+       </div>
+ 
+       <div class="sidebar__info">
+         <h3>Admin</h3>
+         <span></span>
+       </div>
      </div>
-
+ 
      <div class="sidebar__content">
-        <div>
-           <h3 class="sidebar__title">MANAGE</h3>
-
-           <div class="sidebar__list">
-              <a (click)="dashboard()" class="sidebar__link active-link">
-                 <i class="ri-pie-chart-2-fill"></i>
-                 <span>Dashboard</span>
-              </a>
-
-              <a (click)="composition()" class="sidebar__link">
-                 <i class="ri-wallet-3-fill"></i>
-                 <span>Compositions</span>
-              </a>
-
-              <a (click)="new_composition()" class="sidebar__link">
-                 <i class="ri-calendar-fill"></i>
-                 <span>Resultats</span>
-              </a>
-           </div>
-        </div>
-
-        <div>
-           <h3 class="sidebar__title">SETTINGS</h3>
-
-           <div class="sidebar__list">
-              <a href="#" class="sidebar__link">
-                 <i class="ri-settings-3-fill"></i>
-                 <span>Parametres</span>
-              </a>
-
-              <a href="#" class="sidebar__link">
-                 <i class="ri-mail-unread-fill"></i>
-                 <span>Boite de reception</span>
-              </a>
-
-              <a href="#" class="sidebar__link">
-                 <i class="ri-notification-2-fill"></i>
-                 <span>Notifications</span>
-              </a>
-           </div>
-        </div>
+       <div>
+         <h3 class="sidebar__title">MANAGE</h3>
+ 
+         <div class="sidebar__list">
+           <a 
+             (click)="navigateTo('dashboard')" 
+             class="sidebar__link" 
+             [ngClass]="{'bg-indigo-600 text-white': activeLink === 'dashboard'}">
+             <i class="ri-pie-chart-2-fill"></i>
+             <span>Dashboard</span>
+           </a>
+ 
+           <a 
+             (click)="navigateTo('students')" 
+             class="sidebar__link" 
+             [ngClass]="{'bg-indigo-600 text-white': activeLink === 'students'}">
+             <i class="fas fa-user-graduate w-5"></i>
+             <span>Students</span>
+           </a>
+ 
+           <a 
+             (click)="navigateTo('professor')" 
+             class="sidebar__link" 
+             [ngClass]="{'bg-indigo-600 text-white': activeLink === 'professor'}">
+             <i class="fas fa-user-tie w-5"></i>
+             <span>Professor</span>
+           </a>
+           
+           <a 
+             (click)="navigateTo('coordinators')" 
+             class="sidebar__link" 
+             [ngClass]="{'bg-indigo-600 text-white': activeLink === 'coordinators'}">
+             <i class="fas fa-users-cog w-5"></i>
+             <span>Coordinateurs</span>
+           </a>
+           
+           <a 
+             (click)="navigateTo('new_composition')" 
+             class="sidebar__link" 
+             [ngClass]="{'bg-indigo-600 text-white': activeLink === 'new_composition'}">
+             <i class="fas fa-file-alt w-5"></i>
+             <span>Services des examens</span>
+           </a>
+         </div>
+       </div>
+ 
+       <div>
+         <h3 class="sidebar__title">SETTINGS</h3>
+ 
+         <div class="sidebar__list">
+           <a href="#" class="sidebar__link">
+             <i class="ri-settings-3-fill"></i>
+             <span>Parametres</span>
+           </a>
+ 
+           <a href="#" class="sidebar__link">
+             <i class="ri-mail-unread-fill"></i>
+             <span>Boite de reception</span>
+           </a>
+ 
+           <a href="#" class="sidebar__link">
+             <i class="ri-notification-2-fill"></i>
+             <span>Notifications</span>
+           </a>
+         </div>
+       </div>
      </div>
-
+ 
      <div class="sidebar__actions">
-        <button>
-           <i class="ri-moon-clear-fill sidebar__link sidebar__theme" id="theme-button">
-              <span>Theme</span>
-           </i>
-        </button>
-
-        <button class="sidebar__link">
-           <i class="ri-logout-box-r-fill"></i>
-           <span>Se déconnecter</span>
-        </button>
+       <button>
+         <i class="ri-moon-clear-fill sidebar__link sidebar__theme" id="theme-button">
+           <span>Theme</span>
+         </i>
+       </button>
+ 
+       <button class="sidebar__link" (click)="logout()">
+         <i class="ri-logout-box-r-fill"></i>
+         <span>Se déconnecter</span>
+       </button>
      </div>
-  </div>
-</nav>
-
+   </div>
+ </nav>
+ 
