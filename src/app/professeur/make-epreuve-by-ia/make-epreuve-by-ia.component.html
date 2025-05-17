@@ -74,7 +74,7 @@
                 <p *ngIf="exercice.consigne"><em>Consigne :</em> {{ exercice.consigne }}</p>
 
                 <div *ngFor="let question of exercice.questions; let qIndex = index" class="question">
-                  <p><strong>Question {{ qIndex + 1 }} ({{ question.type }}) :</strong></p>
+                  <p><strong>Question {{ qIndex + 1 }}:</strong></p>
 
                   <div [ngSwitch]="question.type.toLowerCase()">
                     <div *ngSwitchCase="'qcm'">
@@ -151,7 +151,7 @@
               <div class="double-bounce2"></div>
             </div>
           </div>
-          <input type="text" placeholder="Envoyez un message ou une suggestion…" [(ngModel)]="nouvelleSuggestion" (keyup.enter)="modifierEpreuve()" [disabled]="isLoading" />
+          <input type="text" placeholder="Envoyez un message…" [(ngModel)]="nouvelleSuggestion" (keyup.enter)="modifierEpreuve()" [disabled]="isLoading" />
            <button class="send-btn" aria-label="Envoyer" (click)="modifierEpreuve()" [disabled]="!chatButtonsEnabled || isLoading">➤</button>
        </div>
     </div>

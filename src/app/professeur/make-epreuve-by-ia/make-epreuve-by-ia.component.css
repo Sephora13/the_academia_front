@@ -242,14 +242,14 @@
   height: 40px;
 
   position: relative;
-  margin: 10px auto;
+  margin: 5px auto;
 }
 
 .double-bounce1, .double-bounce2 {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background-color: #333;
+  background-color: var(--first-color);
   opacity: 0.6;
   position: absolute;
   top: 0;
@@ -483,7 +483,7 @@
 
 .chat-input-container input[type="text"] {
   flex: 1 1 auto;
-  padding: 0.6rem 3rem 0.6rem 1rem;
+  padding: 0.6rem 3rem 0.6rem 2rem;
   border: 1px solid hsl(228, 8%, 75%);
   border-radius: 2rem;
   font-size: var(--normal-font-size);

@@ -1,85 +1,298 @@
-.ia-epreuve-container {
+/* ───────── Disposition générale du composant ───────── */
+.page {
+  display: flex;
+  /* Définir une hauteur pour le conteneur principal flex */
+  /* Cela permet aux enfants (formulaire/r\u00E9sultats et chat) de prendre une part de cette hauteur */
+  /* Tu peux ajuster cette hauteur en fonction de ton design global et de ton header */
+   height: calc(100vh - var(--header-height, 0px) - 2rem); /* Réduit le padding vertical dans le calcul de la hauteur */
+
+  padding: 2.5rem 1.5rem 1rem 1.5rem; /* Réduit les padding horizontaux et verticaux du .page */
+  gap: 1rem; /* Réduit le gap entre les colonnes */
+  font-family: var(--body-font); /* Hérité, mais pour être explicite */
+  overflow: hidden; /* Empêche le défilement du conteneur .page lui-m\u00EAme si les enfants dépassent */
+
+  /* **AJUSTEMENT POUR LE DÉCALAGE DE LA BARRE LATÉRALE** */
+  margin-left: 17rem; /* Décalage vers la droite pour laisser de la place à la barre latérale (ajuste 17rem si nécessaire) */
+  width: calc(100% - 17rem - 1.5rem); /* Réduit la largeur pour compenser le décalage ET le padding droit du .page */
+  box-sizing: border-box; /* Inclure padding et border dans la largeur */
+}
+
+
+/* Nouveau conteneur pour formulaire et résultats */
+.form-and-result-wrapper {
+  flex: 1 1 auto; /* Permet à cette colonne de prendre l'espace horizontal restant */
+  display: flex;
+  flex-direction: column; /* **ESSENTIEL : Les enfants (titre fixe et contenu scrollable) s'empilent verticalement** */
+  gap: 0; /* Pas de gap entre le titre fixe et la zone scrollable */
+   /* overflow-y: auto; */ /* RETIRE : Le défilement sera sur .form-content-scrollable */
+   /* **AJOUT : Bordure et rayon pour un aspect uniforme** */
+  box-shadow: var(--shadow-color);
+  /* padding: 1rem; */ /* RETIRE : Le padding sera sur les enfants directs pour un meilleur contrôle */
+  background-color: var(--body-color); /* S'assure du fond correct */
+  height: 100%; /* **ESSENTIEL : Permet à ce conteneur de prendre toute la hauteur disponible du parent (.page)** */
+  overflow: hidden; /* **ESSENTIEL : Cache le contenu qui dépasse, le défilement est géré par l'enfant** */
+
+}
+
+.dark-theme .form-and-result-wrapper {
+   border-color: hsl(228, 8%, 85%); /* Bordure opaque en mode sombre */
+}
+
+/* ==============  TITRE PRINCIPAL FIXE ============== */
+.form-title-container {
+  padding: 1rem 1.5rem 0.5rem 1.5rem; /* Ajuste le padding pour correspondre au padding horizontal du .page */
+  margin-bottom: 0; /* Retire la marge basse ici */
+  flex-shrink: 0; /* **ESSENTIEL : Empêche cette div de rétrécir** */
+  background-color: var(--body-color); /* **ESSENTIEL : Assure que le fond est correct derrière le titre** */
+  z-index: 1; /* S'assure qu'il est au-dessus du contenu scrollable */
+  /* position: sticky; */ /* Optionnel: si tu veux qu'il reste collé en haut lors du défilement */
+  /* top: 0; */ /* Si position: sticky */
+}
+
+.dark-theme .form-title-container {
+  border-bottom-color: hsl(228, 8%, 90%); /* Ligne de s\u00E9paration opaque en mode sombre */
+}
+
+.form-title {
+  margin: 0; /* Retire les marges du titre lui-même */
+  font-size: 1.35rem;
+  font-weight: var(--font-semi-bold);
+  color: var(--first-color); /* Couleur principale de votre th\u00E8me */
+}
+
+
+/* Sur mobile, le titre n'a plus besoin d'être fixe par rapport à son parent */
+.form-title-container {
+  padding: 0 0 1rem 0; /* Ajuste le padding pour le mobile */
+  border-bottom: none; /* Retire la ligne de s\u00E9paration */
+   background-color: transparent; /* Retire le fond */
+   margin-bottom: 0; /* Retire la marge */
+}
+
+/* ==============  CONTENU SCROLLABLE (FORMULAIRE, BOUTON, ÉPREUVE) ============== */
+.form-content-scrollable {
+  overflow-y: auto; /* **ESSENTIEL : Permet le défilement du contenu de cette div** */
+  padding: 0.5rem 1.5rem; /* **AJOUT : Ajoute un padding intérieur au contenu scrollable pour l'espace autour** */
+  flex-grow: 1; /* **ESSENTIEL : Permet à cette div de prendre tout l'espace vertical restant dans son parent (.form-and-result-wrapper)** */
+  display: flex; /* **AJOUT : Utilise flexbox pour organiser les éléments à l'intérieur** */
+  flex-direction: column; /* **AJOUT : Empile les éléments verticalement** */
+  gap: 1rem; /* Ajoute un gap entre les éléments scrollables (sous-titre, form, bouton, épreuve) */
+  /* **AJOUT : S'assure que le fond est correct même si le parent a un background** */
+  background-color: var(--body-color);
+}
+
+
+.form-subtitle {
+margin: 0; /* Retire toutes les marges */
+font-size: var(--smaller-font-size);
+line-height: 1.4;
+max-width: 32rem;
+color: var(--text-color);
+ /* padding: 0 1rem; */ /* Retiré car géré par le padding de .form-content-scrollable */
+}
+
+.form-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+gap: 1rem 1.5rem;
+margin-bottom: 0; /* Retire la marge basse */
+ /* **RETIRE : Padding ici car géré par .form-content-scrollable** */
+}
+
+.field {
+display: flex;
+flex-direction: column;
+gap: 0.4rem;
+}
+
+/* Style pour les champs qui doivent prendre toute la largeur dans la grille */
+.field.full-width {
+  grid-column: 1 / -1; /* Prend toute la largeur de la grille */
+}
+
+
+.field label {
+font-size: var(--smaller-font-size);
+color: var(--title-color);
+font-weight: var(--font-semi-bold);
+}
+
+/* Styles pour les inputs (text, number, file) - hauteur plus standard */
+.field input[type="text"],
+.field input[type="number"],
+.field input[type="file"] {
+padding: 0.5rem 0.75rem; /* Padding standard */
+border: 1px solid hsl(228, 8%, 75%);
+border-radius: .375rem;
+font-size: var(--normal-font-size);
+background-color: var(--body-color);
+color: var(--text-color);
+transition: border-color .3s, background-color .4s, color .4s;
+ /* **BORDURE EN MODE CLAIR :** Rendre la bordure moins visible */
+ border-color: hsla(228, 8%, 75%, 0.5);
+ width: 100%; /* S'assure que l'input prend la largeur de son conteneur */
+ box-sizing: border-box; /* Inclure padding et border dans la largeur */
+ /* Pas de min-height ou de hauteur fixe ici, la hauteur est définie par le padding et la taille de la police */
+}
+
+
+.dark-theme .field input[type="text"],
+.dark-theme .field input[type="number"],
+.dark-theme .field input[type="file"],
+.dark-theme .field textarea { /* Applique le style de bordure sombre aux inputs et textareas */
+     border-color: hsl(228, 8%, 75%);
+}
+
+/* Style pour le placeholder pour qu'il soit visible dans les deux thèmes */
+.field input::placeholder,
+.field textarea::placeholder { /* Applique le style aux placeholders des inputs et textareas */
+  color: var(--text-color);
+  opacity: 0.6;
+}
+
+/* Amélioration pour le focus sur les inputs et textareas */
+.field input[type="text"]:focus,
+.field input[type="number"]:focus,
+.field textarea:focus { /* Applique le style focus aux inputs et textareas */
+  outline: none;
+  border-color: var(--first-color);
+  box-shadow: 0 0 0 2px hsla(var(--first-color-hsl), 0.2);
+}
+
+
+.file-field {
+  grid-column: 1 / -1;
+}
+
+/* Bouton de génération d'épreuve */
+.generate-btn {
+  margin: 0 auto; /* Retire la marge supérieure et basse fixe, utilise gap du parent */
+  display: block;
+  padding: 0.6rem 1.5rem;
+  background-color: var(--first-color);
+  color: white;
+  border: none;
+  border-radius: .50rem;
+  font-size: var(--normal-font-size);
+  font-weight: var(--font-semi-bold);
+  cursor: pointer;
+  text-align: center;
+  transition: background-color .3s, filter .3s;
+}
+
+.generate-btn:hover {
+  background-color: hsl(228, 85%, 55%);
+}
+
+
+/* Loader styles */
+.loader-container {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    /* background-color: var(--body-color); */ /* Optionnel */
+    border-radius: .5rem; /* Optionnel */
+    margin: 0; /* Retire la marge supérieure, utilise gap du parent */
+    color: var(--secondary-text-color);
+    text-align: center;
+}
+
+.loader {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid var(--first-color);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loader-container p {
+    font-size: var(--normal-font-size);
+    color: var(--text-color);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+
+  position: relative;
+  margin: 5px auto;
+}
+
+.double-bounce1, .double-bounce2 {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: var(--first-color);
+  opacity: 0.6;
+  position: absolute;
+  top: 0;
+  left: 0;
+  
+  -webkit-animation: sk-bounce 2.0s infinite ease-in-out;
+  animation: sk-bounce 2.0s infinite ease-in-out;
+}
+
+.double-bounce2 {
+  -webkit-animation-delay: -1.0s;
+  animation-delay: -1.0s;
+}
+
+@-webkit-keyframes sk-bounce {
+  0%, 100% { -webkit-transform: scale(0.0) }
+  50% { -webkit-transform: scale(1.0) }
+}
+
+@keyframes sk-bounce {
+  0%, 100% { 
+    transform: scale(0.0);
+    -webkit-transform: scale(0.0);
+  } 50% { 
+    transform: scale(1.0);
+    -webkit-transform: scale(1.0);
+  }
+}
+
+@media (max-width: 600px) {
+  .page {
     padding: 1rem;
-    height: calc(100vh - 64px);
-    overflow-y: auto;
-    position: relative;
-    background-color: transparent;
-    border-radius: 10px;
   }
-  
-  .ia-epreuve-form {
-    border: 1px solid hsla(228, 16%, 40%, 0.2);
-    padding: 0.5rem;
-    margin-bottom: 1rem;
-    border-radius: 8px;
-    background-color: transparent;
-    width: 400px; /* Limiter la largeur du formulaire */
-    margin-left: auto;
-    margin-right: auto;
+  .form-wrapper {
+    padding: 1.5rem;
   }
-  
-  .ia-epreuve-form h2 {
-    margin-top: 0;
-    color: var(--title-color);
-    text-align: center;
+  .form-title {
+    font-size: 1.2rem;
   }
-  
-  .form-group {
-    margin-bottom: 0.5rem;
+  .form-grid {
+      gap: 1rem 1.5rem;
   }
-  
-  label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 0.25rem;
-    color: var(--text-color);
+  .field input[type="text"],
+  .field input[type="number"],
+  .field input[type="file"],
+  .chat-input-box input[type="text"] {
+    padding: 0.5rem 0.6rem;
+    font-size: var(--smaller-font-size);
   }
-  
-  input[type="file"] {
+  .generate-btn, .save-btn-floating {
     width: 100%;
-    padding: 0.5rem;
-    border: 1px solid hsla(228, 16%, 40%, 0.2);
-    border-radius: 0.5rem;
-    background-color: transparent;
-    color: var(--text-color);
+    margin-left: 0;
+    margin-right: 0;
   }
-  
-  button {
-    padding: 0.5rem 1rem;
-    background-color: var(--first-color);
-    color: var(--title-color);
-    border: none;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    transition:
-      background-color 0.3s ease,
-      box-shadow 0.3s ease;
-    box-shadow: 0 2px 4px hsla(228, 80%, 4%, 0.1);
-    width: 100%;
-    text-align: center;
-  }
-  
-  button:hover {
-    background-color: hsl(228, 70%, 75%);
-    box-shadow: 0 3px 6px hsla(228, 80%, 4%, 0.15);
-  }
-  
-  button:disabled {
-    background-color: hsl(228, 16%, 30%);
-    color: var(--text-color);
-    cursor: not-allowed;
-    box-shadow: none;
-  }
-  
-  .message {
-    margin-top: 1rem;
-    padding: 0.5rem;
-    border-radius: 0.25rem;
-    text-align: center;
-    color: var(--text-color);
-    background-color: rgba(255, 255, 255, 0.7);
-    border: 1px solid hsla(228, 16%, 40%, 0.2);
-  }
+   .chat-wrapper {
+       padding: 1rem;
+   }
+    .generated-epreuve {
+       padding: 1.5rem;
+   }
+     .chat-input-container input[type="text"] {
+         padding: 0.5rem 2.5rem 0.5rem 0.6rem;
+     }
+}

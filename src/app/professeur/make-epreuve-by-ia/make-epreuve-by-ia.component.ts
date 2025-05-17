@@ -644,7 +644,7 @@ export class MakeEpreuveByIaComponent implements AfterViewInit { // Implémente 
          if (response.success) {
            const successMessage = response.message?.message || 'Épreuve enregistrée avec succès !';
            const epreuveId = response.message?.id_epreuve;
-           this.addMessage('bot', epreuveId ? `${successMessage} (ID: ${epreuveId})` : successMessage, false, 'ai');
+           this.addMessage('bot', epreuveId ? `${successMessage}` : successMessage, false, 'ai');
 
          } else {
            console.error('Erreur logique API sauvegarde :', response.message);
