@@ -53,7 +53,10 @@
         </button>
 
         <div *ngIf="isLoading" class="loader-container">
-          <div class="loader"></div>
+          <div  class="spinner">
+            <div class="double-bounce1"></div>
+            <div class="double-bounce2"></div>
+          </div>
           <p>⏳ Génération de l'épreuve en cours... Patientez un moment.</p>
         </div>
 
@@ -102,7 +105,7 @@
                          <tr>
                              <th>Ex</th>
                              <th>Q</th>
-                             <th>Réponse</th>
+                             <th>Réponse attendu</th>
                              <th>Barème</th>
                          </tr>
                      </thead>
@@ -142,8 +145,14 @@
 
     <div class="chat-actions">
        <div class="chat-input-container">
-          <input type="text" placeholder="Envoyez un message ou une suggestion…" [(ngModel)]="nouvelleSuggestion" (keyup.enter)="modifierEpreuve()" />
-           <button class="send-btn" aria-label="Envoyer" (click)="modifierEpreuve()" [disabled]="!chatButtonsEnabled">➤</button>
+          <div *ngIf="isLoading" class="chat-input-loader">
+            <div class="spinner-small">
+              <div class="double-bounce1"></div>
+              <div class="double-bounce2"></div>
+            </div>
+          </div>
+          <input type="text" placeholder="Envoyez un message ou une suggestion…" [(ngModel)]="nouvelleSuggestion" (keyup.enter)="modifierEpreuve()" [disabled]="isLoading" />
+           <button class="send-btn" aria-label="Envoyer" (click)="modifierEpreuve()" [disabled]="!chatButtonsEnabled || isLoading">➤</button>
        </div>
     </div>
 

@@ -213,6 +213,8 @@
     /* background-color: var(--body-color); */ /* Optionnel */
     border-radius: .5rem; /* Optionnel */
     margin: 0; /* Retire la marge supérieure, utilise gap du parent */
+    color: var(--secondary-text-color);
+    text-align: center;
 }
 
 .loader {
@@ -233,6 +235,48 @@
 .loader-container p {
     font-size: var(--normal-font-size);
     color: var(--text-color);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+
+  position: relative;
+  margin: 10px auto;
+}
+
+.double-bounce1, .double-bounce2 {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #333;
+  opacity: 0.6;
+  position: absolute;
+  top: 0;
+  left: 0;
+  
+  -webkit-animation: sk-bounce 2.0s infinite ease-in-out;
+  animation: sk-bounce 2.0s infinite ease-in-out;
+}
+
+.double-bounce2 {
+  -webkit-animation-delay: -1.0s;
+  animation-delay: -1.0s;
+}
+
+@-webkit-keyframes sk-bounce {
+  0%, 100% { -webkit-transform: scale(0.0) }
+  50% { -webkit-transform: scale(1.0) }
+}
+
+@keyframes sk-bounce {
+  0%, 100% { 
+    transform: scale(0.0);
+    -webkit-transform: scale(0.0);
+  } 50% { 
+    transform: scale(1.0);
+    -webkit-transform: scale(1.0);
+  }
 }
 
 /* Styles pour l\'\u00E9preuve g\u00E9n\u00E9r\u00E9e */
@@ -419,7 +463,6 @@
   display: flex;
   flex-direction: column;
   padding: 0.75rem 1rem 1rem 1rem;
-  border-top: 1px solid hsl(228, 8%, 90%);
   flex-shrink: 0;
   background-color: var(--body-color);
   z-index: 1;
@@ -496,6 +539,45 @@
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+/* Styles pour le loader dans l'input du chat */
+.chat-input-loader {
+  position: absolute;
+  left: 10px; /* Ajuste la position à gauche */
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2; /* S'assure qu'il est au-dessus de l'input */
+}
+
+/* Styles pour le spinner dans l'input (plus petit) */
+.spinner-small {
+width: 20px; /* Taille réduite */
+height: 20px; /* Taille réduite */
+position: relative;
+}
+
+/* Styles pour le spinner (double-bounce) dans l'input */
+/* Réutilise l'animation déjà définie pour .spinner */
+.chat-input-loader .double-bounce1,
+.chat-input-loader .double-bounce2 {
+width: 100%;
+height: 100%;
+border-radius: 50%;
+background-color: var(--first-color); /* Utilise la couleur principale */
+opacity: 0.6;
+position: absolute;
+top: 0;
+left: 0;
+
+-webkit-animation: sk-bounce 2.0s infinite ease-in-out;
+animation: sk-bounce 2.0s infinite ease-in-out;
+}
+
+.chat-input-loader .double-bounce2 {
+-webkit-animation-delay: -1.0s;
+animation-delay: -1.0s;
+}
+
 
 /* Bouton Enregistrer Epreuve flottant */
 .save-btn-floating {
@@ -583,9 +665,20 @@
     .chat-actions {
         padding: 1rem 0;
     }
-     .chat-input-container input[type="text"] {
-         padding: 0.75rem 2.5rem 0.75rem 0.75rem;
-     }
+    .chat-input-container input[type="text"] {
+      flex: 1 1 auto;
+      /* Ajuste le padding gauche pour laisser de la place au loader */
+      /* Environ 20px pour le loader + 10px de marge gauche + 5px de sécurité = 35px */
+      padding: 0.6rem 3rem 0.6rem 35px; /* <-- Modifiez cette ligne */
+      border: 1px solid var(--input-border-color);
+      border-radius: 2rem;
+      font-size: var(--normal-font-size);
+      background-color: var(--input-background-color);
+      color: var(--text-color);
+      transition: border-color .3s, background-color .4s, color .4s;
+      width: 100%;
+      box-sizing: border-box;
+    }
 }
 
 @media (max-width: 600px) {
