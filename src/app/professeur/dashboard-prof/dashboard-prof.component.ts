@@ -15,7 +15,7 @@ import { AuthentificationService } from '../../services/authentification.service
   styleUrl: './dashboard-prof.component.css'
 })
 export class ProfesseurDashboardComponent implements OnInit {
-  user: { id: number, nom: string, prenom: string } | null = null;
+  user: { id: number, nom: string, prenom: string, filiere:string, matiere:string } | null = null;
 
   isSidebarOpen = true;
 

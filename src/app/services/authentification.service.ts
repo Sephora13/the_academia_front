@@ -23,6 +23,7 @@ export class AuthentificationService {
   private apiUrl2 = 'https://the-academia-nestapi.onrender.com/users/register ';
   private apiUrl3 ='https://the-academia-nestapi.onrender.com/auth/signProf';
   private apiUrl4 ='https://the-academia-nestapi.onrender.com/auth/signAdmin';
+  private apiUrl5 = 'https://the-academia-nestapi.onrender.com/users/create-prof ';
 
 
   //creation de compte etudiant
@@ -48,7 +49,7 @@ export class AuthentificationService {
   
       return this.http.post(this.apiUrl2, body);
     }
-
+    //connexion d'un etudiant
     signIn(email: string, password: string): Observable<any> {
       return this.http.post(this.apiUrl, { email, password }).pipe(
         tap((response: any) => {
@@ -59,6 +60,9 @@ export class AuthentificationService {
             localStorage.setItem('user_id', response.User.id);
             localStorage.setItem('user_name', response.User.name);
             localStorage.setItem('user_prenom', response.User.prenom);
+            localStorage.setItem('user_email', response.User.email);
+            localStorage.setItem('user_classe', response.User.classe);
+            localStorage.setItem('user_filiere', response.User.filiere);
           } 
         }),
         catchError(error => throwError(() => error))
@@ -76,6 +80,10 @@ signInProf(email: string, password: string): Observable<any> {
         localStorage.setItem('user_id', response.User.id);
         localStorage.setItem('user_nom', response.User.nom);
         localStorage.setItem('user_prenom', response.User.prenom);
+        localStorage.setItem('user_email', response.User.email);
+        localStorage.setItem('user_filiere', response.User.filiere);
+        localStorage.setItem('user_matiere', response.User.matiere);
+     
       }
     }),
     catchError(error => throwError(() => error))
@@ -97,6 +105,26 @@ signInAdmin(login: string, password: string): Observable<any> {
   );
 }
 
+//methode de création d'un professeur par l'admin 
+createProf(name: string,
+  prenom: string,
+  email: string,
+  password: string,
+  filiere: string,
+  matiere: string): Observable<any> {
+    const body = {
+      name,
+      prenom,
+      email,
+      password,
+      filiere,
+      matiere
+    };
+    
+    return this.http.post(this.apiUrl5, body);
+  }
+
+
 // Méthode pour sauvegarder les informations de l'admin
 private saveAdminInfo(user: any) {
   localStorage.setItem('admin_id', user.id.toString());
@@ -111,32 +139,44 @@ getAdminInfo() {
   };
 }
 // Méthode pour récupérer les informations de l'utilisateur
-getUserInfo(): { id: number, nom: string, prenom: string } | null {
+getUserInfo(): { id: number, nom: string, prenom: string, email: string, filiere:string, matiere: string } | null {
   const id = localStorage.getItem('user_id');
   const nom = localStorage.getItem('user_nom');
   const prenom = localStorage.getItem('user_prenom');
+  const email = localStorage.getItem('user_email');
+  const filiere = localStorage.getItem('user_filiere');
+  const matiere = localStorage.getItem('user_matiere')
   
-  if (id && nom && prenom) {
+  if (id && nom && prenom && email && filiere && matiere) {
     return {
       id: parseInt(id),
       nom,
-      prenom
+      prenom,
+      email,
+      filiere, 
+      matiere
     };
   }
   return null;
 }
 
 //recuperer les informations des ettudiants
-getUserInfo2(): { id: number, nom: string, prenom: string } | null {
+getUserInfo2(): { id: number, nom: string, prenom: string, email: string, filiere : string, classe: string } | null {
   const id = localStorage.getItem('user_id');
   const nom = localStorage.getItem('user_name');
   const prenom = localStorage.getItem('user_prenom');
+  const email = localStorage.getItem('user_email');
+  const filiere = localStorage.getItem('user_filiere');
+  const classe = localStorage.getItem('user_classe')
   
-  if (id && nom && prenom) {
+  if (id && nom && prenom && email && filiere && classe ) {
     return {
       id: parseInt(id),
       nom,
-      prenom
+      prenom,
+      email,
+      filiere,
+      classe
     };
   }
   return null;
@@ -193,6 +233,12 @@ getUserInfo2(): { id: number, nom: string, prenom: string } | null {
   logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
+    localStorage.removeItem('user_id');
+    localStorage.removeItem('user_nom');
+    localStorage.removeItem('user_prenom');
+    localStorage.removeItem('user_email');
+    localStorage.removeItem('user_filiere');
+    localStorage.removeItem('user_matiere')
   }
   
 }

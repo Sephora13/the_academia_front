@@ -25,6 +25,7 @@ import { ProfessorComponent } from './professor/professor.component';
 import { EtudiantComponent } from './etudiant/etudiant.component';
 import { CoordinateursComponent } from './coordinateurs/coordinateurs.component';
 import { SignProfComponent } from './sign-prof/sign-prof.component';
+import { CreateProfComponent } from './create-prof/create-prof.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -53,6 +54,7 @@ export const routes: Routes = [
   {path:'students', component:EtudiantComponent},
   {path: 'signProf', component: SignProfComponent},
   {path:'coordinator', component:CoordinateursComponent},
+  {path:'create-prof', component:CreateProfComponent},
   //{ path: '**', redirectTo: 'signIn', pathMatch: 'full' },
   {
     path: 'professeur',

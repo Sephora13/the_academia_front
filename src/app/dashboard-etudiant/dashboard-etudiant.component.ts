@@ -17,7 +17,7 @@ import { Router } from '@angular/router';
   styleUrl: './dashboard-etudiant.component.css'
 })
 export class DashboardEtudiantComponents implements AfterViewInit, OnInit {
-  user: { id: number, nom: string, prenom: string } | null = null;
+  user: { id: number, nom: string, prenom: string, email:string, classe: string, filiere: string } | null = null;
   isSidebarOpen = true; // Détection si sidebar ouverte
 
   studentName = 'Stormi Jackson';
@@ -37,7 +37,7 @@ export class DashboardEtudiantComponents implements AfterViewInit, OnInit {
     { name: 'Examen d\'Anglais', date: '22 Mai 2025' }
   ];
 
-  constructor( @Inject(Router)
+  constructor(
     private auth : AuthentificationService,
     private router : Router
   ){}

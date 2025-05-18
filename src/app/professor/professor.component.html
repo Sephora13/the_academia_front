@@ -1,29 +1,41 @@
  <app-sidebar-admin></app-sidebar-admin>
- <!-- Main Content -->
- <main id="main">
-          <!-- Main Content -->
-          <div class="flex-1 p-6">   
-            <!-- Professors Section -->
-            <div *ngIf="currentSection === 'professors'" class="mt-6">
-              <h2 class="text-xl font-semibold mb-4">Liste des Professeurs</h2>
-              <table class="min-w-full bg-white">
-                <thead class="bg-gray-200">
-                  <tr>
-                    <th class="p-2">Nom</th>
-                    <th class="p-2">Matière</th>
-                    <th class="p-2">Classe</th>
-                  </tr>
-                </thead>
-                <tbody class="bg-gray-400">
-                  <tr *ngFor="let professor of professors">
-                    <td  class="p-2 text-white">{{ professor.name }}</td>
-                    <td class="p-2 text-white">{{ professor.subject }}</td>
-                    <td class="p-2 text-white">{{ professor.class }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>    
-          </div>
- </main>
+ 
+  <main id="main">
+    <!-- Main Content -->
+    <div class="flex-1 p-6 space-y-6">   
+      <!-- Professors Section -->
+      <div *ngIf="currentSection === 'professors'" class="mt-6 space-y-4">
+        <h2 class="text-xl font-semibold">Liste des Professeurs</h2>
+        <div class="overflow-x-auto">
+          <table class="min-w-full bg-white border-collapse">
+            <thead class="bg-gray-200">
+              <tr>
+                <th class="p-3 text-left border">Nom</th>
+                <th class="p-3 text-left border">Matière</th>
+                <th class="p-3 text-left border">Classe</th>
+                <th class="p-3 text-left border">Email</th>
+              </tr>
+            </thead>
+            <tbody class="bg-gray-400 divide-y divide-gray-200">
+              <tr *ngFor="let professor of professors">
+                <td class="p-3 text-white border">{{ professor.name }}</td>
+                <td class="p-3 text-white border">{{ professor.subject }}</td>
+                <td class="p-3 text-white border">{{ professor.class }}</td>
+                <td class="p-3 text-white border">{{ professor.email }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
   
+        <div class="flex justify-end">
+          <button (click)="onCreate()" class="bg-gray-300 hover:bg-gray-400  text-gray-800 font-bold py-2 px-4 rounded flex items-center space-x-2">
+            <svg class="fill-current w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+              <path d="M11 9V4a1 1 0 10-2 0v5H4a1 1 0 100 2h5v5a1 1 0 102 0v-5h5a1 1 0 100-2h-5z"/>
+            </svg>
+            <span>Créer un nouveau professeur</span>
+          </button>
+        </div>
+      </div>    
+    </div>
+  </main>
   
