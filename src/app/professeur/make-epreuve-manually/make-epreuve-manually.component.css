@@ -1,172 +1,197 @@
+/* Styles pour upload-epreuve.component.css */
+/* Utilisant les variables globales de styles.css */
+
 /* ───────── Disposition générale du composant ───────── */
-.page {
+/* Styles de base du .page, adaptés pour une seule colonne */
+.page.upload-page { /* Cible spécifiquement cette page avec la nouvelle classe */
   display: flex;
-  /* Définir une hauteur pour le conteneur principal flex */
-  /* Cela permet aux enfants (formulaire/r\u00E9sultats et chat) de prendre une part de cette hauteur */
-  /* Tu peux ajuster cette hauteur en fonction de ton design global et de ton header */
-   height: calc(100vh - var(--header-height, 0px) - 2rem); /* Réduit le padding vertical dans le calcul de la hauteur */
+  justify-content: center; /* Centre le contenu horizontalement */
+  align-items: flex-start; /* Aligne le contenu en haut */
+  height: calc(100vh - var(--header-height, 0px) - 2rem); /* Hauteur ajustée */
+  padding: 2.5rem 1.5rem 1rem 1.5rem;
+  gap: 1rem;
+  font-family: var(--body-font);
+  overflow-y: auto; /* Permet le défilement de la page entière si le contenu dépasse */
+  overflow-x: hidden; /* Empêche le défilement horizontal */
 
-  padding: 2.5rem 1.5rem 1rem 1.5rem; /* Réduit les padding horizontaux et verticaux du .page */
-  gap: 1rem; /* Réduit le gap entre les colonnes */
-  font-family: var(--body-font); /* Hérité, mais pour être explicite */
-  overflow: hidden; /* Empêche le défilement du conteneur .page lui-m\u00EAme si les enfants dépassent */
-
-  /* **AJUSTEMENT POUR LE DÉCALAGE DE LA BARRE LATÉRALE** */
-  margin-left: 17rem; /* Décalage vers la droite pour laisser de la place à la barre latérale (ajuste 17rem si nécessaire) */
-  width: calc(100% - 17rem - 1.5rem); /* Réduit la largeur pour compenser le décalage ET le padding droit du .page */
-  box-sizing: border-box; /* Inclure padding et border dans la largeur */
+  /* Retire le décalage de la barre latérale car cette page est en plein écran ou gérée différemment */
+  margin-left: 0; /* Retire la marge gauche */
+  margin-top: 0; /* Retire la marge supérieure */
+  width: 100%; /* Prend toute la largeur disponible */
+  box-sizing: border-box;
 }
-
 
 /* Nouveau conteneur pour formulaire et résultats */
-.form-and-result-wrapper {
-  flex: 1 1 auto; /* Permet à cette colonne de prendre l'espace horizontal restant */
+.upload-page .form-and-result-wrapper { /* Cible le wrapper dans cette page */
+  flex: 0 1 600px; /* Permet au wrapper de rétrécir, mais préfère une largeur max de 600px */
+  max-width: 100%; /* S'assure qu'il ne dépasse pas la largeur du parent sur petits écrans */
   display: flex;
-  flex-direction: column; /* **ESSENTIEL : Les enfants (titre fixe et contenu scrollable) s'empilent verticalement** */
-  gap: 0; /* Pas de gap entre le titre fixe et la zone scrollable */
-   /* overflow-y: auto; */ /* RETIRE : Le défilement sera sur .form-content-scrollable */
-   /* **AJOUT : Bordure et rayon pour un aspect uniforme** */
+  flex-direction: column;
+  gap: 0;
   box-shadow: var(--shadow-color);
-  /* padding: 1rem; */ /* RETIRE : Le padding sera sur les enfants directs pour un meilleur contrôle */
-  background-color: var(--body-color); /* S'assure du fond correct */
-  height: 100%; /* **ESSENTIEL : Permet à ce conteneur de prendre toute la hauteur disponible du parent (.page)** */
-  overflow: hidden; /* **ESSENTIEL : Cache le contenu qui dépasse, le défilement est géré par l'enfant** */
-
+  background-color: var(--body-color);
+  height: auto; /* La hauteur s'adapte au contenu */
+  overflow: visible; /* Permet au contenu de dépasser si nécessaire, le défilement est sur .page */
+  border-radius: .5rem; /* Ajout du rayon de bordure ici pour le conteneur principal */
 }
 
-.dark-theme .form-and-result-wrapper {
-   border-color: hsl(228, 8%, 85%); /* Bordure opaque en mode sombre */
+.dark-theme .upload-page .form-and-result-wrapper {
+     border-color: hsl(228, 8%, 85%);
 }
 
-/* ==============  TITRE PRINCIPAL FIXE ============== */
-.form-title-container {
-  padding: 1rem 1.5rem 0.5rem 1.5rem; /* Ajuste le padding pour correspondre au padding horizontal du .page */
-  margin-bottom: 0; /* Retire la marge basse ici */
-  flex-shrink: 0; /* **ESSENTIEL : Empêche cette div de rétrécir** */
-  background-color: var(--body-color); /* **ESSENTIEL : Assure que le fond est correct derrière le titre** */
-  z-index: 1; /* S'assure qu'il est au-dessus du contenu scrollable */
-  /* position: sticky; */ /* Optionnel: si tu veux qu'il reste collé en haut lors du défilement */
-  /* top: 0; */ /* Si position: sticky */
+
+/* ==============  TITRE PRINCIPAL FIXE (ou non fixe sur cette page) ============== */
+.upload-page .form-title-container { /* Cible le titre dans cette page */
+    padding: 1rem 1.5rem 0.5rem 1.5rem;
+    margin-bottom: 0;
+    flex-shrink: 0;
+    background-color: var(--body-color);
+    z-index: 1;
+    border-bottom: 1px solid hsl(228, 8%, 90%); /* Ajout d'une ligne de séparation sous le titre */
+     border-top-left-radius: .5rem; /* Arrondi en haut à gauche */
+     border-top-right-radius: .5rem; /* Arrondi en haut à droite */
 }
 
-.dark-theme .form-title-container {
-  border-bottom-color: hsl(228, 8%, 90%); /* Ligne de s\u00E9paration opaque en mode sombre */
+.dark-theme .upload-page .form-title-container {
+    border-bottom-color: hsl(228, 8%, 90%);
 }
 
-.form-title {
-  margin: 0; /* Retire les marges du titre lui-même */
+.upload-page .form-title { /* Cible le titre dans cette page */
+  margin: 0;
   font-size: 1.35rem;
   font-weight: var(--font-semi-bold);
-  color: var(--first-color); /* Couleur principale de votre th\u00E8me */
+  color: var(--first-color);
 }
 
 
-/* Sur mobile, le titre n'a plus besoin d'être fixe par rapport à son parent */
-.form-title-container {
-  padding: 0 0 1rem 0; /* Ajuste le padding pour le mobile */
-  border-bottom: none; /* Retire la ligne de s\u00E9paration */
-   background-color: transparent; /* Retire le fond */
-   margin-bottom: 0; /* Retire la marge */
-}
-
-/* ==============  CONTENU SCROLLABLE (FORMULAIRE, BOUTON, ÉPREUVE) ============== */
-.form-content-scrollable {
-  overflow-y: auto; /* **ESSENTIEL : Permet le défilement du contenu de cette div** */
-  padding: 0.5rem 1.5rem; /* **AJOUT : Ajoute un padding intérieur au contenu scrollable pour l'espace autour** */
-  flex-grow: 1; /* **ESSENTIEL : Permet à cette div de prendre tout l'espace vertical restant dans son parent (.form-and-result-wrapper)** */
-  display: flex; /* **AJOUT : Utilise flexbox pour organiser les éléments à l'intérieur** */
-  flex-direction: column; /* **AJOUT : Empile les éléments verticalement** */
-  gap: 1rem; /* Ajoute un gap entre les éléments scrollables (sous-titre, form, bouton, épreuve) */
-  /* **AJOUT : S'assure que le fond est correct même si le parent a un background** */
-  background-color: var(--body-color);
+/* ==============  CONTENU SCROLLABLE (FORMULAIRE, BOUTON, LOADER) ============== */
+.upload-page .form-content-scrollable { /* Cible le contenu scrollable dans cette page */
+    overflow-y: visible; /* Le défilement est géré par le .page */
+    padding: 1.5rem; /* Padding intérieur pour l'espace autour des éléments */
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; /* Augmente le gap entre les éléments */
+    background-color: var(--body-color);
 }
 
 
-.form-subtitle {
-margin: 0; /* Retire toutes les marges */
-font-size: var(--smaller-font-size);
-line-height: 1.4;
-max-width: 32rem;
-color: var(--text-color);
- /* padding: 0 1rem; */ /* Retiré car géré par le padding de .form-content-scrollable */
-}
-
-.form-grid {
-display: grid;
-grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-gap: 1rem 1.5rem;
-margin-bottom: 0; /* Retire la marge basse */
- /* **RETIRE : Padding ici car géré par .form-content-scrollable** */
-}
-
-.field {
-display: flex;
-flex-direction: column;
-gap: 0.4rem;
-}
-
-/* Style pour les champs qui doivent prendre toute la largeur dans la grille */
-.field.full-width {
-  grid-column: 1 / -1; /* Prend toute la largeur de la grille */
-}
-
-
-.field label {
-font-size: var(--smaller-font-size);
-color: var(--title-color);
-font-weight: var(--font-semi-bold);
-}
-
-/* Styles pour les inputs (text, number, file) - hauteur plus standard */
-.field input[type="text"],
-.field input[type="number"],
-.field input[type="file"] {
-padding: 0.5rem 0.75rem; /* Padding standard */
-border: 1px solid hsl(228, 8%, 75%);
-border-radius: .375rem;
-font-size: var(--normal-font-size);
-background-color: var(--body-color);
-color: var(--text-color);
-transition: border-color .3s, background-color .4s, color .4s;
- /* **BORDURE EN MODE CLAIR :** Rendre la bordure moins visible */
- border-color: hsla(228, 8%, 75%, 0.5);
- width: 100%; /* S'assure que l'input prend la largeur de son conteneur */
- box-sizing: border-box; /* Inclure padding et border dans la largeur */
- /* Pas de min-height ou de hauteur fixe ici, la hauteur est définie par le padding et la taille de la police */
-}
-
-
-.dark-theme .field input[type="text"],
-.dark-theme .field input[type="number"],
-.dark-theme .field input[type="file"],
-.dark-theme .field textarea { /* Applique le style de bordure sombre aux inputs et textareas */
-     border-color: hsl(228, 8%, 75%);
-}
-
-/* Style pour le placeholder pour qu'il soit visible dans les deux thèmes */
-.field input::placeholder,
-.field textarea::placeholder { /* Applique le style aux placeholders des inputs et textareas */
+.upload-page .form-subtitle { /* Cible le sous-titre dans cette page */
+  margin: 0;
+  font-size: var(--smaller-font-size);
+  line-height: 1.4;
   color: var(--text-color);
-  opacity: 0.6;
+  text-align: center; /* Centre le texte */
+  width: 100%; /* Prend toute la largeur pour le centrage */
 }
 
-/* Amélioration pour le focus sur les inputs et textareas */
-.field input[type="text"]:focus,
-.field input[type="number"]:focus,
-.field textarea:focus { /* Applique le style focus aux inputs et textareas */
-  outline: none;
-  border-color: var(--first-color);
-  box-shadow: 0 0 0 2px hsla(var(--first-color-hsl), 0.2);
+.upload-page .form-grid { /* Cible la grille du formulaire dans cette page */
+  display: flex; /* Utilise flexbox pour un seul élément */
+  flex-direction: column; /* Empile les éléments verticalement */
+  gap: 1rem; /* Gap entre les champs */
+  margin-bottom: 0;
+  align-items: center; /* Centre le champ horizontalement */
+}
+
+.upload-page .field { /* Cible les champs dans cette page */
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 100%; /* Prend toute la largeur disponible dans le flex container */
+  max-width: 400px; /* Limite la largeur du champ pour une meilleure lisibilité */
+  margin: 0 auto; /* Centre le champ s'il est plus petit que le conteneur */
+}
+
+/* Style pour les champs qui doivent prendre toute la largeur (dans ce cas, le seul champ) */
+.upload-page .field.full-width {
+    grid-column: auto; /* Retire la règle de grille */
 }
 
 
-.file-field {
-  grid-column: 1 / -1;
+.upload-page .field label { /* Cible les labels dans cette page */
+  font-size: var(--smaller-font-size);
+  color: var(--title-color);
+  font-weight: var(--font-semi-bold);
+  text-align: center; /* Centre le texte du label */
+  display: block; /* S'assure que le label prend sa propre ligne */
+  margin-bottom: 0.5rem; /* Ajoute un petit espace sous le label */
 }
 
-/* Bouton de génération d'épreuve */
-.generate-btn {
-  margin: 0 auto; /* Retire la marge supérieure et basse fixe, utilise gap du parent */
+
+/* Cacher l'input file natif */
+.hidden-input {
+    display: none;
+}
+
+/* Nouveau conteneur pour le bouton stylisé et le nom du fichier */
+.file-input-display {
+    display: flex; /* Utilise flexbox pour aligner les enfants sur une ligne */
+    align-items: center; /* Centre les enfants verticalement */
+    gap: 1rem; /* Espace entre le bouton et le nom du fichier */
+    justify-content: center; /* Centre le contenu horizontalement */
+    width: 100%; /* Prend toute la largeur disponible */
+    /* AJOUT : Bordure et padding pour le cadre */
+    border: 1px solid hsla(228, 8%, 75%, 0.5); /* Bordure légère */
+    border-radius: .375rem; /* Arrondis comme les inputs */
+    padding: 0.60rem 0.10rem 0.10rem 0.60rem; /* Padding intérieur */
+    box-sizing: border-box; /* Inclure padding et border dans la largeur */
+    background-color: var(--body-color); /* Fond pour correspondre aux inputs */
+    transition: border-color .3s, background-color .4s; /* Transition pour l'esthétique */
+}
+
+.dark-theme .file-input-display {
+    border-color: hsl(228, 8%, 75%); /* Bordure opaque en mode sombre */
+    background-color: var(--body-color); /* Fond correct en mode sombre */
+}
+
+/* Amélioration pour le focus sur le conteneur de fichier */
+.file-input-display:focus-within { /* Cible le conteneur quand un élément à l'intérieur est focus */
+    outline: none; /* Retire l'outline par défaut si un élément est focus */
+    border-color: var(--first-color); /* Change la couleur de la bordure au focus */
+    box-shadow: 0 0 0 2px hsla(var(--first-color-hsl), 0.2); /* Ajoute une ombre au focus */
+}
+
+
+/* Style pour le label qui agit comme un bouton d'upload */
+.custom-file-upload {
+    display: inline-block;
+    padding: 0.6rem 1.5rem;
+    background-color: var(--first-color);
+    color: white;
+    border: none;
+    border-radius: .375rem;
+    font-size: var(--normal-font-size);
+    font-weight: var(--font-semi-bold);
+    cursor: pointer;
+    text-align: center;
+    transition: background-color .3s, filter .3s;
+    box-shadow: var(--shadow-color);
+    /* max-width: 200px; */ /* Retire la largeur max ici pour laisser flexbox gérer */
+    margin: 0; /* Retire la marge auto ici, le centrage est géré par .file-input-display */
+    flex-shrink: 0; /* Empêche le bouton de rétrécir */
+}
+
+.custom-file-upload:hover {
+  background-color: hsl(228, 85%, 55%);
+}
+
+/* Style pour afficher le nom du fichier sélectionné */
+.file-name {
+    display: inline-block; /* Affiche sur la même ligne */
+    margin-top: 0; /* Retire la marge supérieure */
+    font-size: var(--smaller-font-size);
+    color: var(--text-color);
+    text-align: left; /* Aligne le texte à gauche (par défaut dans un flex item) */
+    flex-grow: 1; /* Permet au nom du fichier de prendre l'espace restant */
+    overflow: hidden; /* Cache le texte qui dépasse */
+    text-overflow: ellipsis; /* Ajoute des points de suspension si le texte est trop long */
+    white-space: nowrap; /* Empêche le retour à la ligne */
+}
+
+
+/* Bouton d'enregistrement (anciennement generate-btn) */
+.upload-page .save-upload-btn { /* Cible le bouton d'enregistrement dans cette page */
+  margin: 0 auto; /* Centre le bouton */
   display: block;
   padding: 0.6rem 1.5rem;
   background-color: var(--first-color);
@@ -178,51 +203,51 @@ transition: border-color .3s, background-color .4s, color .4s;
   cursor: pointer;
   text-align: center;
   transition: background-color .3s, filter .3s;
+  box-shadow: var(--shadow-color); /* Ajout de l'ombre */
+   /* Retire la position flottante spécifique à l'autre page */
+   position: static;
+   bottom: auto;
+   left: auto;
+   width: auto; /* La largeur s'adapte au contenu */
 }
 
-.generate-btn:hover {
+.upload-page .save-upload-btn:hover {
   background-color: hsl(228, 85%, 55%);
+}
+
+.upload-page .save-upload-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 
 /* Loader styles */
-.loader-container {
+.upload-page .loader-container { /* Cible le loader dans cette page */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 1.5rem;
-    /* background-color: var(--body-color); */ /* Optionnel */
-    border-radius: .5rem; /* Optionnel */
-    margin: 0; /* Retire la marge supérieure, utilise gap du parent */
+    border-radius: .5rem;
+    margin: 0 auto; /* Centre le loader */
     color: var(--secondary-text-color);
     text-align: center;
+     /* Retire le fond et la bordure pour supprimer le cadre */
+     background-color: transparent; /* Fond transparent */
+     border: none; /* Pas de bordure */
+     width: fit-content; /* La largeur s'adapte au contenu */
 }
 
-.loader {
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid var(--first-color);
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
-  margin-bottom: 1rem;
+.dark-theme .upload-page .loader-container {
+    background-color: transparent; /* Fond transparent en mode sombre */
+    border-color: transparent; /* Pas de bordure en mode sombre */
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
 
-.loader-container p {
-    font-size: var(--normal-font-size);
-    color: var(--text-color);
-}
-
+/* Styles du spinner (conservés) */
 .spinner {
   width: 40px;
   height: 40px;
-
   position: relative;
   margin: 5px auto;
 }
@@ -236,7 +261,7 @@ transition: border-color .3s, background-color .4s, color .4s;
   position: absolute;
   top: 0;
   left: 0;
-  
+
   -webkit-animation: sk-bounce 2.0s infinite ease-in-out;
   animation: sk-bounce 2.0s infinite ease-in-out;
 }
@@ -252,47 +277,145 @@ transition: border-color .3s, background-color .4s, color .4s;
 }
 
 @keyframes sk-bounce {
-  0%, 100% { 
+  0%, 100% {
     transform: scale(0.0);
     -webkit-transform: scale(0.0);
-  } 50% { 
+  } 50% {
     transform: scale(1.0);
     -webkit-transform: scale(1.0);
   }
 }
 
+/* Styles pour les messages de statut (succès/erreur) */
+.status-message {
+    padding: 1rem;
+    border-radius: .375rem;
+    font-size: var(--normal-font-size);
+    text-align: center;
+    margin-top: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.status-message.success {
+    background-color: hsla(140, 80%, 40%, 0.2); /* Vert semi-transparent */
+    color: hsl(140, 80%, 30%); /* Vert plus foncé */
+    border: 1px solid hsla(140, 80%, 30%, 0.5);
+}
+
+.status-message.error {
+    background-color: hsla(0, 80%, 60%, 0.2); /* Rouge semi-transparent */
+    color: hsl(0, 80%, 50%); /* Rouge plus foncé */
+    border: 1px solid hsla(0, 80%, 50%, 0.5);
+}
+
+
+/* ─ Responsive (styles pour petits écrans) ─ */
+@media (max-width: 900px) {
+  .page.upload-page { /* Cible spécifiquement cette page en mobile */
+    flex-direction: column; /* Reviens à une colonne sur mobile */
+    padding: 1.5rem;
+    height: auto; /* Hauteur automatique */
+    overflow-y: visible; /* Défilement global */
+    margin-left: 0;
+    width: auto;
+    align-items: center; /* Centre le contenu principal */
+  }
+  .upload-page .form-and-result-wrapper { /* Cible le wrapper en mobile */
+    flex-basis: auto;
+    height: auto;
+    overflow: visible;
+    position: static;
+    width: 100%; /* Prend toute la largeur disponible */
+  }
+
+    /* Sur mobile, le titre n'a plus besoin d'être fixe par rapport à son parent */
+    .upload-page .form-title-container {
+        padding: 1rem 1.5rem 0.5rem 1.5rem; /* Conserve le padding */
+        border-bottom: 1px solid hsl(228, 8%, 90%); /* Conserve la ligne */
+         background-color: var(--body-color); /* Conserve le fond */
+         margin-bottom: 0;
+         border-radius: .5rem .5rem 0 0; /* Arrondis en haut */
+    }
+
+     /* Sur mobile, le contenu scrollable n'a plus besoin d'être scrollable ou de prendre tout l'espace restant */
+     .upload-page .form-content-scrollable {
+         overflow-y: visible;
+         padding: 1.5rem; /* Conserve le padding */
+         flex-grow: 0;
+         display: flex; /* Conserve flex pour le gap */
+         flex-direction: column;
+         gap: 1.5rem;
+         background-color: var(--body-color);
+         border-bottom-left-radius: .5rem; /* Arrondis en bas */
+         border-bottom-right-radius: .5rem;
+     }
+
+    .upload-page .form-grid {
+        flex-direction: column; /* Toujours en colonne sur mobile */
+    }
+
+     .upload-page .field {
+        max-width: 100%; /* Permet au champ de prendre toute la largeur sur mobile */
+     }
+
+    .upload-page .save-upload-btn {
+        width: 100%; /* Bouton prend toute la largeur sur mobile */
+        max-width: 400px; /* Limite la largeur max même sur mobile si souhaité */
+        margin: 0 auto; /* Centre le bouton */
+    }
+
+     .upload-page .loader-container {
+         width: 100%; /* Loader prend toute la largeur sur mobile */
+         max-width: 400px; /* Limite la largeur max même sur mobile si souhaité */
+         margin: 1.5rem auto 0 auto; /* Centre et ajoute une marge supérieure */
+     }
+
+      .status-message {
+          width: 100%;
+          max-width: 400px;
+          margin: 1rem auto 0 auto; /* Centre et ajoute une marge supérieure */
+      }
+}
+
 @media (max-width: 600px) {
-  .page {
+  .page.upload-page {
     padding: 1rem;
   }
-  .form-wrapper {
-    padding: 1.5rem;
+  .upload-page .form-title-container {
+      padding: 1rem;
   }
-  .form-title {
+  .upload-page .form-title {
     font-size: 1.2rem;
   }
-  .form-grid {
-      gap: 1rem 1.5rem;
+  .upload-page .form-content-scrollable {
+      padding: 1rem;
+      gap: 1rem;
   }
-  .field input[type="text"],
-  .field input[type="number"],
-  .field input[type="file"],
-  .chat-input-box input[type="text"] {
+  .upload-page .form-grid {
+      gap: 1rem;
+  }
+  .upload-page .field input[type="text"],
+  .upload-page .field input[type="number"],
+  .upload-page .field input[type="file"],
+   .upload-page .field textarea {
     padding: 0.5rem 0.6rem;
     font-size: var(--smaller-font-size);
   }
-  .generate-btn, .save-btn-floating {
-    width: 100%;
-    margin-left: 0;
-    margin-right: 0;
+  .upload-page .custom-file-upload {
+      padding: 0.5rem 1rem;
+      font-size: var(--smaller-font-size);
   }
-   .chat-wrapper {
+  .upload-page .save-upload-btn {
+    padding: 0.5rem 1rem;
+    font-size: var(--smaller-font-size);
+  }
+   .upload-page .loader-container {
        padding: 1rem;
+       margin-top: 1rem;
    }
-    .generated-epreuve {
-       padding: 1.5rem;
-   }
-     .chat-input-container input[type="text"] {
-         padding: 0.5rem 2.5rem 0.5rem 0.6rem;
-     }
+    .status-message {
+        padding: 0.8rem;
+        font-size: var(--smaller-font-size);
+    }
 }

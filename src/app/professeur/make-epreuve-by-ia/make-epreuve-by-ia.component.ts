@@ -9,7 +9,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http'; // Importe 
 // import { ParsingService, ParsedEpreuve, ParsedGrilleCorrection } from '../../services/professeur/parsing.service'; // Ajuste le chemin si n\u00E9cessaire
 // Importe le service API si tu l'as cr\u00E9\u00E9
 import { MakeEpreuveByIaService } from '../../services/professeur/make-epreuve-by-ia.service'; // Importe le service API
-
+import { AuthentificationService } from '../../services/authentification.service';
 
 // Définir une interface pour les messages du chat pour une meilleure structuration
 interface ChatMessage {
@@ -69,6 +69,8 @@ interface ParsedReponse {
 export class MakeEpreuveByIaComponent implements AfterViewInit { // Implémente AfterViewInit
   @ViewChild('chatBody') private chatBodyRef?: ElementRef; // Référence à l'élément chat-body
 
+  user: { id: number, nom: string, prenom: string } | null = null;
+
   isLoading = false; // Pour afficher le loader
   showResult = false; // Pour afficher/cacher les résultats générés
 
@@ -114,10 +116,20 @@ export class MakeEpreuveByIaComponent implements AfterViewInit { // Implémente 
   constructor(
     private router: Router,
     private http: HttpClient, // Utilis\u00E9 pour les appels API directs (ou supprime si tu utilises le service)
-    // private parsingService: ParsingService // **INJECTION DU SERVICE DE PARSING** (Si tu as d\u00E9plac\u00E9 le parsing)
+    private auth: AuthentificationService,
     private makeEpreuveByIaService: MakeEpreuveByIaService // Injecte le service API
   ) {}
 
+  ngOnInit(): void {
+    // R\u00E9cup\u00E9rez les informations de l'utilisateur connect\u00E9
+    this.user = this.auth.getUserInfo();
+    if (this.user && this.user.id) {
+      // Si l'ID du professeur est disponible, appelez la m\u00E9thode pour charger les \u00E9preuves
+      this.professeurId = this.user.id
+    } 
+  }
+
+  
   ngAfterViewInit(): void {
      this.scrollToBottom(); // Fait défiler vers le bas une fois au début
   }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams} from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AppConfig } from '../../config/config'; // Assuming AppConfig is used for apiUrl
 
@@ -101,5 +101,18 @@ export class MakeEpreuveByIaService {
      return this.http.post<any>(`${this.apiUrl}/enregistrer_epreuve/`, saveData);
   }
 
-  // Vous pouvez ajouter d'autres méthodes ici pour d'autres appels API liés aux épreuves
+  /**
+   * Appelle l'API pour récupérer la liste des épreuves d'un professeur.
+   * Utilise un paramètre de requête pour filtrer par ID professeur.
+   * @param idProfesseur L'ID du professeur dont on veut récupérer les épreuves.
+   * @returns Un Observable contenant la liste des épreuves.
+   */
+  getEpreuvesByProfesseurId(idProfesseur: number): Observable<any> {
+    // Construit l'URL en incluant l'ID du professeur comme paramètre de chemin
+    // L'URL correcte doit être /epreuves/professeur/{id_professeur}
+    const url = `${this.apiUrl}/epreuves/professeur/${idProfesseur}`;
+
+    console.log("Appel API pour getEpreuvesByProfesseurId:", url);
+    return this.http.get<any>(url);
+  }
 }
