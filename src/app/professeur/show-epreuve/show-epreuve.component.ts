@@ -99,7 +99,7 @@ export class ShowEpreuveComponent implements OnInit {
               second: '2-digit',
           }),
             id_professeur: epreuveItem.id_professeur,
-            icon: 'https://cdn-icons-png.flaticon.com/128/1945/1945985.png' // Ajoutez l'URL statique de l'ic\u00F4ne ici
+            icon: 'https://cdn-icons-png.flaticon.com/128/1945/1945985.png'
           }));
           console.log('\u00C9preuves charg\u00E9es avec succ\u00E8s (avec ic\u00F4ne statique) :', this.epreuves);
         } else {

@@ -387,3 +387,40 @@ body.dark-theme {
     padding-left: 114px;
   }
 }
+
+/* Quand dark-theme est sur <html> (document root) */
+html.dark-theme {
+  --first-color: hsl(228, 70%, 63%);
+  --title-color: hsl(228, 18%, 96%);
+  --text-color: hsl(228, 12%, 61%);
+  --body-color: hsl(228, 24%, 16%);
+  --shadow-color: hsla(228, 80%, 4%, .3);
+  
+  background-color: var(--body-color);
+  color: var(--text-color);
+}
+
+/* Pour appliquer le background sur body aussi (au cas où) */
+html.dark-theme body {
+  background-color: var(--body-color);
+  color: var(--text-color);
+}
+
+/* Pour s’assurer que sidebar, header, main s’adaptent */
+html.dark-theme .sidebar,
+html.dark-theme .header__container,
+html.dark-theme main,
+html.dark-theme .main {
+  background-color: var(--body-color);
+  color: var(--text-color);
+  box-shadow: 0 2px 24px var(--shadow-color);
+}
+
+/* Scrollbar dans le sidebar */
+html.dark-theme .sidebar__content::-webkit-scrollbar {
+  background-color: hsl(228, 16%, 30%);
+}
+
+html.dark-theme .sidebar__content::-webkit-scrollbar-thumb {
+  background-color: hsl(228, 16%, 40%);
+}

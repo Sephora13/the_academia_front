@@ -39,7 +39,7 @@ export const routes: Routes = [
   { path: 'header', component: HeaderComponent },
   { path: 'sidebar', component: SidebarComponent },
   { path: 'composition', component: CompositionComponent },
-  { path: 'new_composition', component: NewCompositionComponent },
+  { path: 'new_composition/:id', component: NewCompositionComponent },
   { path: 'composition_admin', component: CompositionAdminComponent },
   { path: 'create_composition', component: CreateCompositionComponent },
   {path: 'not-authorized', component: UnauthorizedPageComponent},
