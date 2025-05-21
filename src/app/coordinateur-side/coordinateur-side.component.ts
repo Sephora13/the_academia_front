@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthentificationService } from '../services/authentification.service';
 
 @Component({
   selector: 'app-coordinateur-side',
@@ -9,8 +10,10 @@ import { Router } from '@angular/router';
 })
 export class CoordinateurSideComponent {
   constructor(
-    private router : Router
+    private router : Router,
+    private auth: AuthentificationService
   ){}
+
   ngAfterViewInit(): void {
     // Sidebar toggle (si jamais tu veux ajouter un bouton toggle plus tard)
     const toggle = document.getElementById('header-toggle');
@@ -67,5 +70,10 @@ export class CoordinateurSideComponent {
   
   dashboard(){
     this.router.navigate(['/exam_service'])
+  }
+
+  logout() {
+    this.auth.logout();
+    this.router.navigate(['/register_coord']);
   }
 }

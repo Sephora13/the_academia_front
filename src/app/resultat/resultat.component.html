@@ -1,32 +1,56 @@
-<app-sidebar></app-sidebar>
+<app-dashboard-exam-service></app-dashboard-exam-service>
 
-<section class="min-h-screen bg-gradient-to-r from-black via-gray-900 to-black text-white px-8 py-12">
-    <div class="max-w-4xl mx-auto">
-      <h1 class="text-4xl font-extrabold mb-8">📊 Résultats des Épreuves</h1>
 
-      <div class="overflow-x-auto">
-        <table class="min-w-full bg-white text-gray-900 rounded-lg overflow-hidden shadow-lg">
-          <thead class="bg-blue-800 text-white">
-            <tr>
-              <th class="p-4 text-left">Nom de l'Étudiant</th>
-              <th class="p-4 text-left">Matière</th>
-              <th class="p-4 text-left">Note</th>
-              <th class="p-4 text-left">Statut</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let result of results" class="odd:bg-white even:bg-gray-100 hover:bg-blue-50">
-              <td class="p-4">{{ result.name }}</td>
-              <td class="p-4">{{ result.subject }}</td>
-              <td class="p-4">{{ result.grade }}</td>
-              <td class="p-4">
-                <span [ngClass]="result.grade >= 50 ? 'text-green-600' : 'text-red-600'">
-                  {{ result.grade >= 50 ? 'Admis' : 'Échoué' }}
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+<div class="p-6" id="compose">
+  <h1 class="text-3xl font-bold mb-8 text-gray-500">
+    Résultats des compositions
+  </h1>
+
+  <!-- Bouton créer -->
+  <div class="flex justify-end mb-6">
+    <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center" (click)="ouvrirCreationComposition()">
+      <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+        <path d="M11 9V4a1 1 0 10-2 0v5H4a1 1 0 100 2h5v5a1 1 0 102 0v-5h5a1 1 0 100-2h-5z"/>
+      </svg>
+      <span>Créer une nouvelle composition</span>
+    </button>
+    
+  </div>
+
+  <!-- Compositions Programmées -->
+  <div class="mb-10">
+    <h2 class="text-2xl font-semibold text-gray-700 dark:text-gray-500 mb-4">Non publié</h2>
+    <div *ngIf="programmedCompositions.length > 0" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div *ngFor="let compo of programmedCompositions" class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+        <h3 class="text-lg font-semibold mb-2 dark:text-white">{{ compo.titre }}</h3>
+        <p class="text-gray-600 dark:text-gray-400 mb-4">Reçu le : {{ compo.date }}</p>
+        <button
+          class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded"
+          (click)="annulerComposition(compo.id)">
+          Publier
+        </button>
       </div>
     </div>
-  </section>
+    <p *ngIf="programmedCompositions.length === 0" class="text-gray-500 dark:text-gray-400">Aucune composition programmée.</p>
+  </div>
+
+
+  <!-- Compositions terminées -->
+  <div class="mb-10">
+    <h2 class="text-2xl font-semibold text-gray-700 dark:text-gray-500 mb-4">Publié</h2>
+    <div *ngIf="completedCompositions.length > 0" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div *ngFor="let compo of completedCompositions" class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+        <h3 class="text-lg font-semibold mb-2 dark:text-white">{{ compo.titre }}</h3>
+        <p class="text-gray-600 dark:text-gray-400">Publier le  : {{ compo.dateFin }}</p>
+        <button
+          class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded mt-4"
+          (click)="supprimerComposition(compo.id)">
+          Supprimer
+        </button>
+      </div>
+    </div>
+    <p *ngIf="completedCompositions.length === 0" class="text-gray-500 dark:text-gray-400">Pas de composition terminée.</p>
+  </div>
+</div>
+
+  

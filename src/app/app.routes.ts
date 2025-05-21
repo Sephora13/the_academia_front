@@ -25,6 +25,14 @@ import { ProfessorComponent } from './professor/professor.component';
 import { EtudiantComponent } from './etudiant/etudiant.component';
 import { CoordinateursComponent } from './coordinateurs/coordinateurs.component';
 import { SignProfComponent } from './sign-prof/sign-prof.component';
+import { CreateProfComponent } from './create-prof/create-prof.component';
+import { CoordinateurSideComponent } from './coordinateur-side/coordinateur-side.component';
+import { CoordDashboardComponent } from './coord-dashboard/coord-dashboard.component';
+import { ShowExamServiceComponent } from './show-exam-service/show-exam-service.component';
+import { ShowSignCoordinatorComponent } from './show-sign-coordinator/show-sign-coordinator.component';
+import { SignCoordComponent } from './sign-coord/sign-coord.component';
+import { SignExamserviceComponent } from './sign-examservice/sign-examservice.component';
+import { ResultatsEtudiantComponent } from './resultats-etudiant/resultats-etudiant.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -46,13 +54,20 @@ export const routes: Routes = [
   {path: 'resultats', component: ResultatComponent},
   {path : 'decouvrir', component: DecouvrirComponent},
   {path: 'notification_etudiant', component: NotificationEtudiantComponent},
-  {path: 'exam_service', component:ExamServiceComponent},
+  {path: 'exam_service', component:ExamServiceComponent,canActivate: [AuthGuard], data: { roles: ['exam_service']}},
   {path:'activate_account',component:ActiveAccountComponent},
   {path:'sign_them', component:SignThemComponent},
   {path:'professor', component:ProfessorComponent},
   {path:'students', component:EtudiantComponent},
   {path: 'signProf', component: SignProfComponent},
   {path:'coordinator', component:CoordinateursComponent},
+  {path:'coordinator_side', component:CoordDashboardComponent, canActivate: [AuthGuard], data: { roles: ['coordinateur']}},
+  {path:'create-prof', component:CreateProfComponent},
+  {path:'show_examService', component:ShowExamServiceComponent},
+  {path:'sign_coord', component:ShowSignCoordinatorComponent},
+  {path:'register_coord', component:SignCoordComponent},
+  {path:'register_examinator', component:SignExamserviceComponent},
+  {path:'resultat_etudiant',component:ResultatsEtudiantComponent},
   //{ path: '**', redirectTo: 'signIn', pathMatch: 'full' },
   {
     path: 'professeur',

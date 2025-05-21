@@ -1,3 +1,15 @@
+/* Transition douce pour les cards */
+div[ng-reflect-ng-if="true"] {
+    transition: all 0.3s ease-in-out;
+  }
+  
+
+
+#main2{
+    margin-top: 1rem;
+    margin-left: 21rem;
+}
+
 #main{
     margin-top: 1rem;
     margin-left: 21rem;
