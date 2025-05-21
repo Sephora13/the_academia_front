@@ -1,117 +1,99 @@
-<body class="">
-      <div class="max-w-[1780px] mx-auto border border-gray-300 rounded-md select-none bg-white font-sans text-gray-900">
-        <!-- Header -->
-        <header class="flex items-center justify-between px-4 py-2 border-b border-gray-300">
-          <div class="flex items-center space-x-2">
-            <img alt="Datacamp logo black square with DK letters" class="w-6 h-6" height="24" src="assets/img/academia.png" width="24"/>
-            <span class="font-semibold text-lg">
-              Academia
-            </span>
-          </div>
-          <div class="flex items-center space-x-4 text-gray-900 text-sm font-semibold">
-            <button aria-label="Daily XP" class="flex items-center space-x-1" title="Daily XP">
-              <i class="fas fa-trophy"></i>
-              <span>Time</span>
-              <span class="text-red-600">{{countdown}}</span>
-            </button>
-            <div class="w-3 h-3 rounded-full bg-green-500" title="Online status indicator"></div>
-            <button aria-label="Info" title="Info">
-              <i class="far fa-circle-question"></i>
-            </button>
-          </div>
-        </header>
-    
-        <!-- En-tête supplémentaire avec les informations -->
-        <div class="flex justify-between items-center py-4 px-6 bg-gray-100 border-b border-gray-300 text-sm font-semibold">
-          <!-- Gauche -->
-          <div class="text-left space-y-1">
-            <p class="text-gray-700">UATM GASA-FORMATION</p>
-            <p class="text-gray-700">GE3/SIL</p>
-          </div>
-    
-          <!-- Centre -->
-          <div class="text-center">
-            <h2 class="text-2xl font-bold text-blue-700">Épreuve de JavaScript</h2>
-          </div>
-    
-          <!-- Droite -->
-          <div class="text-right space-y-1">
-            <p class="text-gray-700">Calavi/Porto-Novo</p>
-            <p class="text-gray-700">Date : 7 Mai 2025</p>
+<body class="bg-gray-100 font-sans text-gray-900">
+  <div class="max-w-7xl mx-auto border border-gray-300 rounded-md bg-white">
+
+    <!-- Header -->
+    <header class="flex items-center justify-between px-4 py-2 border-b border-gray-300 bg-blue-700 text-white">
+      <div class="flex items-center space-x-2">
+        <img alt="Academia Logo" class="w-8 h-8" src="assets/img/academia.png" />
+        <span class="font-semibold text-xl">Academia</span>
+      </div>
+      <div class="flex items-center space-x-4">
+        <button class="flex items-center space-x-1">
+          <i class="fas fa-trophy"></i>
+          <span>Durée :</span>
+          <span class="text-red-300">{{ examInfo.duree }}</span>
+        </button>
+        <div class="w-3 h-3 rounded-full bg-green-500" title="Online status indicator"></div>
+      </div>
+    </header>
+
+    <!-- Informations supplémentaires -->
+    <div class="flex justify-between items-center py-4 px-6 bg-gray-100 border-b border-gray-300 text-sm font-semibold">
+      <div class="text-left">
+        <p class="text-gray-700">{{ examInfo.niveau }}</p>
+      </div>
+      <div class="text-center">
+        <h2 class="text-2xl font-bold text-blue-700">{{ examInfo.titre }}</h2>
+      </div>
+      <div class="text-right">
+        <p class="text-gray-700">Date : {{ examInfo.created_at | date:'dd MMMM yyyy' }}</p>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="p-6 space-y-8 h-screen overflow-y-auto">
+
+      <!-- Partie 1 : QCM -->
+      <section class="mb-8">
+        <h3 class="text-xl font-semibold mb-2 text-blue-700">Partie 1 : Questions à Choix Multiple (QCM)</h3>
+        <div class="space-y-4">
+          <div *ngFor="let question of partie1">
+            <h4 class="font-semibold">{{ question.contenu }}</h4>
+            <div class="space-y-2">
+              <label *ngFor="let option of question.option" class="flex items-center space-x-2">
+                <input
+                  type="radio"
+                  name="{{ question.id_question }}"
+                  [value]="option"
+                  (change)="selectOption(question.id_question.toString(), option)"
+                  [checked]="selectedOptions[question.id_question] === option"
+                />
+                <span>{{ option }}</span>
+              </label>
+            </div>
           </div>
         </div>
-    
-        <main class="flex flex-col md:flex-row h-[calc(100vh-48px)]">
-          <!-- Left panel -->
-          <section class="p-6 w-full mx-auto bg-white shadow-xl rounded-lg h-screen overflow-y-auto">
-            <article class="p-6 space-y-6 text-[13px] leading-relaxed text-gray-900">
-              <div class="p-4 max-w-6xl mx-auto">
-                <!-- PARTIE 1 -->
-                <section class="mb-8">
-                  <h3 class="text-xl font-semibold mb-2 text-blue-700">Partie 1 : Questions à Choix Multiple (QCM)</h3>
-                  <div class="space-y-4">
-                    <div *ngFor="let question of partie1">
-                      <h4 class="font-semibold">{{ question.question }}</h4>
-                      <div *ngIf="question.type === 'qcm'">
-                        <div class="space-y-2">
-                          <label *ngFor="let option of question.options" class="flex items-center space-x-2">
-                            <input type="radio" name="{{ question.question }}" value="{{ option }}" 
-                                   (change)="selectOption(question.question, option)">
-                            <span>{{ option }}</span>
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </section>
-                
-                <!-- PARTIE 2 : Code -->
-                <section class="mb-8">
-                  <h3 class="text-xl font-semibold mb-2 text-blue-700">Partie 2 : Écriture de Code</h3>
-                  <div class="space-y-4">
-                    <div *ngFor="let question of partie2; let i = index">
-                      <h4 class="font-semibold">{{ question.question }}</h4>
-                      <div *ngIf="question.type === 'code'">
-                        <div class="border rounded-lg overflow-hidden">
-                          <div ace-editor class="h-40 app-ace-editor" #editor style="width: 100%; height: 250px;"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </section>
-                
-                <!-- PARTIE 3 : Réponses Courtes -->
-                <section class="mb-8">
-                  <h3 class="text-xl font-semibold mb-2 text-blue-700">Partie 3 : Questions à Réponse Courte</h3>
-                  <div class="space-y-4">
-                    <div *ngFor="let question of partie3; let i = index">
-                        <h4 class="font-semibold">{{ question.question }}</h4>
-                        <textarea 
-                            class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            rows="4" 
-                            placeholder="Votre réponse..."
-                            (input)="saveShortAnswer(i, $event)"
-                            (copy)="$event.preventDefault()"
-                            (paste)="$event.preventDefault()"
-                            (cut)="$event.preventDefault()"
-                          >
-                          </textarea>            
-                    </div>
-                  </div>
-                </section>
-                
-                <!-- BOUTON SOUMETTRE -->
-                <div class="flex justify-end mt-4">
-                  <button class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-200 shadow-lg" 
-                          (click)="submitExam()">
-                    Soumettre
-                  </button>
-                </div>
+      </section>
 
-              </div>
-            </article>
-          </section>
-        </main>
+      <!-- Partie 2 : Écriture de Code -->
+      <section class="mb-8">
+        <h3 class="text-xl font-semibold mb-2 text-blue-700">Partie 2 : Écriture de Code</h3>
+        <div class="space-y-4">
+          <div *ngFor="let question of partie2; let i = index">
+            <h4 class="font-semibold">{{ question.contenu }}</h4>
+            <div class="border rounded-lg overflow-hidden">
+              <div ace-editor class="h-40 app-ace-editor" #editor style="width: 100%; height: 250px;"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Partie 3 : Réponses Courtes -->
+      <section class="mb-8">
+        <h3 class="text-xl font-semibold mb-2 text-blue-700">Partie 3 : Questions à Réponse Courte</h3>
+        <div class="space-y-4">
+          <div *ngFor="let question of partie3; let i = index">
+            <h4 class="font-semibold">{{ question.contenu }}</h4>
+            <textarea
+              class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              rows="4"
+              placeholder="Votre réponse..."
+              (input)="saveShortAnswer(i, $event)"
+            ></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bouton Soumettre -->
+      <div class="flex justify-end mt-4">
+        <button
+          class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-200 shadow-lg"
+          (click)="submitExam()"
+        >
+          Soumettre
+        </button>
       </div>
-    </body>
-    
+
+    </main>
+  </div>
+</body>

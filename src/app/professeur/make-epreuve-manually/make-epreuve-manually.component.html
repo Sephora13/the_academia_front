@@ -1,33 +1,66 @@
-<div class="page">
-
+<div class="page upload-page">
   <section class="form-and-result-wrapper">
+
+    <!-- Titre de la section -->
     <div class="form-title-container">
-      <h1 class="form-title">📘 Créer une épreuve avec l’IA</h1>
+      <h1 class="form-title">📥 Importer une épreuve existante</h1>
     </div>
 
+    <!-- Contenu du formulaire -->
     <div class="form-content-scrollable">
-        <p class="form-subtitle">
-          Uploader votre fichier pdf qui contient déj.
-        </p>
+      <p class="form-subtitle">
+        Uploader votre fichier PDF contenant l'épreuve et la grille de correction que vous souhaitez importer.
+      </p>
 
-        <form class="form-grid">
-          <div class="field file-field full-width">
-            <label for="cours">📎 Document contenant l'épreuve et la grille(PDF)</label>
-            <input id="cours" type="file" accept=".pdf" />
+      <form class="form-grid">
+
+        <!-- Champ de fichier -->
+        <div class="field file-field full-width">
+          <label for="epreuveFile">
+            📎 Document contenant l'épreuve et la grille (PDF)
+          </label>
+
+          <div class="file-input-display">
+            <input 
+              id="epreuveFile" 
+              type="file" 
+              accept=".pdf" 
+              class="hidden-input" 
+              (change)="handleFileInput($event)" 
+            />
+
+            <label for="epreuveFile" class="custom-file-upload">
+              Choisir un fichier
+            </label>
+
+            <span class="file-name">{{ fileNameDisplay }}</span>
           </div>
-        </form>
-
-        <button class="generate-btn" [disabled]="">
-          🚀 Générer l’épreuve
-        </button>
-
-        <div class="loader-container">
-          <div  class="spinner">
-            <div class="double-bounce1"></div>
-            <div class="double-bounce2"></div>
-          </div>
-          <p>⏳ Enregistrement en cours... Patientez un moment.</p>
         </div>
+
+      </form>
+
+      <!-- Loader pendant l'analyse -->
+      <div class="loader-container" *ngIf="loading">
+        <div class="spinner">
+          <div class="double-bounce1"></div>
+          <div class="double-bounce2"></div>
+        </div>
+      </div>
+
+      <!-- Message d'information -->
+      <div *ngIf="!loading " class="message-container">
+        <p>⏳ {{ message }}</p>
+      </div>
+
+      <!-- Bouton d'enregistrement -->
+      <button 
+        class="generate-btn save-upload-btn" 
+        [disabled]="!isSaveButtonEnabled || loading" 
+        (click)="isSaveButtonEnabled && saveAnalyzedEpreuve()">
+        💾 Enregistrer l’épreuve et la grille
+      </button>
+
     </div>
+
   </section>
 </div>

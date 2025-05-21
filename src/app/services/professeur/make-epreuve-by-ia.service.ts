@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders} from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AppConfig } from '../../config/config'; // Assuming AppConfig is used for apiUrl
 
@@ -8,6 +8,12 @@ interface ModificationRequestBody {
   epreuve_initiale: string;
   nouveau_prompt: string;
   contenu_pdf: string; // Supposons que le backend attend le contenu en string (ex: base64)
+}
+
+// Interface pour le corps de la requête d'enregistrement manuel
+interface SaveManuallyRequestBody {
+  texte_epreuve: string;
+  id_professeur: number | null;
 }
 
 
@@ -67,13 +73,12 @@ export class MakeEpreuveByIaService {
         formData.append('pdf_file', formValues.fichier, formValues.fichier.name);
     } else {
         // Gérer le cas où le fichier est manquant si nécessaire (peut-être une validation côté frontend)
-        console.warn("Aucun fichier PDF n'a été sélectionné.");
+        console.warn("Aucun fichier PDF n'a été sélectionné pour la génération.");
     }
 
 
     // 6. Effectuer l'appel HTTP POST vers votre API avec le FormData
-    // Remplacez '/generer_epreuve/' par l'endpoint exact de votre API pour la génération
-    // HttpClient gère automatiquement le type de contenu 'multipart/form-data' avec FormData
+    // L'endpoint de génération est '/generer_epreuve/'
     return this.http.post<any>(`${this.apiUrl}/generer_epreuve/`, formData);
   }
 
@@ -84,22 +89,69 @@ export class MakeEpreuveByIaService {
    */
   modifyEpreuve(modificationData: ModificationRequestBody): Observable<any> {
      console.log('Appel modifyEpreuve avec données:', modificationData); // Log de débogage
-     // L'endpoint de personnalisation attend un objet JSON avec epreuve_initiale, nouveau_prompt, contenu_pdf
-     // Remplacez '/personnaliser_epreuve/' par l'endpoint exact de votre API pour la modification
+     // L'endpoint de personnalisation est '/personnaliser_epreuve/'
      return this.http.post<any>(`${this.apiUrl}/personnaliser_epreuve/`, modificationData);
   }
 
   /**
-   * Appelle l'API de sauvegarde d'épreuve.
+   * Appelle l'API de sauvegarde d'épreuve (endpoint original).
    * @param saveData Un objet contenant la chaîne brute de l'épreuve et l'ID du professeur.
    * @returns Un Observable contenant la réponse de l'API.
    */
   saveEpreuve(saveData: { texte_epreuve: string; id_professeur: number | null }): Observable<any> {
-     console.log('Appel saveEpreuve avec données:', saveData); // Log de débogage
-     // L'endpoint d'enregistrement attend un objet JSON avec texte_epreuve et id_professeur
-     // Remplacez '/enregistrer_epreuve/' par l'endpoint exact de votre API pour la sauvegarde
+     console.log('Appel saveEpreuve (original) avec données:', saveData); // Log de débogage
+     // L'endpoint d'enregistrement original est '/enregistrer_epreuve/'
      return this.http.post<any>(`${this.apiUrl}/enregistrer_epreuve/`, saveData);
   }
 
-  // Vous pouvez ajouter d'autres méthodes ici pour d'autres appels API liés aux épreuves
+  /**
+   * Appelle l'API pour récupérer la liste des épreuves d'un professeur.
+   * Utilise un paramètre de requête pour filtrer par ID professeur.
+   * @param idProfesseur L'ID du professeur dont on veut récupérer les épreuves.
+   * @returns Un Observable contenant la liste des épreuves.
+   */
+  getEpreuvesByProfesseurId(idProfesseur: number): Observable<any> {
+    // Construit l'URL en incluant l'ID du professeur comme paramètre de chemin
+    // L'URL correcte doit être /epreuves/professeur/{id_professeur}
+    const url = `${this.apiUrl}/epreuves/professeur/${idProfesseur}`;
+
+    console.log("Appel API pour getEpreuvesByProfesseurId:", url);
+    return this.http.get<any>(url);
+  }
+
+
+  // --- NOUVELLES FONCTIONS POUR L'ANALYSE ET L'ENREGISTREMENT MANUEL ---
+
+  /**
+   * Appelle l'API pour analyser un PDF contenant l'épreuve et la grille balisée manuellement.
+   * Cet endpoint est '/analyser_epreuve_avec_grille/'.
+   * @param pdfFile Le fichier PDF à analyser.
+   * @returns Un Observable contenant la réponse de l'API avec l'épreuve balisée.
+   */
+  analyzeAndTagEpreuve(pdfFile: File): Observable<any> {
+    console.log('Appel analyzeAndTagEpreuve avec fichier:', pdfFile.name); // Log de débogage
+
+    const formData = new FormData();
+    formData.append('pdf_file', pdfFile, pdfFile.name);
+
+    // L'endpoint d'analyse manuelle est '/analyser_epreuve_avec_grille/'
+    return this.http.post<any>(`${this.apiUrl}/analyser_epreuve_avec_grille/`, formData);
+  }
+
+  /**
+   * Appelle l'API pour enregistrer manuellement une épreuve balisée.
+   * Cet endpoint est utilisé après l'analyse d'un PDF balisé manuellement.
+   * L'endpoint est '/enregistrer_epreuve/manually'.
+   * @param saveData Un objet contenant la chaîne brute de l'épreuve balisée et l'ID du professeur.
+   * @returns Un Observable contenant la réponse de l'API.
+   */
+  saveEpreuveManually(saveData: SaveManuallyRequestBody): Observable<any> {
+     console.log('Appel saveEpreuveManually avec données:', saveData); 
+     const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });// Log de débogage
+     // L'endpoint d'enregistrement manuel est '/enregistrer_epreuve/manually'
+     return this.http.post<any>(`${this.apiUrl}/enregistrer_epreuve/manually`, saveData);
+  }
+
 }
