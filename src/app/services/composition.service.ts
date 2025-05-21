@@ -41,4 +41,28 @@ export class CompositionService {
     return this.httpClient.post<any>(url, {});
   }
 
+    creerReponse(reponse: any): Observable<any> {
+      return this.httpClient.post<any>(`${this.apiUrlMendel}/reponses`, reponse);
+    }
+  
+    lireReponse(id_reponse: number): Observable<any> {
+      return this.httpClient.get<any>(`${this.apiUrlMendel}/${id_reponse}`);
+    }
+  
+    lireToutesLesReponses(): Observable<any> {
+      return this.httpClient.get<any>(this.apiUrlMendel);
+    }
+
+    soumettreCopie(copie: {
+      id_etudiant: number,
+      id_epreuve: number,
+      reponses_qcm: { [id_question: number]: string },
+      reponses_code: string[],
+      reponses_courtes: string[]
+    }): Observable<any> {
+      const url = `${this.apiUrlMendel}/copies/soumettre-copie`;
+      return this.httpClient.post<any>(url, copie);
+    }
+    
+
 }

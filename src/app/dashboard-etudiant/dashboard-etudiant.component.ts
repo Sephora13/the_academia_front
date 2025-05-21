@@ -37,7 +37,7 @@ export class DashboardEtudiantComponents implements AfterViewInit, OnInit {
     { name: 'Examen d\'Anglais', date: '22 Mai 2025' }
   ];
 
-  constructor( @Inject(Router)
+  constructor(
     private auth : AuthentificationService,
     private router : Router
   ){}

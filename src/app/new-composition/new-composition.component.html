@@ -32,7 +32,7 @@
 
     <!-- Main Content -->
     <main class="p-6 space-y-8 h-screen overflow-y-auto">
-      
+
       <!-- Partie 1 : QCM -->
       <section class="mb-8">
         <h3 class="text-xl font-semibold mb-2 text-blue-700">Partie 1 : Questions à Choix Multiple (QCM)</h3>
@@ -41,8 +41,13 @@
             <h4 class="font-semibold">{{ question.contenu }}</h4>
             <div class="space-y-2">
               <label *ngFor="let option of question.option" class="flex items-center space-x-2">
-                <input type="radio" name="{{ question.contenu }}" value="{{ option }}"
-                  (change)="selectOption(question.contenu, option)">
+                <input
+                  type="radio"
+                  name="{{ question.id_question }}"
+                  [value]="option"
+                  (change)="selectOption(question.id_question.toString(), option)"
+                  [checked]="selectedOptions[question.id_question] === option"
+                />
                 <span>{{ option }}</span>
               </label>
             </div>
@@ -69,17 +74,22 @@
         <div class="space-y-4">
           <div *ngFor="let question of partie3; let i = index">
             <h4 class="font-semibold">{{ question.contenu }}</h4>
-            <textarea class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              rows="4" placeholder="Votre réponse..."
-              (input)="saveShortAnswer(i, $event)"></textarea>
+            <textarea
+              class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              rows="4"
+              placeholder="Votre réponse..."
+              (input)="saveShortAnswer(i, $event)"
+            ></textarea>
           </div>
         </div>
       </section>
 
       <!-- Bouton Soumettre -->
       <div class="flex justify-end mt-4">
-        <button class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-200 shadow-lg"
-          (click)="submitExam()">
+        <button
+          class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-200 shadow-lg"
+          (click)="submitExam()"
+        >
           Soumettre
         </button>
       </div>

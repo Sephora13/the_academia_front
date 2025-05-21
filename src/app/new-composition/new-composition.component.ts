@@ -14,27 +14,20 @@ import { CompositionService } from '../services/composition.service';
   styleUrls: ['./new-composition.component.css']
 })
 export class NewCompositionComponent implements AfterViewInit {
-  // Informations de l'utilisateur connecté
   user: { id: number, nom: string, prenom: string } | null = null;
-
-  // Informations de l'épreuve
   examInfo: any = {};
   id_epreuve: number = 0;
 
-  // Conteneurs de questions
   partie1: any[] = []; // QCM
   partie2: any[] = []; // Questions de Code
-  partie3: any[] = []; // Questions Réponses Courtes
+  partie3: any[] = []; // Réponses Courtes
 
-  // Réponses stockées
-  selectedOptions: { [key: string]: string } = {};
+  selectedOptions: { [key: number]: string } = {};
   codeAnswers: string[] = [];
   shortAnswers: string[] = [];
 
-  // Gestionnaire d'éditeurs de code ACE
   @ViewChildren("editor") codeEditors!: QueryList<ElementRef>;
 
-  // Indicateurs de chargement et d'erreur pour l'appel API
   loading = true;
   error: string | null = null;
 
@@ -52,7 +45,6 @@ export class NewCompositionComponent implements AfterViewInit {
     this.loadQuestions();
   }
 
-  // Méthode pour récupérer les informations de l'épreuve
   loadExamInfo(): void {
     this.loading = true;
     this.error = null;
@@ -74,7 +66,6 @@ export class NewCompositionComponent implements AfterViewInit {
     });
   }
 
-  // Méthode pour récupérer les questions
   loadQuestions(): void {
     this.loading = true;
     this.compositionService.showQuesByEp(this.id_epreuve).subscribe({
@@ -106,7 +97,6 @@ export class NewCompositionComponent implements AfterViewInit {
     });
   }
 
-  // Initialisation des éditeurs de code ACE
   ngAfterViewInit(): void {
     this.codeEditors.changes.subscribe(() => {
       this.codeEditors.forEach((editor, index) => {
@@ -125,12 +115,10 @@ export class NewCompositionComponent implements AfterViewInit {
     });
   }
 
-  // Enregistrement des réponses QCM
-  selectOption(question: string, option: string) {
-    this.selectedOptions[question] = option;
+  selectOption(questionId: number, option: string) {
+    this.selectedOptions[questionId] = option;
   }
 
-  // Enregistrement des réponses courtes
   saveShortAnswer(index: number, event: Event) {
     const target = event.target as HTMLTextAreaElement | null;
     if (target) {
@@ -138,59 +126,33 @@ export class NewCompositionComponent implements AfterViewInit {
     }
   }
 
-  // Méthode pour soumettre l'épreuve
   submitExam() {
+    this.user = this.auth.getUserInfo2();
     if (!this.user) {
-      alert("Utilisateur non authentifié.");
+      console.log("Utilisateur non authentifié.");
       return;
     }
-  
+
     const payloadCopie = {
       id_etudiant: this.user.id,
       id_epreuve: this.id_epreuve,
       reponses_qcm: this.selectedOptions,
       reponses_code: this.codeAnswers,
-      reponses_ouvertes: this.shortAnswers
+      reponses_courtes: this.shortAnswers
     };
-  
+
     console.log("Soumission de la copie numérique :", payloadCopie);
-  
-    this.compositionService.creerCopie(payloadCopie).subscribe({
-      next: (response) => {
-        if (response.success && response.message && response.message.id_copie_numerique) {
-          const idCopie = response.message.id_copie_numerique;
-  
-          console.log("Copie créée avec ID :", idCopie);
-  
-          // Appel de la correction après la création de la copie
-          this.compositionService.corrigerCopie(idCopie).subscribe({
-            next: (res) => {
-              if (res.success) {
-                alert("Épreuve soumise et corrigée avec succès. Note : " + res.message.note_finale);
-                console.log("Résultat de la correction :", res.message);
-              } else {
-                alert("La copie a été soumise mais la correction a échoué.");
-              }
-            },
-            error: (err) => {
-              console.error("Erreur lors de la correction :", err);
-              alert("Erreur lors de la correction de la copie.");
-            }
-          });
-  
-        } else {
-          alert("Échec lors de la création de la copie.");
-        }
+
+    this.compositionService.soumettreCopie(payloadCopie).subscribe({
+      next: (res) => {
+        console.log("✅ Copie soumise avec succès", res);
       },
-      error: (error) => {
-        console.error("Erreur soumission copie :", error);
-        alert("Erreur lors de la soumission de l'épreuve.");
+      error: (err) => {
+        console.error("❌ Erreur lors de la soumission de la copie :", err);
       }
     });
   }
-  
 
-  // Gestion des erreurs HTTP
   private handleError(err: any): string {
     if (err.status === 0) {
       return 'Connexion au serveur impossible.';
