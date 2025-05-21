@@ -61,7 +61,12 @@
             </div>
       
             <div class="form-group form-button">
-                <input type="submit"  name="signin" id="signin" class="w-full bg-[#6366f1] hover:bg-[#4f46e5] transition text-white font-semibold py-2 rounded" value="Log in"/>
+              <div *ngIf="isLoading" class="flex justify-center items-center my-4">
+                <!-- From Uiverse.io by carlosepcc -->
+                <div class="loader border-t-2 rounded-full border-gray-500 bg-gray-300 animate-spin
+                aspect-square w-8 flex justify-center items-center text-yellow-700"></div>
+              </div>
+                <input type="submit"  [disabled]="isLoading" name="signin" id="signin" class="w-full bg-[#6366f1] hover:bg-[#4f46e5] transition text-white font-semibold py-2 rounded" value="Log in"/>
             </div>
           </form>
         </div>

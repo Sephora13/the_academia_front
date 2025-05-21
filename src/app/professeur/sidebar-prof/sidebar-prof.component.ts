@@ -119,6 +119,6 @@ export class ProfesseurSidebarComponent implements AfterViewInit, OnInit {
 
   logout() {
     this.auth.logout();
-    this.router.navigate(['/signIn']);
+    this.router.navigate(['/signProf']);
   }
 }

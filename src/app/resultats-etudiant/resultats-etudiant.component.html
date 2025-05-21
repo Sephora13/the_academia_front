@@ -1,0 +1,46 @@
+<app-sidebar></app-sidebar>
+
+<div id="compose" class=" text-gray-100 min-h-screen p-10 flex items-center justify-center">
+  <div class="w-full max-w-6xl bg-[#1f2937] rounded-2xl shadow-2xl p-10 border border-gray-700">
+    <div class="flex items-center justify-between mb-8">
+      <h1 class="text-4xl font-bold text-indigo-400">📊 Résultats des Examens</h1>
+      <span class="text-sm text-gray-400">Année académique 2024</span>
+    </div>
+
+    <div class="overflow-x-auto rounded-xl border border-gray-600">
+      <table class="min-w-full divide-y divide-gray-700 text-sm">
+        <thead class="bg-indigo-700 text-indigo-100">
+          <tr>
+            <th class="p-4 text-left font-semibold">Matière</th>
+            <th class="p-4 text-left font-semibold">Date</th>
+            <th class="p-4 text-left font-semibold">Note</th>
+            <th class="p-4 text-left font-semibold">Statut</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-800">
+          <tr
+            *ngFor="let result of results"
+            class="hover:bg-indigo-800/60 transition duration-300"
+          >
+            <td class="p-4">{{ result.subject }}</td>
+            <td class="p-4">{{ result.date | date: 'dd/MM/yyyy' }}</td>
+            <td class="p-4 font-bold text-white">{{ result.score }}/20</td>
+            <td class="p-4">
+              <span
+                [ngClass]="{
+                  'bg-green-600 text-green-100 px-3 py-1 rounded-full font-semibold text-xs': result.passed,
+                  'bg-red-600 text-red-100 px-3 py-1 rounded-full font-semibold text-xs': !result.passed
+                }"
+              >
+                {{ result.passed ? '✅ Validé' : '❌ Non validé' }}
+              </span>
+            </td>
+          </tr>
+          <tr *ngIf="results.length === 0">
+            <td colspan="4" class="p-4 text-center text-gray-400">Aucun résultat disponible.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

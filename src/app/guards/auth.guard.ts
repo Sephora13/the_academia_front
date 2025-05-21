@@ -23,13 +23,19 @@ export class AuthGuard implements CanActivate {
       if (role === 'admin' && targetPath === 'dashboard') {
         return true;
       }
+      if (role === 'coordinateur' && targetPath === 'coordinator_side') {
+        return true;
+      }
+      if (role === 'exam_service' && targetPath === 'exam_service') {
+        return true;
+      }
       // Si le rôle ne correspond pas à la page
       this.router.navigate(['/not-authorized']);
       return false;
     }
   
     // Si non authentifié, redirection vers la page de connexion
-    this.router.navigate(['/signIn']);
+    this.router.navigate(['/auth']);
     return false;
   }
   

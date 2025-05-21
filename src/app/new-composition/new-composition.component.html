@@ -86,9 +86,16 @@
                   <div class="space-y-4">
                     <div *ngFor="let question of partie3; let i = index">
                         <h4 class="font-semibold">{{ question.question }}</h4>
-                        <textarea class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                  rows="4" placeholder="Votre réponse..."
-                                  (input)="saveShortAnswer(i, $event)"></textarea>
+                        <textarea 
+                            class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            rows="4" 
+                            placeholder="Votre réponse..."
+                            (input)="saveShortAnswer(i, $event)"
+                            (copy)="$event.preventDefault()"
+                            (paste)="$event.preventDefault()"
+                            (cut)="$event.preventDefault()"
+                          >
+                          </textarea>            
                     </div>
                   </div>
                 </section>

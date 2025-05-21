@@ -1,36 +1,56 @@
-<app-sidebar></app-sidebar>
+<app-dashboard-exam-service></app-dashboard-exam-service>
 
 
-  <body class=" text-gray-100  min-h-screen flex items-center justify-center" id="main">
-    <div class="w-full max-w-6xl bg-gray-800 p-6 rounded-lg shadow-lg ">
-      <h1 class="text-4xl text-gray-500 font-bold mb-8 text-center">Résultats des Examens</h1>
-      <div class="overflow-x-auto">
-        <table class="min-w-full border-collapse border border-gray-700 rounded-lg">
-          <thead>
-            <tr class="bg-indigo-500" >
-              <th class="p-4 text-left text-gray-100 font-semibold border border-gray-600">Matière</th>
-              <th class="p-4 text-left text-gray-100 font-semibold border border-gray-600">Date</th>
-              <th class="p-4 text-left text-gray-100 font-semibold border border-gray-600">Note</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr ng-repeat="result in results" *ngFor="let result of results" class="border border-gray-700 hover:bg-indigo-200 transition">
-              <td class="p-4 border text-gray-500 border-gray-600">{{ result.subject }}</td>
-              <td class="p-4 border text-gray-500 border-gray-600">{{ result.grade | date:'dd/MM/yyyy' }}</td>
-              <td class="p-4">
-                <span ng-class="{
-                  'bg-green-600 text-green-100 px-3 py-1 rounded-full font-semibold': result.passed,
-                  'bg-red-600 text-red-100 px-3 py-1 rounded-full font-semibold': !result.passed
-                }" [ngClass]="result.grade >= 50 ? 'text-green-600' : 'text-red-600'">
-                  {{ result.grade >= 50 ? 'Admis' : 'Échoué' }}
-                </span>
-              </td>
-            </tr>
-            <tr ng-if="results.length === 0">
-              <td colspan="5" class="p-4 text-center text-gray-400">Aucun résultat disponible.</td>
-            </tr>
-          </tbody>
-        </table>
+<div class="p-6" id="compose">
+  <h1 class="text-3xl font-bold mb-8 text-gray-500">
+    Résultats des compositions
+  </h1>
+
+  <!-- Bouton créer -->
+  <div class="flex justify-end mb-6">
+    <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center" (click)="ouvrirCreationComposition()">
+      <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+        <path d="M11 9V4a1 1 0 10-2 0v5H4a1 1 0 100 2h5v5a1 1 0 102 0v-5h5a1 1 0 100-2h-5z"/>
+      </svg>
+      <span>Créer une nouvelle composition</span>
+    </button>
+    
+  </div>
+
+  <!-- Compositions Programmées -->
+  <div class="mb-10">
+    <h2 class="text-2xl font-semibold text-gray-700 dark:text-gray-500 mb-4">Non publié</h2>
+    <div *ngIf="programmedCompositions.length > 0" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div *ngFor="let compo of programmedCompositions" class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+        <h3 class="text-lg font-semibold mb-2 dark:text-white">{{ compo.titre }}</h3>
+        <p class="text-gray-600 dark:text-gray-400 mb-4">Reçu le : {{ compo.date }}</p>
+        <button
+          class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded"
+          (click)="annulerComposition(compo.id)">
+          Publier
+        </button>
       </div>
     </div>
+    <p *ngIf="programmedCompositions.length === 0" class="text-gray-500 dark:text-gray-400">Aucune composition programmée.</p>
+  </div>
+
+
+  <!-- Compositions terminées -->
+  <div class="mb-10">
+    <h2 class="text-2xl font-semibold text-gray-700 dark:text-gray-500 mb-4">Publié</h2>
+    <div *ngIf="completedCompositions.length > 0" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div *ngFor="let compo of completedCompositions" class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+        <h3 class="text-lg font-semibold mb-2 dark:text-white">{{ compo.titre }}</h3>
+        <p class="text-gray-600 dark:text-gray-400">Publier le  : {{ compo.dateFin }}</p>
+        <button
+          class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded mt-4"
+          (click)="supprimerComposition(compo.id)">
+          Supprimer
+        </button>
+      </div>
+    </div>
+    <p *ngIf="completedCompositions.length === 0" class="text-gray-500 dark:text-gray-400">Pas de composition terminée.</p>
+  </div>
+</div>
+
   

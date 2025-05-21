@@ -20,6 +20,8 @@ export class SignInComponent {
   password: string = '';
   role: string = 'etudiant'; // Par défaut, "etudiant"
   showPassword: boolean = false;
+  isLoading: boolean = false;
+  
 
   constructor(
     private router : Router,
@@ -30,19 +32,23 @@ export class SignInComponent {
     this.showPassword = !this.showPassword;
   }
 
-   signIn() {
+  signIn() {
     if (!this.email || !this.password) {
       alert("Veuillez remplir tous les champs.");
       return;
     }
-     this.auth.signIn(this.email, this.password).subscribe({
+  
+    this.isLoading = true; // Démarre le loader
+  
+    this.auth.signIn(this.email, this.password).subscribe({
       next: (response) => {
         console.log('Connexion réussie:', response);
   
         const userRole = this.auth.getUserRole(); 
         console.log('Rôle utilisateur:', userRole);
   
-        // Rediriger l'utilisateur en fonction de son rôle
+        this.isLoading = false; // Arrête le loader
+  
         if (userRole === 'etudiant') {
           this.router.navigate(['/student_side']);
         } else {
@@ -51,12 +57,12 @@ export class SignInComponent {
       },
       error: (error) => {
         console.error('Erreur de connexion:', error);
-        this.auth.logout(); // Efface les informations en cas d'erreur
+        this.auth.logout();
+        this.isLoading = false; // Arrête le loader
         alert("Email ou mot de passe incorrect");
       }
     });
   }
-
   sidebar(){
     this.router.navigate(['/student_side'])
   }

@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { SidebarAdminComponent } from '../sidebar-admin/sidebar-admin.component';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { GetPasswordService } from '../services/get-password.service';
 
 @Component({
   selector: 'app-professor',
@@ -10,14 +11,30 @@ import { Router } from '@angular/router';
   templateUrl: './professor.component.html',
   styleUrl: './professor.component.css'
 })
-export class ProfessorComponent {
-  constructor(private router: Router){}
-  currentSection = 'professors';
+export class ProfessorComponent implements OnInit {
+  constructor(private router: Router, private recup:GetPasswordService){}
+  professors: any[] = [];
+  loading: boolean = true;
 
-  professors = [
-    { name: 'Yomi Denzel', subject: 'Marketing digital', class: 'SG2', email:'yomidenzel2@gmail.com' },
-    { name: 'Jane Smith', subject: 'Tableur', class: 'SIL2', email: 'janesmith@gmail.com' }
-  ];
+  currentSection = 'professors';
+  ngOnInit(): void {
+    this.loadProfessors();
+  }
+
+  loadProfessors(): void {
+    this.loading = true;
+    this.recup.recuProf().subscribe(
+      (data) => {
+        this.professors = data;
+        this.loading = false;
+        console.log(this.professors);
+      },
+      (error) => {
+        console.error('Erreur lors de la récupération des professeurs', error);
+        this.loading = false;
+      }
+    );
+  }
 
   onCreate(){
     this.router.navigate(['/create-prof'])

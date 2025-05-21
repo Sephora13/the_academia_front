@@ -13,12 +13,12 @@ import { CommonModule } from '@angular/common';
   styleUrl: './create-prof.component.css'
 })
 export class CreateProfComponent implements OnInit {
-  email = '';
   name = '';
   prenom = '';
+  email = '';
   filiere = '';
-  matiere = '';
   password = '';
+  matiere = '';
 
   constructor(private router: Router,
     private auth: AuthentificationService
@@ -27,19 +27,20 @@ export class CreateProfComponent implements OnInit {
     
   }
   async onRegister() {
-      if (!!this.email || !this.name || !this.prenom || !this.filiere || !this.matiere || !this.password) {
+     if (!this.email || !this.name || !this.prenom || !this.filiere || !this.matiere || !this.password) 
+      {
         alert("Veuillez remplir tous les champs.");
         return;
       }
     
       try {
         const response = await this.auth.createProf(
-          this.email,
           this.name,
           this.prenom,
+          this.email,
           this.filiere,
-          this.matiere,
           this.password,
+          this.matiere,
         ).pipe(first()).toPromise();
     
         if (response.status) {

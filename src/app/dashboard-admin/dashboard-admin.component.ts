@@ -6,6 +6,7 @@ import { ChartOptions, ChartType } from 'chart.js';
 import { SidebarAdminComponent } from "../sidebar-admin/sidebar-admin.component";
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { GetPasswordService } from '../services/get-password.service';
 
 
 
@@ -28,23 +29,20 @@ interface User {
   styleUrl: './dashboard-admin.component.css'
 })
 export class DashboardAdminComponent implements AfterViewInit, OnInit {
+  totalUsers : number=0
   // Statistiques globales
-  totalStudents: number;
-  totalProfessors: number;
-  totalCoordinators: number;
-  totalExamService: number;
+  totalStudents: number =0;
+  totalProfessors: number =0;
+  totalExamService: number = 0;
+  loading: boolean = true;
 
   // Liste des derniers utilisateurs
   recentUsers: User[] = [];
   constructor(
-    private router: Router
+    private router: Router,
+    private recup :GetPasswordService
   ){
-    // Initialisation des données (exemples fictifs)
-    this.totalStudents = 520;
-    this.totalProfessors = 45;
-    this.totalCoordinators = 8;
-    this.totalExamService = 3;
-
+    
     // Exemple de récents utilisateurs
     this.recentUsers = [
       { name: 'Alice Dupont', role: 'Étudiant', addedAt: new Date('2025-05-10') },
@@ -56,8 +54,57 @@ export class DashboardAdminComponent implements AfterViewInit, OnInit {
   }
 
   ngOnInit(): void {
-    // Si tu veux charger depuis une API, tu pourrais le faire ici
+    this.loadUserCount();
+    this.loadProfCount();
   }
+
+  // ✅ Charger le nombre d'utilisateurs
+  loadUserCount(): void {
+    this.recup.countUser().subscribe(
+      (data) => {
+        this.totalUsers = data.totalUsers;
+        this.loading = false;
+        console.log('Total d\'utilisateurs:', this.totalUsers);
+      },
+      (error) => {
+        console.error('Erreur lors de la récupération du nombre d\'utilisateurs', error);
+        this.loading = false;
+      }
+    );
+  }
+
+  //charger le nombre de prof
+  loadProfCount():void{
+    this.recup.countProf().subscribe(
+      (data) => {
+        this.totalProfessors = data.totalProfessors;
+        this.loading = false;
+        console.log('Total professeurs:', this.totalProfessors);
+      },
+      (error) => {
+        console.error('Erreur lors de la récupération du nombre d\'utilisateurs', error);
+        this.loading = false;
+
+      }
+    )
+  }
+
+  /*
+  //charge service des examens
+  loadExam_service():void{
+    this.recup.countExam_service().subscribe(
+      (data) => {
+        this.totalExamService = data.totalExamService;
+        console.log('Total examinateurs:', this.totalExamService);
+      },
+      (error) => {
+        console.error('Erreur lors de la récupération du nombre d\'utilisateurs', error);
+
+      }
+    )
+  }
+    */
+
   isSidebarOpen = true; // Détection si sidebar ouverte
   compositionName: string = '';
   compositions: string[] = [];

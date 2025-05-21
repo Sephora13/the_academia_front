@@ -1,4 +1,3 @@
-// src/app/sidebar/sidebar.component.ts
 
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { HeaderComponent } from '../header/header.component';
@@ -99,7 +98,7 @@ export class SidebarComponent implements AfterViewInit, OnInit {
   }
 
   resultats(){
-    this.router.navigate(['/resultats'])
+    this.router.navigate(['/resultat_etudiant'])
   }
 
   logout() {

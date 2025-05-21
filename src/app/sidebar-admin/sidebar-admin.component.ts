@@ -88,6 +88,6 @@ export class SidebarAdminComponent {
 
   logout() {
     this.auth.logout();
-    this.router.navigate(['/signIn']);
+    this.router.navigate(['/register']);
   }
 }
