@@ -29,5 +29,11 @@ export class AuthentificationComponent {
   signProf(){
     this.router.navigate(['/signProf'])
   }
+  signCoord(){
+    this.router.navigate(['/register_coord'])
+  }
+  sign_examService(){
+    this.router.navigate(['/register_examinator'])
+  }
   
 }

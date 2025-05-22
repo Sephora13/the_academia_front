@@ -1,0 +1,16 @@
+.input-dark {
+    background-color: #2d3748;
+    color: #e2e8f0;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    outline: none;
+    border: 1px solid #4a5568;
+  }
+  .input-dark:focus {
+    border-color: #63b3ed;
+  }
+
+  #main{
+   margin-top: 2rem;
+    margin-left: 21rem;
+  }

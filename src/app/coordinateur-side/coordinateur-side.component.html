@@ -17,7 +17,7 @@
              <h3 class="sidebar__title">MANAGE</h3>
   
              <div class="sidebar__list">
-                <a (click)="dashboard()" class="sidebar__link active-link">
+                <a  class="sidebar__link active-link">
                    <i class="ri-pie-chart-2-fill"></i>
                    <span>Dashboard</span>
                 </a>
@@ -59,7 +59,7 @@
              </i>
           </button>
   
-          <button class="sidebar__link">
+          <button  (click)="logout()" class="sidebar__link">
              <i class="ri-logout-box-r-fill"></i>
              <span>Se déconnecter</span>
           </button>

@@ -8,8 +8,8 @@
       </div>
 
       <div class="sidebar__info">
-        <h3>Stormi Jackson</h3>
-        <span>stormijacksongmail.com</span>
+        <h3>{{user?.nom}} {{user?.prenom}}</h3>
+        <span>{{user?.email}}</span>
       </div>
     </div>
 
@@ -33,9 +33,9 @@
           </a>
 
           <a 
-            (click)="navigateTo('resultats')" 
+            (click)="navigateTo('resultat_etudiant')" 
             class="sidebar__link" 
-            [ngClass]="{'bg-indigo-600 text-white': activeLink === 'resultats'}">
+            [ngClass]="{'bg-indigo-600 text-white': activeLink === 'resultat_etudiant'}">
             <i class="fas fa-graduation-cap"></i>
             <span>Resultats</span>
           </a>

@@ -15,12 +15,19 @@ export class RegisterAdminComponent {
   login: string = '';
   password: string = '';
   errorMessage: string = '';
+  isLoading: boolean = false;
+
   constructor(
       private router : Router,
       private auth : AuthentificationService
     ){}
 
     onSubmit() {
+      if (!this.login || !this.password) {
+        alert("Veuillez remplir tous les champs.");
+        return;
+      }
+      this.isLoading=true;
       this.auth.signInAdmin(this.login, this.password).subscribe({
         next: (response) => {
           console.log('Connexion réussie:', response);
@@ -29,6 +36,7 @@ export class RegisterAdminComponent {
         error: (err) => {
           this.errorMessage = 'Login ou mot de passe incorrect';
           console.error('Erreur de connexion:', err);
+          this.isLoading=true;
         }
       });
     }

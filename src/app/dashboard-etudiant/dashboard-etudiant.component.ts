@@ -17,7 +17,7 @@ import { Router } from '@angular/router';
   styleUrl: './dashboard-etudiant.component.css'
 })
 export class DashboardEtudiantComponents implements AfterViewInit, OnInit {
-  user: { id: number, nom: string, prenom: string } | null = null;
+  user: { id: number, nom: string, prenom: string, email:string, classe: string, filiere: string } | null = null;
   isSidebarOpen = true; // Détection si sidebar ouverte
 
   studentName = 'Stormi Jackson';

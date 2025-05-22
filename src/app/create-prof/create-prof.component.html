@@ -1,0 +1,98 @@
+<app-sidebar-admin></app-sidebar-admin>
+
+  <body class="bg-gray-900 flex items-center justify-center min-h-screen p-4" id="main">
+    <form
+      class="bg-[#1e2128] text-[#d1d5db] rounded-lg shadow-lg w-full max-w-md p-8 space-y-6"
+      id="signUpForm"
+      (ngSubmit)="onRegister()"
+    >
+      <h2 class="text-2xl font-extrabold mb-6 text-center">Sign Up</h2>
+      <div class="flex flex-col">
+        <label for="name" class="mb-1 text-sm font-semibold">Name</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          [(ngModel)]="name"
+          required
+          class="w-full rounded bg-[#121317] border border-[#374151] px-3 py-2 text-sm text-[#d1d5db] placeholder-[#6b7280] focus:outline-none focus:ring-2 focus:ring-[#6366f1]"
+          placeholder="Enter your name"
+        />
+      </div>
+  
+      <div class="flex space-x-4">
+        <div class="flex flex-col flex-1">
+          <label for="prenom" class="mb-1 text-sm font-semibold">Prenom</label>
+          <input
+            type="text"
+            id="prenom"
+            name="prenom"
+            [(ngModel)]="prenom"
+            required
+            class="w-full rounded bg-[#121317] border border-[#374151] px-3 py-2 text-sm text-[#d1d5db] placeholder-[#6b7280] focus:outline-none focus:ring-2 focus:ring-[#6366f1]"
+            placeholder="Enter your prenom"
+          />
+        </div>
+        <div class="flex flex-col flex-1">
+          <label for="email" class="mb-1 text-sm font-semibold">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            [(ngModel)]="email"
+            required
+            class="w-full rounded bg-[#121317] border border-[#374151] px-3 py-2 text-sm text-[#d1d5db] placeholder-[#6b7280] focus:outline-none focus:ring-2 focus:ring-[#6366f1]"
+            placeholder="Enter your email"
+          />
+        </div>
+      </div>
+  
+      <div class="flex space-x-4">
+        <div class="flex flex-col flex-1">
+          <label for="filiere" class="mb-1 text-sm font-semibold">filiere</label>
+          <input
+            type="text"
+            id="filiere"
+            name="filiere"
+            [(ngModel)]="filiere"
+            required
+            class="w-full rounded bg-[#121317] border border-[#374151] px-3 py-2 text-sm text-[#d1d5db] placeholder-[#6b7280] focus:outline-none focus:ring-2 focus:ring-[#6366f1]"
+            placeholder="Enter your filiere"
+          />
+        </div>
+        <div class="flex flex-col flex-1">
+          <label for="password" class="mb-1 text-sm font-semibold">Password</label>
+          <input
+            type="text"
+            id="password"
+            name="password"
+            [(ngModel)]="password"
+            required
+            class="w-full rounded bg-[#121317] border border-[#374151] px-3 py-2 text-sm text-[#d1d5db] placeholder-[#6b7280] focus:outline-none focus:ring-2 focus:ring-[#6366f1]"
+            placeholder="Enter your password"
+          />
+        </div>
+      </div>
+  
+      <div class="flex flex-col">
+        <label for="matiere" class="mb-1 text-sm font-semibold">Matiere</label>
+        <input
+          type="text"
+          id="matiere"
+          name="matiere"
+          [(ngModel)]="matiere"
+          required
+          class="w-full rounded bg-[#121317] border border-[#374151] px-3 py-2 text-sm text-[#d1d5db] placeholder-[#6b7280] focus:outline-none focus:ring-2 focus:ring-[#6366f1]"
+          placeholder="Enter your matiere"
+        />
+      </div>
+  
+      <button
+        type="submit"
+        class="w-38 bg-[#6366f1] hover:bg-[#4f46e5] transition text-white font-semibold py-2 px-4 rounded"
+      > Sign Up
+      </button>
+    </form>
+  
+  </body>
+  

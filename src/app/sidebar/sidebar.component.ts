@@ -1,6 +1,5 @@
-// src/app/sidebar/sidebar.component.ts
 
-import { AfterViewInit, Component } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { HeaderComponent } from '../header/header.component';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { AuthentificationService } from '../services/authentification.service';
@@ -17,12 +16,19 @@ import { CommonModule } from '@angular/common';
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css']
 })
-export class SidebarComponent implements AfterViewInit {
+export class SidebarComponent implements AfterViewInit, OnInit {
+  user: { id: number, nom: string, prenom: string, email:string } | null = null;
+
   activeLink: string = '';
   constructor(
     private router : Router,
     private auth:  AuthentificationService
   ){}
+  ngOnInit(): void{
+    this.user = this.auth.getUserInfo2();
+    console.log(this.user)
+  }
+
   ngAfterViewInit(): void {
     // Sidebar toggle (si jamais tu veux ajouter un bouton toggle plus tard)
     const toggle = document.getElementById('header-toggle');
@@ -92,7 +98,7 @@ export class SidebarComponent implements AfterViewInit {
   }
 
   resultats(){
-    this.router.navigate(['/resultats'])
+    this.router.navigate(['/resultat_etudiant'])
   }
 
   logout() {

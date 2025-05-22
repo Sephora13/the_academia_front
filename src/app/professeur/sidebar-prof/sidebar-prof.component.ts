@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Inject, PLATFORM_ID } from '@angular/core';
+import { AfterViewInit, Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { AuthentificationService } from '../../services/authentification.service';
@@ -10,7 +10,8 @@ import { AuthentificationService } from '../../services/authentification.service
   templateUrl: './sidebar-prof.component.html',
   styleUrl: './sidebar-prof.component.css'
 })
-export class ProfesseurSidebarComponent implements AfterViewInit {
+export class ProfesseurSidebarComponent implements AfterViewInit, OnInit {
+  user: { id: number, nom: string, prenom: string, email:string } | null = null;
   isEpreuveSubmenuOpen: boolean = false; // Initialisation de la propriété
 
   constructor(
@@ -19,6 +20,9 @@ export class ProfesseurSidebarComponent implements AfterViewInit {
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
+  ngOnInit(): void {
+    this.user = this.auth.getUserInfo();
+  }
   ngAfterViewInit(): void {
     // Sidebar toggle (si jamais tu veux ajouter un bouton toggle plus tard)
     const toggle = document.getElementById('header-toggle');
@@ -103,6 +107,6 @@ export class ProfesseurSidebarComponent implements AfterViewInit {
 
   logout() {
     this.auth.logout();
-    this.router.navigate(['/signIn']);
+    this.router.navigate(['/signProf']);
   }
 }

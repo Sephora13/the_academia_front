@@ -81,15 +81,13 @@ export class SidebarAdminComponent {
   coordinators(){
     this.router.navigate(['/coordinator'])
   }
-  new_composition(){
-    this.router.navigate(['/'])
-  }
+  
   dashboard(){
     this.router.navigate(['/dashboard'])
   }
 
   logout() {
     this.auth.logout();
-    this.router.navigate(['/signIn']);
+    this.router.navigate(['/register']);
   }
 }
