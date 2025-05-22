@@ -1,5 +1,14 @@
 <body class="bg-gray-100 font-sans text-gray-900">
-  <div class="max-w-7xl mx-auto border border-gray-300 rounded-md bg-white">
+  <div class="max-w-7xl mx-auto border border-gray-300 rounded-md bg-white relative">
+
+    <!-- Loader Global -->
+    <div class="absolute inset-0 bg-white bg-opacity-75 z-50 flex flex-col items-center justify-center" *ngIf="loading">
+      <div class="spinner">
+        <div class="double-bounce1"></div>
+        <div class="double-bounce2"></div>
+      </div>
+      <p class="mt-4 text-blue-700 font-semibold">⏳ Chargement en cours... Patientez un moment.</p>
+    </div>
 
     <!-- Header -->
     <header class="flex items-center justify-between px-4 py-2 border-b border-gray-300 bg-blue-700 text-white">
@@ -26,7 +35,8 @@
         <h2 class="text-2xl font-bold text-blue-700">{{ examInfo.titre }}</h2>
       </div>
       <div class="text-right">
-        <p class="text-gray-700">Date : {{ examInfo.created_at | date:'dd MMMM yyyy' }}</p>
+        <!-- Nouveau affichage du décompteur -->
+        <p class="text-red-600 font-bold text-lg">⏳ Temps restant : {{ remainingTime }}</p>
       </div>
     </div>
 
@@ -34,8 +44,8 @@
     <main class="p-6 space-y-8 h-screen overflow-y-auto">
 
       <!-- Partie 1 : QCM -->
-      <section class="mb-8">
-        <h3 class="text-xl font-semibold mb-2 text-blue-700">Partie 1 : Questions à Choix Multiple (QCM)</h3>
+      <section class="mb-8" *ngIf="partie1.length">
+        <h3 class="text-xl font-semibold mb-2 text-blue-700">Partie : Questions à Choix Multiple (QCM)</h3>
         <div class="space-y-4">
           <div *ngFor="let question of partie1">
             <h4 class="font-semibold">{{ question.contenu }}</h4>
@@ -56,8 +66,8 @@
       </section>
 
       <!-- Partie 2 : Écriture de Code -->
-      <section class="mb-8">
-        <h3 class="text-xl font-semibold mb-2 text-blue-700">Partie 2 : Écriture de Code</h3>
+      <section class="mb-8" *ngIf="partie2.length">
+        <h3 class="text-xl font-semibold mb-2 text-blue-700">Partie : Écriture de Code</h3>
         <div class="space-y-4">
           <div *ngFor="let question of partie2; let i = index">
             <h4 class="font-semibold">{{ question.contenu }}</h4>
@@ -69,8 +79,8 @@
       </section>
 
       <!-- Partie 3 : Réponses Courtes -->
-      <section class="mb-8">
-        <h3 class="text-xl font-semibold mb-2 text-blue-700">Partie 3 : Questions à Réponse Courte</h3>
+      <section class="mb-8" *ngIf="partie3.length">
+        <h3 class="text-xl font-semibold mb-2 text-blue-700">Partie : Questions à Réponse Courte</h3>
         <div class="space-y-4">
           <div *ngFor="let question of partie3; let i = index">
             <h4 class="font-semibold">{{ question.contenu }}</h4>
@@ -87,10 +97,11 @@
       <!-- Bouton Soumettre -->
       <div class="flex justify-end mt-4">
         <button
-          class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-200 shadow-lg"
+          class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-200 shadow-lg disabled:bg-gray-400 disabled:cursor-not-allowed"
+          [disabled]="loading"
           (click)="submitExam()"
         >
-          Soumettre
+          {{ loading ? 'Soumission en cours...' : 'Soumettre' }}
         </button>
       </div>
 

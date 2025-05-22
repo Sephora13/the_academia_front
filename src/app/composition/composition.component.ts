@@ -25,8 +25,8 @@ export class CompositionComponent {
   user: { id: number, nom: string, prenom: string } | null = null;
   compositions = [
     { id: 33, titre: 'Composition de Mathématiques', date: '2025-04-25' },
-    { id: 33, titre: 'Composition de Physique', date: '2025-04-26' },
-    { id: 33, titre: 'Composition d\'Anglais', date: '2025-04-27' }
+    { id: 35, titre: 'Composition de Physique', date: '2025-04-26' },
+    { id: 35, titre: 'Composition d\'Anglais', date: '2025-04-27' }
   ];
 
   lancerComposition(id_epreuve: number) {
