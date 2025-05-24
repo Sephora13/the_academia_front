@@ -1,82 +1,126 @@
 <!--=============== SIDEBAR ===============-->
 <nav class="sidebar" id="sidebar">
-   <div class="sidebar__container">
-     <div class="sidebar__user">
-       <div class="sidebar__img">
-         <img src="assets/img/academia.png" alt="image">
-       </div>
- 
-       <div class="sidebar__info">
-         <strong><h3>Services des examens</h3></strong>
-         <span></span>
-       </div>
-     </div>
- 
-     <div class="sidebar__content">
-       <div>
-         <h3 class="sidebar__title">MANAGE</h3>
- 
-         <div class="sidebar__list">
-           <a 
-             (click)="navigateTo('exam_service')" 
+  <div class="sidebar__container">
+    <div class="sidebar__user">
+      <div class="sidebar__img">
+        <img src="assets/img/academia.png" alt="image">
+      </div>
+
+      <div class="sidebar__info">
+        <strong><h3>Services des examens</h3></strong>
+        <span></span>
+      </div>
+    </div>
+
+    <div class="sidebar__content">
+      <!-- Dashboard -->
+      <div>
+        <h3 class="sidebar__title">MANAGE</h3>
+        <div class="sidebar__list">
+          <a (click)="navigateTo('exam_service')" 
              class="sidebar__link" 
-             [ngClass]="{'bg-indigo-600 text-white': activeLink === 'exam_service'}">
-             <i class="ri-pie-chart-2-fill"></i>
-             <span>Dashboard</span>
-           </a>
- 
-           <a 
-             (click)="navigateTo('composition_admin')" 
+             [ngClass]="{'bg-indigo-600 text-white': activeLink === 'dashboard'}">
+            <i class="ri-pie-chart-2-fill"></i>
+            <span>Tableau de bord</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Sessions d’examen -->
+      <div>
+        <h3 class="sidebar__title">Sessions d’examen</h3>
+        <div class="sidebar__list">
+          <a (click)="navigateTo('gerer_sessions')" 
              class="sidebar__link" 
-             [ngClass]="{'bg-indigo-600 text-white': activeLink === 'composition_admin'}">
-             <i class="ri-wallet-3-fill"></i>
-             <span>Compositions</span>
-           </a>
- 
-           <a 
-             (click)="navigateTo('resultats')" 
+             [ngClass]="{'bg-indigo-600 text-white': activeLink === 'gerer_sessions'}">
+            <i class="ri-file-list-3-fill"></i>
+            <span>Gérer mes sessions</span>
+          </a>
+          <a (click)="navigateTo('planifier_session')" 
              class="sidebar__link" 
-             [ngClass]="{'bg-indigo-600 text-white': activeLink === 'resultats'}">
-             <i class="ri-calendar-fill"></i>
-             <span>Resultats</span>
-           </a>
-         </div>
-       </div>
- 
-       <div>
-         <h3 class="sidebar__title">SETTINGS</h3>
- 
-         <div class="sidebar__list">
-           <a href="#" class="sidebar__link">
-             <i class="ri-settings-3-fill"></i>
-             <span>Parametres</span>
-           </a>
- 
-           <a href="#" class="sidebar__link">
-             <i class="ri-mail-unread-fill"></i>
-             <span>Boite de reception</span>
-           </a>
- 
-           <a href="#" class="sidebar__link">
-             <i class="ri-notification-2-fill"></i>
-             <span>Notifications</span>
-           </a>
-         </div>
-       </div>
-     </div>
- 
-     <div class="sidebar__actions">
-       <button>
-         <i class="ri-moon-clear-fill sidebar__link sidebar__theme" id="theme-button">
-           <span>Theme</span>
-         </i>
-       </button>
- 
-       <button class="sidebar__link" (click)="logout()">
-         <i class="ri-logout-box-r-fill"></i>
-         <span>Se déconnecter</span>
-       </button>
-     </div>
-   </div>
- </nav>
- 
+             [ngClass]="{'bg-indigo-600 text-white': activeLink === 'planifier_session'}">
+            <i class="ri-calendar-event-fill"></i>
+            <span>Planifier une session</span>
+          </a>
+          <a (click)="navigateTo('affecter_epreuves')" 
+             class="sidebar__link" 
+             [ngClass]="{'bg-indigo-600 text-white': activeLink === 'affecter_epreuves'}">
+            <i class="ri-logout-circle-r-line"></i>
+            <span>Affecter les épreuves</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Épreuves -->
+      <div>
+        <h3 class="sidebar__title">Épreuves</h3>
+        <div class="sidebar__list">
+          <a (click)="navigateTo('suivi_depots')" 
+             class="sidebar__link" 
+             [ngClass]="{'bg-indigo-600 text-white': activeLink === 'suivi_depots'}">
+            <i class="ri-time-fill"></i>
+            <span>Suivi des dépôts</span>
+          </a>
+          <a (click)="navigateTo('resultats_epreuves')" 
+             class="sidebar__link" 
+             [ngClass]="{'bg-indigo-600 text-white': activeLink === 'resultats_epreuves'}">
+            <i class="ri-bar-chart-2-fill"></i>
+            <span>Résultats d’épreuves</span>
+          </a>
+          <a (click)="navigateTo('reclamations')" 
+             class="sidebar__link" 
+             [ngClass]="{'bg-indigo-600 text-white': activeLink === 'reclamations'}">
+            <i class="ri-chat-1-fill"></i>
+            <span>Réclamations étudiants</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Paramètres -->
+      <div>
+        <h3 class="sidebar__title">Paramètres</h3>
+        <div class="sidebar__list">
+          <a (click)="navigateTo('filieres')" class="sidebar__link" [ngClass]="{'bg-indigo-600 text-white': activeLink === 'filieres'}">
+            <i class="ri-organization-chart"></i>
+            <span>Filières</span>
+          </a>
+          <a (click)="navigateTo('options')" class="sidebar__link" [ngClass]="{'bg-indigo-600 text-white': activeLink === 'options'}">
+            <i class="ri-folder-settings-fill"></i>
+            <span>Options</span>
+          </a>
+          <a (click)="navigateTo('matieres')" class="sidebar__link" [ngClass]="{'bg-indigo-600 text-white': activeLink === 'matieres'}">
+            <i class="ri-book-open-fill"></i>
+            <span>Matières</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Notifications -->
+      <div>
+        <h3 class="sidebar__title">Notifications</h3>
+        <div class="sidebar__list">
+          <a href="#" class="sidebar__link">
+            <i class="ri-notification-2-fill"></i>
+            <span>Notifications</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    
+
+    <!-- Bottom actions -->
+    <div class="sidebar__actions">
+      <button>
+        <i class="ri-moon-clear-fill sidebar__link sidebar__theme" id="theme-button">
+          <span>Theme</span>
+        </i>
+      </button>
+
+      <button class="sidebar__link" (click)="logout()">
+        <i class="ri-logout-box-r-fill"></i>
+        <span>Se déconnecter</span>
+      </button>
+    </div>
+  </div>
+</nav>

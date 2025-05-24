@@ -5,13 +5,14 @@ import { CoordinateurSideComponent } from '../coordinateur-side/coordinateur-sid
 import { DashboardExamServiceComponent } from '../dashboard-exam-service/dashboard-exam-service.component';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { HeaderComponent } from '../header/header.component';
 import { Chart} from 'chart.js';
 
 
 
 @Component({
   selector: 'app-exam-service',
-  imports: [DashboardExamServiceComponent, FormsModule,CommonModule],
+  imports: [DashboardExamServiceComponent, FormsModule,CommonModule, HeaderComponent],
   templateUrl: './exam-service.component.html',
   styleUrl: './exam-service.component.css'
 })

@@ -1,0 +1,115 @@
+<app-header></app-header>
+<app-dashboard-exam-service></app-dashboard-exam-service>
+<main id="main" class="p-6 bg-gray-900 min-h-screen text-gray-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col sm:flex-row justify-between items-center mb-6">
+      <div class="mb-4 sm:mb-0">
+        <h4 class="text-3xl font-bold text-blue-400 animate-fade-in-down">Gestion des Filières</h4>
+        <ol class="flex text-sm text-gray-400 mt-1">
+          <li class="mr-2">
+            <a routerLink="/dashboard-exam-service" class="hover:text-blue-300 transition duration-200">Tableau de Bord</a>
+          </li>
+          <li class="mr-2">/</li>
+          <li class="text-blue-400">Filières</li>
+        </ol>
+      </div>
+      <div>
+        <button class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300 ease-in-out flex items-center justify-center animate-scale-up" (click)="openAddFiliereModal()">
+          <i class="fas fa-plus-circle mr-2"></i> Ajouter une Filière
+        </button>
+      </div>
+    </div>
+    <div class="w-full">
+      <div class=" p-6 rounded-lg shadow-xl border border-gray-700 animate-slide-up">
+        <h5 class="text-xl font-semibold text-gray-100 mb-2">Liste des Filières Existantes</h5>
+        <p class="text-gray-400 mb-4">
+          Consultez et gérez toutes les filières disponibles dans le système.
+        </p>
+        <div class="flex mb-6">
+          <input type="text" class="flex-grow px-4 py-2 bg-gray-700 border border-gray-600 rounded-l-lg text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Rechercher une filière..." [(ngModel)]="searchTerm" (input)="filterFilieres()">
+          <button class="px-4 py-2 bg-gray-600 text-gray-100 rounded-r-lg hover:bg-gray-700 transition duration-300" type="button" (click)="filterFilieres()">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+        <div class="overflow-x-auto rounded-lg border border-gray-700">
+          <table class="min-w-full text-left divide-y divide-gray-700">
+            <thead class="bg-gray-700 text-blue-300 uppercase text-sm">
+              <tr>
+                <th class="py-3 px-4">Nom de la Filière</th>
+                <th class="py-3 px-4">Description</th>
+                <th class="py-3 px-4">Date de Création</th>
+                <th class="py-3 px-4">Dernière Mise à Jour</th>
+                <th class="py-3 px-4 min-w-[150px] text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-700">
+              <tr *ngIf="filteredFilieres.length === 0">
+                <td colspan="5" class="py-4 px-4 text-center text-gray-400">
+                  Aucune filière trouvée.
+                </td>
+              </tr>
+              <tr *ngFor="let filiere of filteredFilieres" class=" hover:bg-gray-700 transition duration-200 filiere-row animate-fade-in">
+                <td class="py-3 px-4 text-blue-300 font-semibold">{{ filiere.nom_filiere }}</td>
+                <td class="py-3 px-4 text-gray-400">{{ filiere.description || 'N/A' }}</td>
+                <td class="py-3 px-4 text-gray-400">{{ filiere.created_at | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td class="py-3 px-4 text-gray-400">{{ filiere.updated_at | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td class="py-3 px-4 text-center">
+                  <button class="p-2 rounded-full hover:bg-gray-700 transition duration-200 text-blue-400" title="Modifier" (click)="openEditFiliereModal(filiere)">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="p-2 rounded-full hover:bg-red-900 transition duration-200 text-red-400 ml-2" title="Supprimer" (click)="confirmDeleteFiliere(filiere.id_filiere)">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="showFiliereModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+      <div class=" p-6 rounded-lg shadow-2xl w-11/12 md:w-1/2 lg:w-1/3 transform scale-95 animate-scale-in">
+        <div class="flex justify-between items-center pb-4 border-b border-gray-700 mb-4">
+          <h5 class="text-xl font-semibold text-blue-300">
+            {{ isEditMode ? 'Modifier la Filière' : 'Ajouter une Nouvelle Filière' }}
+          </h5>
+          <button type="button" class="text-gray-400 hover:text-gray-100 text-2xl" (click)="showFiliereModal = false" aria-label="Close">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="filiereForm" (ngSubmit)="saveFiliere()">
+            <div class="mb-4">
+              <label for="nom_filiere" class="block text-gray-300 text-sm font-bold mb-2">Nom de la Filière</label>
+              <input type="text" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" id="nom_filiere" formControlName="nom_filiere" required>
+              <div *ngIf="filiereForm.controls['nom_filiere'].invalid && filiereForm.controls['nom_filiere'].touched" class="text-red-400 text-xs mt-1">
+                Le nom de la filière est requis.
+              </div>
+            </div>
+            <div class="mb-4">
+              <label for="description" class="block text-gray-300 text-sm font-bold mb-2">Description</label>
+              <textarea class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" id="description" formControlName="description" rows="3"></textarea>
+            </div>
+            <div class="flex justify-end pt-4 border-t border-gray-700 mt-4">
+              <button type="button" class="px-4 py-2 bg-gray-600 text-white rounded-lg font-semibold hover:bg-gray-700 transition duration-300 mr-2" (click)="showFiliereModal = false">Annuler</button>
+              <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition duration-300" [disabled]="filiereForm.invalid">
+                {{ isEditMode ? 'Enregistrer les Modifications' : 'Ajouter la Filière' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div id="filiereToast" class="fixed top-4 right-4 z-[1000] w-full max-w-sm rounded-lg shadow-lg transition-opacity duration-300 ease-out opacity-0 pointer-events-none">
+      <div class="flex items-center justify-between p-3 border-b border-gray-700 rounded-t-lg toast-header-bg">
+        <strong class="font-bold text-blue-300 toast-title"></strong>
+        <button type="button" class="text-gray-400 hover:text-gray-100 text-xl" (click)="hideToast()" aria-label="Close">
+          &times;
+        </button>
+      </div>
+      <div class="p-3 text-gray-200 toast-body-bg rounded-b-lg">
+        <span class="toast-message"></span>
+      </div>
+    </div>
+  </div>
+</main>

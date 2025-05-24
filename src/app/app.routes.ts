@@ -33,6 +33,7 @@ import { ShowSignCoordinatorComponent } from './show-sign-coordinator/show-sign-
 import { SignCoordComponent } from './sign-coord/sign-coord.component';
 import { SignExamserviceComponent } from './sign-examservice/sign-examservice.component';
 import { ResultatsEtudiantComponent } from './resultats-etudiant/resultats-etudiant.component';
+import { FiliereComponent } from './filiere/filiere.component'
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -68,6 +69,7 @@ export const routes: Routes = [
   {path:'register_coord', component:SignCoordComponent},
   {path:'register_examinator', component:SignExamserviceComponent},
   {path:'resultat_etudiant',component:ResultatsEtudiantComponent},
+  {path: 'filieres', component:FiliereComponent},
   //{ path: '**', redirectTo: 'signIn', pathMatch: 'full' },
   {
     path: 'professeur',
