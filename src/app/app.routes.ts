@@ -33,6 +33,12 @@ import { ShowSignCoordinatorComponent } from './show-sign-coordinator/show-sign-
 import { SignCoordComponent } from './sign-coord/sign-coord.component';
 import { SignExamserviceComponent } from './sign-examservice/sign-examservice.component';
 import { ResultatsEtudiantComponent } from './resultats-etudiant/resultats-etudiant.component';
+import { FiliereComponent } from './filiere/filiere.component'
+import { OptionComponent } from './option/option.component';
+import { MatiereComponent } from './matiere/matiere.component';
+import { SessionExamenComponent } from './session-examen/session-examen.component';
+import { PlanifierSessionComponent } from './planifier-session/planifier-session.component';
+import { SuivreDepotComponent } from './suivre-depot/suivre-depot.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -68,6 +74,12 @@ export const routes: Routes = [
   {path:'register_coord', component:SignCoordComponent},
   {path:'register_examinator', component:SignExamserviceComponent},
   {path:'resultat_etudiant',component:ResultatsEtudiantComponent},
+  {path: 'filieres', component:FiliereComponent},
+  {path: 'options', component:OptionComponent},
+  {path: 'matieres', component:MatiereComponent},
+  {path: 'gerer_sessions', component:SessionExamenComponent},
+  { path: 'planifier_session/:id', component: PlanifierSessionComponent },
+  {path: 'suivi_depots', component:SuivreDepotComponent},
   //{ path: '**', redirectTo: 'signIn', pathMatch: 'full' },
   {
     path: 'professeur',

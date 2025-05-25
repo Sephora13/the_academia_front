@@ -1,0 +1,124 @@
+/* Animations personnalis\u00E9es - R\u00E9utilis\u00E9es de filiere.component.css */
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-down {
+    animation: fadeInDown 0.6s ease-out forwards;
+}
+
+@keyframes scaleUp {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+}
+.animate-scale-up {
+    animation: scaleUp 0.4s ease-out forwards;
+    animation-delay: 0.1s;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-up {
+    animation: slideUp 0.6s ease-out forwards;
+    animation-delay: 0.2s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* D\u00E9lais pour les cartes d'\u00E9preuves pour un effet d'apparition progressif */
+.epreuve-card:nth-child(1) { animation-delay: 0.3s; }
+.epreuve-card:nth-child(2) { animation-delay: 0.4s; }
+.epreuve-card:nth-child(3) { animation-delay: 0.5s; }
+.epreuve-card:nth-child(4) { animation-delay: 0.6s; }
+.epreuve-card:nth-child(5) { animation-delay: 0.7s; }
+.epreuve-card:nth-child(6) { animation-delay: 0.8s; }
+.epreuve-card:nth-child(7) { animation-delay: 0.9s; }
+
+
+/* Styles pour les toasts (couleurs de fond pour le header/body) */
+.toast-header-bg {
+    background-color: theme('colors.gray.700'); /* Couleur par d\u00E9faut */
+}
+
+.toast-body-bg {
+    background-color: theme('colors.gray.800'); /* Couleur par d\u00E9faut */
+}
+
+/* Override pour les couleurs sp\u00E9cifiques des toasts */
+.bg-green-700 { background-color: theme('colors.green.700') !important; }
+.bg-green-800 { background-color: theme('colors.green.800') !important; }
+.bg-red-700 { background-color: theme('colors.red.700') !important; }
+.bg-red-800 { background-color: theme('colors.red.800') !important; }
+.bg-blue-700 { background-color: theme('colors.blue.700') !important; }
+.bg-blue-800 { background-color: theme('colors.blue.800') !important; }
+
+/* Styles sp\u00E9cifiques \u00E0 la modale des r\u00E9sultats */
+.modal-body table tbody td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px; /* Ajustez selon le besoin */
+}
+
+/* Animation pour la modale */
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+.animate-scale-in {
+    animation: scaleIn 0.3s ease-out forwards;
+}
+
+/* Styles pour les petites \u00E9crans dans la modale (si le tableau devient trop large) */
+@media (max-width: 640px) {
+    .modal-body table, .modal-body thead, .modal-body tbody, .modal-body th, .modal-body td, .modal-body tr {
+        display: block;
+    }
+
+    .modal-body thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    .modal-body tr {
+        margin-bottom: 0.75rem;
+        border: 1px solid theme('colors.gray.700');
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+
+    .modal-body td {
+        border: none;
+        position: relative;
+        padding-left: 45%;
+        text-align: right;
+        white-space: normal;
+        max-width: none;
+    }
+
+    .modal-body td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 40%;
+        padding-left: 1rem;
+        white-space: nowrap;
+        text-align: left;
+        font-weight: bold;
+        color: theme('colors.blue.300');
+    }
+}
+
+#main {
+    margin-top: 10rem;
+    margin-left: 18rem;
+  }

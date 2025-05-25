@@ -1,0 +1,134 @@
+<app-header></app-header>
+<app-dashboard-exam-service></app-dashboard-exam-service>
+
+<main id="main" class="p-6 bg-gray-900 min-h-screen text-gray-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-6">
+            <div class="mb-4 sm:mb-0">
+                <h4 class="text-3xl font-bold text-blue-400 animate-fade-in-down">Suivi des Remises d'Épreuves</h4>
+                <ol class="flex text-sm text-gray-400 mt-1">
+                    <li class="mr-2"><a routerLink="/dashboard-exam-service" class="hover:text-blue-300 transition duration-200">Tableau de Bord</a></li>
+                    <li class="mr-2">/</li>
+                    <li class="text-blue-400">Suivi des Dépôts</li>
+                </ol>
+            </div>
+            </div>
+        <div class="w-full">
+            <div class=" p-6 rounded-lg shadow-xl border border-gray-700 animate-slide-up">
+                <h5 class="text-xl font-semibold text-gray-100 mb-2">État des Remises par Professeur</h5>
+                <p class="text-gray-400 mb-4">
+                    Suivez la soumission des épreuves par les professeurs pour chaque affectation.
+                </p>
+
+                <div class="flex flex-col md:flex-row gap-4 mb-6">
+                    <div class="flex-grow flex">
+                        <input type="text" class="flex-grow px-4 py-2 bg-gray-700 border border-gray-600 rounded-l-lg text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Rechercher (professeur, matière, session)..." [(ngModel)]="searchTerm" (input)="filterSuiviDepots()">
+                        <button class="px-4 py-2 bg-gray-600 text-gray-100 rounded-r-lg hover:bg-gray-700 transition duration-300" type="button" (click)="filterSuiviDepots()">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    <div class="relative w-full md:w-1/4">
+                        <select
+                            id="sessionFilter"
+                            class="block w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none pr-8"
+                            [(ngModel)]="selectedSessionId"
+                            (change)="filterSuiviDepots()"
+                        >
+                            <option [ngValue]="null">Toutes les Sessions</option>
+                            <option *ngFor="let session of sessions" [ngValue]="session.id_session">
+                                {{ session.nom }}
+                            </option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                        </div>
+                    </div>
+                    <div class="relative w-full md:w-1/4">
+                        <select
+                            id="submissionStatusFilter"
+                            class="block w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none pr-8"
+                            [(ngModel)]="selectedStatutRemise"
+                            (change)="filterSuiviDepots()"
+                        >
+                            <option [ngValue]="null">Tous les Statuts de Remise</option>
+                            <option *ngFor="let status of availableStatutRemise" [ngValue]="status">{{ status }}</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto rounded-lg border border-gray-700">
+                    <table class="min-w-full text-left divide-y divide-gray-700">
+                        <thead class="bg-gray-700 text-blue-300 uppercase text-sm">
+                            <tr>
+                                <th class="py-3 px-4">Session</th>
+                                <th class="py-3 px-4">Matière</th>
+                                <th class="py-3 px-4">Professeur</th>
+                                <th class="py-3 px-4">Date Limite Soumission</th>
+                                <th class="py-3 px-4">Date Remise Professeur</th>
+                                <th class="py-3 px-4">Statut Remise</th>
+                                <th class="py-3 px-4">Commentaires</th>
+                                <th class="py-3 px-4 text-center min-w-[100px]">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-700">
+                            <tr *ngIf="filteredSuiviDepots.length === 0">
+                                <td colspan="8" class="py-4 px-4 text-center text-gray-400">
+                                    Aucun suivi de dépôt trouvé.
+                                </td>
+                            </tr>
+                            <tr *ngFor="let suivi of filteredSuiviDepots" class="hover:bg-gray-700 transition duration-200 suivi-row animate-fade-in">
+                                <td class="py-3 px-4 text-blue-300 font-semibold">{{ suivi.nom_session }}</td>
+                                <td class="py-3 px-4 text-gray-400">{{ suivi.nom_matiere }}</td>
+                                <td class="py-3 px-4 text-gray-400">{{ suivi.nom_professeur }}</td>
+                                <td class="py-3 px-4 text-gray-400">{{ suivi.date_limite_soumission | date:'dd/MM/yyyy' }}</td>
+                                <td class="py-3 px-4 text-gray-400">
+                                    <span *ngIf="suivi.date_remise_professeur">{{ suivi.date_remise_professeur | date:'dd/MM/yyyy HH:mm' }}</span>
+                                    <span *ngIf="!suivi.date_remise_professeur" class="text-gray-500 italic">Non remis</span>
+                                </td>
+                                <td class="py-3 px-4">
+                                    <span class="text-xs font-bold px-3 py-1 rounded-full"
+                                          [ngClass]="{
+                                              'bg-green-600 text-white': suivi.statut_remise === 'Remis à temps',
+                                              'bg-yellow-600 text-white': suivi.statut_remise === 'Remis en retard',
+                                              'bg-red-600 text-white': suivi.statut_remise === 'Non remis'
+                                          }">
+                                        {{ suivi.statut_remise }}
+                                    </span>
+                                </td>
+                                <td class="py-3 px-4 text-gray-400">{{ suivi.commentaires|| 'N/A' }}</td>
+                                <td class="py-3 px-4 text-center">
+                                    <button *ngIf="suivi.statut_remise === 'Non remis'"
+                                            class="px-3 py-1 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition duration-300"
+                                            title="Marquer comme Remis"
+                                            (click)="markAsRemis(suivi.id_session)">
+                                        Marquer Remis
+                                    </button>
+                                    <button class="p-2 rounded-full hover:bg-gray-700 transition duration-200 text-blue-400 ml-2"
+                                            title="Voir Détails Affectation"
+                                            (click)="viewAffectationDetails(suivi.id_affectation)">
+                                        <i class="fas fa-info-circle"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div id="suivreDepotToast" class="fixed top-4 right-4 z-[1000] w-full max-w-sm rounded-lg shadow-lg transition-opacity duration-300 ease-out opacity-0 pointer-events-none">
+            <div class="flex items-center justify-between p-3 border-b border-gray-700 rounded-t-lg toast-header-bg">
+                <strong class="font-bold text-blue-300 toast-title"></strong>
+                <button type="button" class="text-gray-400 hover:text-gray-100 text-xl" (click)="hideToast()" aria-label="Close">
+                    &times;
+                </button>
+            </div>
+            <div class="p-3 text-gray-200 toast-body-bg rounded-b-lg">
+                <span class="toast-message"></span>
+            </div>
+        </div>
+
+    </div>
+</main>
