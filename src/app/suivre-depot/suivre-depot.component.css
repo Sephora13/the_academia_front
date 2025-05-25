@@ -1,0 +1,122 @@
+/* Animations personnalis\u00E9es - Copi\u00E9es de filiere.component.css */
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-down {
+    animation: fadeInDown 0.6s ease-out forwards;
+}
+
+@keyframes scaleUp {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+}
+.animate-scale-up {
+    animation: scaleUp 0.4s ease-out forwards;
+    animation-delay: 0.1s;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-up {
+    animation: slideUp 0.6s ease-out forwards;
+    animation-delay: 0.2s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* D\u00E9lais pour les lignes de tableau pour un effet d'apparition progressif */
+.suivi-row:nth-child(1) { animation-delay: 0.3s; }
+.suivi-row:nth-child(2) { animation-delay: 0.4s; }
+.suivi-row:nth-child(3) { animation-delay: 0.5s; }
+.suivi-row:nth-child(4) { animation-delay: 0.6s; }
+.suivi-row:nth-child(5) { animation-delay: 0.7s; }
+.suivi-row:nth-child(6) { animation-delay: 0.8s; }
+.suivi-row:nth-child(7) { animation-delay: 0.9s; }
+.suivi-row:nth-child(8) { animation-delay: 1.0s; }
+.suivi-row:nth-child(9) { animation-delay: 1.1s; }
+.suivi-row:nth-child(10) { animation-delay: 1.2s; }
+
+
+/* Styles pour les toasts (couleurs de fond pour le header/body) */
+.toast-header-bg {
+    background-color: theme('colors.gray.700'); /* Couleur par d\u00E9faut */
+}
+
+.toast-body-bg {
+    background-color: theme('colors.gray.800'); /* Couleur par d\u00E9faut */
+}
+
+/* Override pour les couleurs sp\u00E9cifiques des toasts */
+.bg-green-700 { background-color: theme('colors.green.700') !important; }
+.bg-green-800 { background-color: theme('colors.green.800') !important; }
+.bg-red-700 { background-color: theme('colors.red.700') !important; }
+.bg-red-800 { background-color: theme('colors.red.800') !important; }
+.bg-blue-700 { background-color: theme('colors.blue.700') !important; }
+.bg-blue-800 { background-color: theme('colors.blue.800') !important; }
+
+/* Styles sp\u00E9cifiques au tableau de suivi */
+table thead th {
+    white-space: nowrap; /* Emp\u00EAche le texte de s'enrouler dans l'en-t\u00EAte */
+}
+
+table tbody td {
+    white-space: nowrap; /* Emp\u00EAche le texte de s'enrouler dans les cellules */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Ajoute des points de suspension si le texte est trop long */
+    max-width: 180px; /* Limite la largeur des cellules pour \u00E9viter le d\u00E9bordement */
+}
+
+/* Ajustement pour les petites \u00E9crans */
+@media (max-width: 768px) {
+    table, thead, tbody, th, td, tr {
+        display: block;
+    }
+
+    thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    tr {
+        margin-bottom: 1rem;
+        border: 1px solid theme('colors.gray.700');
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+
+    td {
+        border: none;
+        position: relative;
+        padding-left: 50%;
+        text-align: right;
+        white-space: normal; /* Permet le retour \u00E0 la ligne pour les petites \u00E9crans */
+        max-width: none; /* Supprime la limite de largeur */
+    }
+
+    td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 45%;
+        padding-left: 1rem;
+        white-space: nowrap;
+        text-align: left;
+        font-weight: bold;
+        color: theme('colors.blue.300');
+    }
+}
+
+#main {
+    margin-top: 10rem;
+    margin-left: 18rem;
+  }
