@@ -32,38 +32,6 @@
                             <i class="fas fa-search"></i>
                         </button>
                     </div>
-                    <div class="relative w-full md:w-1/4">
-                        <select
-                            id="filiereFilter"
-                            class="block w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none pr-8"
-                            [(ngModel)]="selectedFiliereId"
-                            (change)="filterMatieres()"
-                        >
-                            <option [ngValue]="null">Toutes les Filières</option>
-                            <option *ngFor="let filiere of filieres" [ngValue]="filiere.id_filiere">
-                                {{ filiere.nom_filiere }}
-                            </option>
-                        </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
-                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-                        </div>
-                    </div>
-                    <div class="relative w-full md:w-1/4">
-                        <select
-                            id="optionFilter"
-                            class="block w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none pr-8"
-                            [(ngModel)]="selectedOptionId"
-                            (change)="filterMatieres()"
-                        >
-                            <option [ngValue]="null">Toutes les Options</option>
-                            <option *ngFor="let option of options" [ngValue]="option.id_option_etude">
-                                {{ option.nom_option }} ({{ getFiliereName(option.id_filiere) }})
-                            </option>
-                        </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
-                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="overflow-x-auto rounded-lg border border-gray-700">
@@ -71,8 +39,6 @@
                         <thead class="bg-gray-700 text-blue-300 uppercase text-sm">
                             <tr>
                                 <th class="py-3 px-4">Nom de la Matière</th>
-                                <th class="py-3 px-4">Filière</th>
-                                <th class="py-3 px-4">Option</th>
                                 <th class="py-3 px-4">Description</th>
                                 <th class="py-3 px-4">Dernière Mise à Jour</th>
                                 <th class="py-3 px-4 min-w-[150px] text-center">Actions</th>
@@ -80,14 +46,12 @@
                         </thead>
                         <tbody class="divide-y divide-gray-700">
                             <tr *ngIf="filteredMatieres.length === 0">
-                                <td colspan="7" class="py-4 px-4 text-center text-gray-400">
+                                <td colspan="4" class="py-4 px-4 text-center text-gray-400">
                                     Aucune matière trouvée.
                                 </td>
                             </tr>
                             <tr *ngFor="let matiere of filteredMatieres" class=" hover:bg-gray-700 transition duration-200 matiere-row animate-fade-in">
                                 <td class="py-3 px-4 text-blue-300 font-semibold">{{ matiere.nom_matiere }}</td>
-                                <td class="py-3 px-4 text-gray-400">{{ getFiliereName(matiere.id_filiere) }}</td>
-                                <td class="py-3 px-4 text-gray-400">{{ getOptionName(matiere.id_option) }}</td>
                                 <td class="py-3 px-4 text-gray-400">{{ matiere.description || 'N/A' }}</td>
                                 <td class="py-3 px-4 text-gray-400">{{ matiere.updated_at | date:'dd/MM/yyyy HH:mm' }}</td>
                                 <td class="py-3 px-4 text-center">
@@ -124,47 +88,6 @@
                             </div>
                         </div>
                         <div class="mb-4">
-                            <label for="id_filiere" class="block text-gray-300 text-sm font-bold mb-2">Filière Associée</label>
-                            <div class="relative">
-                                <select
-                                    id="id_filiere"
-                                    class="block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none pr-8"
-                                    formControlName="id_filiere"
-                                    required
-                                    (change)="onFiliereChange(matiereForm.controls['id_filiere'].value)"
-                                >
-                                    <option [ngValue]="null" disabled>Sélectionnez une filière</option>
-                                    <option *ngFor="let filiere of filieres" [ngValue]="filiere.id_filiere">
-                                        {{ filiere.nom_filiere }}
-                                    </option>
-                                </select>
-                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
-                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-                                </div>
-                            </div>
-                            <div *ngIf="matiereForm.controls['id_filiere'].invalid && matiereForm.controls['id_filiere'].touched" class="text-red-400 text-xs mt-1">
-                                La filière est requise.
-                            </div>
-                        </div>
-                        <div class="mb-4">
-                            <label for="id_option" class="block text-gray-300 text-sm font-bold mb-2">Option d'Étude (facultatif)</label>
-                            <div class="relative">
-                                <select
-                                    id="id_option"
-                                    class="block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none pr-8"
-                                    formControlName="id_option"
-                                >
-                                    <option [ngValue]="null">Aucune option</option>
-                                    <option *ngFor="let option of filteredOptionsForForm" [ngValue]="option.id_option_etude">
-                                        {{ option.nom_option }}
-                                    </option>
-                                </select>
-                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
-                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mb-4">
                             <label for="description" class="block text-gray-300 text-sm font-bold mb-2">Description</label>
                             <textarea class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" id="description" formControlName="description" rows="3"></textarea>
                         </div>
@@ -190,6 +113,5 @@
                 <span class="toast-message"></span>
             </div>
         </div>
-
     </div>
 </main>

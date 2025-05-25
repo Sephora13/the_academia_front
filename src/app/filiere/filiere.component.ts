@@ -1,19 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule } from '@angular/forms';
-import { Observable, of } from 'rxjs';
-import { delay } from 'rxjs/operators';
-
 import { HeaderComponent } from '../header/header.component';
 import { DashboardExamServiceComponent } from '../dashboard-exam-service/dashboard-exam-service.component'; 
+import { FiliereService } from '../services/filiere.service';
 
-// --- D\u00E9finition des interfaces pour les donn\u00E9es de fili\u00E8re (simul\u00E9es) ---
+// Interfaces pour les données de filière
 interface FiliereRead {
   id_filiere: number;
   nom_filiere: string;
   description?: string;
-  created_at: Date;
-  updated_at: Date;
+  created_at: string;
+  updated_at: string;
 }
 
 interface FiliereCreate {
@@ -25,8 +23,12 @@ interface FiliereUpdate {
   nom_filiere?: string;
   description?: string;
 }
-// --- Fin des d\u00E9finitions d'interfaces ---
 
+interface ApiResponse {
+  success: boolean;
+  status: number;
+  message: FiliereRead[];
+}
 
 @Component({
   selector: 'app-filiere',
@@ -48,20 +50,12 @@ export class FiliereComponent implements OnInit {
   isEditMode: boolean = false;
   currentFiliereId: number | null = null;
   searchTerm: string = '';
-  showFiliereModal: boolean = false; // Contr\u00F4le la visibilit\u00E9 de la modale
-  private toastTimeout: any; // Pour g\u00E9rer le timeout du toast
-
-  // Donn\u00E9es de fili\u00E8re simul\u00E9es
-  private mockFilieres: FiliereRead[] = [
-    { id_filiere: 1, nom_filiere: 'Génie Logiciel', description: 'Développement de logiciels et applications.', created_at: new Date(), updated_at: new Date() },
-    { id_filiere: 2, nom_filiere: 'Réseaux et Télécommunications', description: 'Conception et gestion des infrastructures réseau.', created_at: new Date(), updated_at: new Date() },
-    { id_filiere: 3, nom_filiere: 'Intelligence Artificielle', description: 'Apprentissage automatique et science des données.', created_at: new Date(), updated_at: new Date() },
-    { id_filiere: 4, nom_filiere: 'Cybersécurité', description: 'Protection des systèmes et données informatiques.', created_at: new Date(), updated_at: new Date() }
-  ];
-  private nextFiliereId = 5; // Pour g\u00E9n\u00E9rer de nouveaux IDs
+  showFiliereModal: boolean = false;
+  private toastTimeout: any;
 
   constructor(
     private fb: FormBuilder,
+    private filiereService: FiliereService
   ) {
     this.filiereForm = this.fb.group({
       nom_filiere: ['', Validators.required],
@@ -73,27 +67,34 @@ export class FiliereComponent implements OnInit {
     this.loadFilieres();
   }
 
-  /**
-   * Simule le chargement de toutes les fili\u00E8res depuis un service.
-   */
   loadFilieres(): void {
-    this._get_all_filieres().subscribe({
-      next: (data: FiliereRead[]) => {
-        this.filieres = data;
-        this.filterFilieres(); // Appliquer le filtre initial au chargement
-        this.showToast('Info', 'Filières chargées (simulé).', 'info');
+    this.filiereService.lireFilieres().subscribe({
+      next: (response: ApiResponse) => {
+        if (response.success && response.message) {
+          this.filieres = response.message;
+          this.filterFilieres();
+          this.showToast('Info', 'Filières chargées avec succès.', 'info');
+        } else {
+          this.showToast('Info', 'Aucune filière trouvée.', 'info');
+          this.filieres = [];
+          this.filterFilieres();
+        }
       },
       error: (err) => {
-        console.error('Erreur lors du chargement des filières (simulé) :', err);
-        this.showToast('Erreur', 'Impossible de charger les filières (simulé).', 'danger');
+        console.error('Erreur lors du chargement des filières :', err);
+        this.showToast('Erreur', 'Impossible de charger les filières.', 'danger');
+        this.filieres = [];
+        this.filterFilieres();
       }
     });
   }
 
-  /**
-   * Filtre les fili\u00E8res affich\u00E9es en fonction du terme de recherche.
-   */
   filterFilieres(): void {
+    if (!this.filieres || !Array.isArray(this.filieres)) {
+      this.filteredFilieres = [];
+      return;
+    }
+
     if (this.searchTerm) {
       this.filteredFilieres = this.filieres.filter(filiere =>
         filiere.nom_filiere.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
@@ -104,99 +105,86 @@ export class FiliereComponent implements OnInit {
     }
   }
 
-  /**
-   * Ouvre la modale pour ajouter une nouvelle fili\u00E8re.
-   */
   openAddFiliereModal(): void {
     this.isEditMode = false;
     this.currentFiliereId = null;
-    this.filiereForm.reset(); // R\u00E9initialise le formulaire
-    this.showFiliereModal = true; // Affiche la modale
+    this.filiereForm.reset();
+    this.showFiliereModal = true;
   }
 
-  /**
-   * Ouvre la modale pour modifier une fili\u00E8re existante.
-   * @param filiere La fili\u00E8re \u00E0 modifier.
-   */
   openEditFiliereModal(filiere: FiliereRead): void {
     this.isEditMode = true;
     this.currentFiliereId = filiere.id_filiere;
-    this.filiereForm.patchValue(filiere); // Remplit le formulaire avec les donn\u00E9es de la fili\u00E8re
-    this.showFiliereModal = true; // Affiche la modale
+    this.filiereForm.patchValue({
+      nom_filiere: filiere.nom_filiere,
+      description: filiere.description
+    });
+    this.showFiliereModal = true;
   }
 
-  /**
-   * Sauvegarde une fili\u00E8re (cr\u00E9ation ou modification) via le service simul\u00E9.
-   */
   saveFiliere(): void {
     if (this.filiereForm.invalid) {
-      this.filiereForm.markAllAsTouched(); // Affiche les erreurs de validation
+      this.filiereForm.markAllAsTouched();
       this.showToast('Erreur', 'Veuillez remplir tous les champs requis.', 'danger');
       return;
     }
 
-    const filiereData: FiliereCreate | FiliereUpdate = this.filiereForm.value;
+    const filiereData = this.filiereForm.value;
 
     if (this.isEditMode && this.currentFiliereId !== null) {
-      this._update_filiere(this.currentFiliereId, filiereData as FiliereUpdate).subscribe({
-        next: (updatedFiliere) => {
-          if (updatedFiliere) {
+      this.filiereService.mettreAJourFiliere(this.currentFiliereId, filiereData).subscribe({
+        next: (response: any) => {
+          if (response.success) {
             this.showToast('Succès', 'Filière modifiée avec succès !', 'success');
-            this.loadFilieres(); // Recharger la liste
-            this.showFiliereModal = false; // Cache la modale
+            this.loadFilieres();
+            this.showFiliereModal = false;
           } else {
-            this.showToast('Erreur', 'Filière non trouvée pour la modification.', 'danger');
+            this.showToast('Erreur', response.message || 'Erreur lors de la modification', 'danger');
           }
         },
         error: (err) => {
-          console.error('Erreur lors de la modification de la filière (simulé) :', err);
-          this.showToast('Erreur', 'Impossible de modifier la filière (simulé).', 'danger');
+          console.error('Erreur lors de la modification de la filière :', err);
+          this.showToast('Erreur', 'Impossible de modifier la filière.', 'danger');
         }
       });
     } else {
-      this._create_filiere(filiereData as FiliereCreate).subscribe({
-        next: (newFiliere) => {
-          this.showToast('Succès', 'Filière ajoutée avec succès !', 'success');
-          this.loadFilieres(); // Recharger la liste
-          this.showFiliereModal = false; // Cache la modale
-        },
-        error: (err) => {
-          console.error('Erreur lors de l\'ajout de la filière (simulé) :', err);
-          this.showToast('Erreur', 'Impossible d\'ajouter la filière (simulé).', 'danger');
-        }
-      });
-    }
-  }
-
-  /**
-   * Demande confirmation et supprime une fili\u00E8re via le service simul\u00E9.
-   * @param id L'ID de la fili\u00E8re \u00E0 supprimer.
-   */
-  confirmDeleteFiliere(id: number): void {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cette filière ? Cette action est irréversible.')) {
-      this._delete_filiere(id).subscribe({
-        next: (success) => {
-          if (success) {
-            this.showToast('Succès', 'Filière supprimée avec succès !', 'success');
-            this.loadFilieres(); // Recharger la liste
+      this.filiereService.creerFiliere(filiereData).subscribe({
+        next: (response: any) => {
+          if (response.success) {
+            this.showToast('Succès', 'Filière ajoutée avec succès !', 'success');
+            this.loadFilieres();
+            this.showFiliereModal = false;
           } else {
-            this.showToast('Erreur', 'Impossible de supprimer la filière (non trouvée).', 'danger');
+            this.showToast('Erreur', response.message || 'Erreur lors de l\'ajout', 'danger');
           }
         },
         error: (err) => {
-          console.error('Erreur lors de la suppression de la filière (simulé) :', err);
-          this.showToast('Erreur', 'Une erreur est survenue lors de la suppression (simulé).', 'danger');
+          console.error('Erreur lors de l\'ajout de la filière :', err);
+          this.showToast('Erreur', 'Impossible d\'ajouter la filière.', 'danger');
         }
       });
     }
   }
 
-  /**
-   * Affiche un message Toast.
-   * @param title Titre du Toast.
-   * @param message Contenu du message.
-   * @param type Type de message pour le style (success, danger, info).
-   */
+  confirmDeleteFiliere(id: number): void {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette filière ? Cette action est irréversible.')) {
+      this.filiereService.supprimerFiliere(id).subscribe({
+        next: (response: any) => {
+          if (response.success) {
+            this.showToast('Succès', 'Filière supprimée avec succès !', 'success');
+            this.loadFilieres();
+          } else {
+            this.showToast('Erreur', response.message || 'Erreur lors de la suppression', 'danger');
+          }
+        },
+        error: (err) => {
+          console.error('Erreur lors de la suppression de la filière :', err);
+          this.showToast('Erreur', 'Une erreur est survenue lors de la suppression.', 'danger');
+        }
+      });
+    }
+  }
+
   showToast(title: string, message: string, type: 'success' | 'danger' | 'info'): void {
     const toastElement = document.getElementById('filiereToast');
     if (toastElement) {
@@ -207,15 +195,12 @@ export class FiliereComponent implements OnInit {
         toastTitleElement.textContent = title;
         toastMessageElement.textContent = message;
 
-        // R\u00E9initialise et ajoute la classe de couleur pour le header et body du toast
         const header = toastElement.querySelector('.toast-header-bg') as HTMLElement;
         const body = toastElement.querySelector('.toast-body-bg') as HTMLElement;
 
-        // Nettoyage des classes pr\u00E9c\u00E9dentes
         header.classList.remove('bg-green-700', 'bg-red-700', 'bg-blue-700');
         body.classList.remove('bg-green-800', 'bg-red-800', 'bg-blue-800');
 
-        // Ajout des nouvelles classes Tailwind
         if (type === 'success') {
           header.classList.add('bg-green-700');
           body.classList.add('bg-green-800');
@@ -227,11 +212,9 @@ export class FiliereComponent implements OnInit {
           body.classList.add('bg-blue-800');
         }
 
-        // Affiche le toast
         toastElement.classList.remove('opacity-0', 'pointer-events-none');
         toastElement.classList.add('opacity-100');
 
-        // Cache le toast apr\u00E8s 3 secondes
         if (this.toastTimeout) {
           clearTimeout(this.toastTimeout);
         }
@@ -242,49 +225,11 @@ export class FiliereComponent implements OnInit {
     }
   }
 
-  /**
-   * Cache le message Toast.
-   */
   hideToast(): void {
     const toastElement = document.getElementById('filiereToast');
     if (toastElement) {
       toastElement.classList.remove('opacity-100');
       toastElement.classList.add('opacity-0', 'pointer-events-none');
     }
-  }
-
-
-  // --- M\u00E9thodes de simulation du service ---
-
-  private _get_all_filieres(): Observable<FiliereRead[]> {
-    return of([...this.mockFilieres]).pipe(delay(500));
-  }
-
-  private _create_filiere(filiere: FiliereCreate): Observable<FiliereRead> {
-    const newFiliere: FiliereRead = {
-      id_filiere: this.nextFiliereId++,
-      nom_filiere: filiere.nom_filiere,
-      description: filiere.description,
-      created_at: new Date(),
-      updated_at: new Date()
-    };
-    this.mockFilieres.push(newFiliere);
-    return of(newFiliere).pipe(delay(500));
-  }
-
-  private _update_filiere(id: number, filiere: FiliereUpdate): Observable<FiliereRead | null> {
-    const index = this.mockFilieres.findIndex(f => f.id_filiere === id);
-    if (index > -1) {
-      const updatedFiliere = { ...this.mockFilieres[index], ...filiere, updated_at: new Date() };
-      this.mockFilieres[index] = updatedFiliere;
-      return of(updatedFiliere).pipe(delay(500));
-    }
-    return of(null).pipe(delay(500));
-  }
-
-  private _delete_filiere(id: number): Observable<boolean> {
-    const initialLength = this.mockFilieres.length;
-    this.mockFilieres = this.mockFilieres.filter(filiere => filiere.id_filiere !== id);
-    return of(this.mockFilieres.length < initialLength).pipe(delay(500));
   }
 }
