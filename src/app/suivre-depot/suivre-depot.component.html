@@ -14,7 +14,7 @@
             </div>
             </div>
         <div class="w-full">
-            <div class="bg-gray-800 p-6 rounded-lg shadow-xl border border-gray-700 animate-slide-up">
+            <div class=" p-6 rounded-lg shadow-xl border border-gray-700 animate-slide-up">
                 <h5 class="text-xl font-semibold text-gray-100 mb-2">État des Remises par Professeur</h5>
                 <p class="text-gray-400 mb-4">
                     Suivez la soumission des épreuves par les professeurs pour chaque affectation.
@@ -79,7 +79,7 @@
                                     Aucun suivi de dépôt trouvé.
                                 </td>
                             </tr>
-                            <tr *ngFor="let suivi of filteredSuiviDepots" class="bg-gray-800 hover:bg-gray-700 transition duration-200 suivi-row animate-fade-in">
+                            <tr *ngFor="let suivi of filteredSuiviDepots" class="hover:bg-gray-700 transition duration-200 suivi-row animate-fade-in">
                                 <td class="py-3 px-4 text-blue-300 font-semibold">{{ suivi.nom_session }}</td>
                                 <td class="py-3 px-4 text-gray-400">{{ suivi.nom_matiere }}</td>
                                 <td class="py-3 px-4 text-gray-400">{{ suivi.nom_professeur }}</td>
@@ -98,12 +98,12 @@
                                         {{ suivi.statut_remise }}
                                     </span>
                                 </td>
-                                <td class="py-3 px-4 text-gray-400">{{ suivi.commentaires_suivi || 'N/A' }}</td>
+                                <td class="py-3 px-4 text-gray-400">{{ suivi.commentaires|| 'N/A' }}</td>
                                 <td class="py-3 px-4 text-center">
                                     <button *ngIf="suivi.statut_remise === 'Non remis'"
                                             class="px-3 py-1 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition duration-300"
                                             title="Marquer comme Remis"
-                                            (click)="markAsRemis(suivi.id_suivi)">
+                                            (click)="markAsRemis(suivi.id_session)">
                                         Marquer Remis
                                     </button>
                                     <button class="p-2 rounded-full hover:bg-gray-700 transition duration-200 text-blue-400 ml-2"
