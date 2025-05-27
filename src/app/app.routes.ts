@@ -39,6 +39,7 @@ import { MatiereComponent } from './matiere/matiere.component';
 import { SessionExamenComponent } from './session-examen/session-examen.component';
 import { PlanifierSessionComponent } from './planifier-session/planifier-session.component';
 import { SuivreDepotComponent } from './suivre-depot/suivre-depot.component';
+import { TrackingComponent } from './tracking/tracking.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -80,6 +81,7 @@ export const routes: Routes = [
   {path: 'gerer_sessions', component:SessionExamenComponent},
   { path: 'planifier_session/:id', component: PlanifierSessionComponent },
   {path: 'suivi_depots', component:SuivreDepotComponent},
+  {path: 'tracking', component:TrackingComponent},
   //{ path: '**', redirectTo: 'signIn', pathMatch: 'full' },
   {
     path: 'professeur',

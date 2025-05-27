@@ -1,10 +1,11 @@
 import { Component, ElementRef, Inject, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
 import { SignalingService } from '../services/signaling.service';
 import { isPlatformBrowser } from '@angular/common';
+import { CoordinateurSideComponent } from '../coordinateur-side/coordinateur-side.component';
 
 @Component({
   selector: 'app-tracking',
-  imports: [],
+  imports: [CoordinateurSideComponent],
   templateUrl: './tracking.component.html',
   styleUrl: './tracking.component.css'
 })
@@ -14,7 +15,7 @@ export class TrackingComponent implements OnInit {
 
   constructor(private signaling: SignalingService, @Inject(PLATFORM_ID) private platformId: Object) {}
 
-  ngOnInit(): void {
+  async ngOnInit() {
     if (!isPlatformBrowser(this.platformId)) return;
 
     this.signaling.setRole('coordinateur');

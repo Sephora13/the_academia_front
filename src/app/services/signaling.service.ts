@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import { Subject } from 'rxjs';
+import { Socket,io } from 'socket.io-client';
 
 
 @Injectable({ providedIn: 'root' })

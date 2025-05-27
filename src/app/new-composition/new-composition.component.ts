@@ -52,8 +52,6 @@ export class NewCompositionComponent implements AfterViewInit, OnInit {
 
   remainingTime: string = '';
   private countdownTimer: any;
-
-
   
 
   async ngOnInit() {
@@ -203,15 +201,37 @@ export class NewCompositionComponent implements AfterViewInit, OnInit {
 
   ngAfterViewInit(): void {
     this.codeEditors.changes.subscribe(() => {
-      this.codeEditors.forEach((editor, index) => {
-        const aceEditor = ace.edit(editor.nativeElement);
+      this.codeEditors.forEach((editorRef, index) => {
+        const aceEditor = ace.edit(editorRef.nativeElement);
+  
+        // ✅ Bloquer copier-coller dans l’éditeur
+        const textInput: HTMLTextAreaElement = aceEditor.textInput.getElement();
+  
+        textInput.addEventListener('copy', (e: ClipboardEvent) => {
+          e.preventDefault();
+          alert('Copie désactivée');
+        });
+  
+        textInput.addEventListener('paste', (e: ClipboardEvent) => {
+          e.preventDefault();
+          alert('Coller désactivé');
+        });
+  
+        textInput.addEventListener('cut', (e: ClipboardEvent) => {
+          e.preventDefault();
+          alert('Couper désactivé');
+        });
+  
+        // ✅ Configuration d'Ace
         ace.config.set('basePath', 'https://unpkg.com/ace-builds@1.4.12/src-noconflict');
         aceEditor.setOptions({
           fontSize: "14px",
           theme: 'ace/theme/twilight',
           mode: 'ace/mode/javascript'
         });
+  
         aceEditor.session.setValue("");
+  
         aceEditor.on("change", () => {
           this.codeAnswers[index] = aceEditor.getValue();
         });
@@ -291,6 +311,11 @@ export class NewCompositionComponent implements AfterViewInit, OnInit {
     });
   }
   
+  //empêcher le copier-coller dans le text-area
+  onBlockAction(event: ClipboardEvent): void {
+    event.preventDefault();
+    alert('Copier-coller désactivé');
+  }
   
 
   private handleError(err: any): string {
