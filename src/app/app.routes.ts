@@ -40,6 +40,7 @@ import { SessionExamenComponent } from './session-examen/session-examen.componen
 import { PlanifierSessionComponent } from './planifier-session/planifier-session.component';
 import { SuivreDepotComponent } from './suivre-depot/suivre-depot.component';
 import { ResultatsEpreuveComponent } from './resultats-epreuve/resultats-epreuve.component';
+import { TrackingComponent } from './tracking/tracking.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -82,7 +83,8 @@ export const routes: Routes = [
   { path: 'planifier_session/:id', component: PlanifierSessionComponent },
   { path: 'suivi_depots', component: SuivreDepotComponent },
   { path: 'resultats_epreuves', component: ResultatsEpreuveComponent },
-
+  {path: 'suivi_depots', component:SuivreDepotComponent},
+  {path: 'tracking', component:TrackingComponent},
   //{ path: '**', redirectTo: 'signIn', pathMatch: 'full' },
   {
     path: 'professeur',

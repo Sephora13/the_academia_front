@@ -72,6 +72,10 @@ export class CoordinateurSideComponent {
     this.router.navigate(['/exam_service'])
   }
 
+  tracking(){
+    this.router.navigate(['/tracking'])
+  }
+
   logout() {
     this.auth.logout();
     this.router.navigate(['/register_coord']);

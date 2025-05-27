@@ -89,7 +89,10 @@
               rows="4"
               placeholder="Votre réponse..."
               (input)="saveShortAnswer(i, $event)"
-            ></textarea>
+              (copy)="onBlockAction($event)" 
+              (cut)="onBlockAction($event)" 
+              (paste)="onBlockAction($event)">
+            </textarea>
           </div>
         </div>
       </section>

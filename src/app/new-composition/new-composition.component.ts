@@ -1,20 +1,38 @@
-import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, QueryList, ViewChildren } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { AfterViewInit, Component, ElementRef,Inject, OnInit, PLATFORM_ID, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import * as ace from "ace-builds";
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthentificationService } from '../services/authentification.service';
 import { CompositionService } from '../services/composition.service';
+import { SignalingService } from '../services/signaling.service';
 
 
 @Component({
   selector: 'app-new-composition',
   standalone: true,
   imports: [CommonModule],
+  template: `<video #localVideo autoplay muted playsinline></video>`,
   templateUrl: './new-composition.component.html',
   styleUrls: ['./new-composition.component.css']
 })
-export class NewCompositionComponent implements AfterViewInit {
+export class NewCompositionComponent implements AfterViewInit, OnInit {
+  @ViewChild('localVideo') localVideo!: ElementRef<HTMLVideoElement>;
+  private localStream!: MediaStream;
+  private peerConnection!: RTCPeerConnection;
+
+  constructor(
+    private httpClient: HttpClient,
+    private route: ActivatedRoute,
+    private auth: AuthentificationService,
+    private compositionService: CompositionService,
+    private router: Router,
+    private signaling: SignalingService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    this.id_epreuve = this.route.snapshot.params['id'];
+  }
+  
   user: { id: number, nom: string, prenom: string } | null = null;
   examInfo: any = {};
   id_epreuve: number = 0;
@@ -34,21 +52,46 @@ export class NewCompositionComponent implements AfterViewInit {
 
   remainingTime: string = '';
   private countdownTimer: any;
+  
 
-
-  constructor(
-    private httpClient: HttpClient,
-    private route: ActivatedRoute,
-    private auth: AuthentificationService,
-    private compositionService: CompositionService,
-    private router: Router
-  ) {
-    this.id_epreuve = this.route.snapshot.params['id'];
-  }
-
-  ngOnInit() {
+  async ngOnInit() {
     this.loadExamInfo();
     this.loadQuestions();
+
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    try {
+      this.signaling.setRole('meeting');
+
+      this.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      this.localVideo.nativeElement.srcObject = this.localStream;
+
+      this.peerConnection = new RTCPeerConnection({
+        iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+      });
+
+      this.localStream.getTracks().forEach(track => {
+        this.peerConnection.addTrack(track, this.localStream);
+      });
+
+      this.peerConnection.onicecandidate = (event) => {
+        if (event.candidate) {
+          console.log('[Meeting] Sending ICE candidate:', event.candidate);
+          this.signaling.sendCandidate(event.candidate);
+        }
+      };
+
+      this.signaling.answer$.subscribe(async answer => {
+        console.log('[Meeting] Answer received');
+        await this.peerConnection.setRemoteDescription(answer);
+      });
+
+      const offer = await this.peerConnection.createOffer();
+      await this.peerConnection.setLocalDescription(offer);
+      this.signaling.sendOffer(offer);
+    } catch (error) {
+      console.error('[Meeting] Error:', error);
+    }
   }
   
 
@@ -158,15 +201,37 @@ export class NewCompositionComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.codeEditors.changes.subscribe(() => {
-      this.codeEditors.forEach((editor, index) => {
-        const aceEditor = ace.edit(editor.nativeElement);
+      this.codeEditors.forEach((editorRef, index) => {
+        const aceEditor = ace.edit(editorRef.nativeElement);
+  
+        // ✅ Bloquer copier-coller dans l’éditeur
+        const textInput: HTMLTextAreaElement = aceEditor.textInput.getElement();
+  
+        textInput.addEventListener('copy', (e: ClipboardEvent) => {
+          e.preventDefault();
+          alert('Copie désactivée');
+        });
+  
+        textInput.addEventListener('paste', (e: ClipboardEvent) => {
+          e.preventDefault();
+          alert('Coller désactivé');
+        });
+  
+        textInput.addEventListener('cut', (e: ClipboardEvent) => {
+          e.preventDefault();
+          alert('Couper désactivé');
+        });
+  
+        // ✅ Configuration d'Ace
         ace.config.set('basePath', 'https://unpkg.com/ace-builds@1.4.12/src-noconflict');
         aceEditor.setOptions({
           fontSize: "14px",
           theme: 'ace/theme/twilight',
           mode: 'ace/mode/javascript'
         });
+  
         aceEditor.session.setValue("");
+  
         aceEditor.on("change", () => {
           this.codeAnswers[index] = aceEditor.getValue();
         });
@@ -246,6 +311,11 @@ export class NewCompositionComponent implements AfterViewInit {
     });
   }
   
+  //empêcher le copier-coller dans le text-area
+  onBlockAction(event: ClipboardEvent): void {
+    event.preventDefault();
+    alert('Copier-coller désactivé');
+  }
   
 
   private handleError(err: any): string {
