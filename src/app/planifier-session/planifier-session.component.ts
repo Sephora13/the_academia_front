@@ -197,6 +197,10 @@ export class PlanifierSessionComponent implements OnInit {
       statut_affectation: 'assignee'
     });
     this.showAffectationModal = true;
+    // Après le chargement des données, ajouter :
+    console.log('Matieres:', this.matieres);
+    console.log('Options:', this.options);
+    console.log('Professeurs:', this.professeurs);
   }
 
   openEditAffectationModal(affectation: AffectationEpreuveRead): void {

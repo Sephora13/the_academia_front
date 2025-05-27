@@ -176,3 +176,24 @@ animation-delay: -1.0s;
 }
 }
 
+/* Ajouts CSS */
+.group:hover .group-hover\:translate-y{
+  transform: translateY(-2px);
+}
+
+.group\/button:hover .group-hover\/button:rotate-90 {
+  transform: rotate(90deg);
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.toast-enter {
+  animation: slideIn 0.3s ease-out forwards;
+}
+
+.border-gradient {
+  border-image: linear-gradient(45deg, #3B82F6, #8B5CF6) 1;
+}

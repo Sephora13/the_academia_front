@@ -19,26 +19,15 @@
             <span>Dashboard</span>
           </a>
 
-          <div class="sidebar__submenu-container" (click)="toggleEpreuveSubmenu()">
-            <a class="sidebar__link">
-              <i class="ri-pencil-fill"></i>
-              <span>Epreuve</span>
-              <i class="ri-arrow-down-s-line sidebar__submenu-arrow" [ngClass]="{'rotate-180': isEpreuveSubmenuOpen}"></i>
+          <div class="sidebar__submenu-container">
+            <a [routerLink]="['/professeur/epreuve_a_rendre']" routerLinkActive="active-link" class="sidebar__link">
+              <i class="fas fa-clipboard-list"></i>
+              <span>Epreuve à rendre</span>
             </a>
-            <div class="sidebar__submenu" [ngClass]="{'show-submenu': isEpreuveSubmenuOpen}">
-              <a [routerLink]="['/professeur/show_epreuve']" routerLinkActive="active-link" class="sidebar__submenu-link">
-                <i class="ri-eye-fill"></i>
-                <span>Voir mes épreuves</span>
-              </a>
-              <a [routerLink]="['/professeur/make_epreuve_by_ia']" routerLinkActive="active-link" class="sidebar__submenu-link">
-                <i class="ri-robot-2-fill"></i>
-                <span>Créer une épreuve avec IA</span>
-              </a>
-              <a [routerLink]="['/professeur/make_epreuve_manually']" routerLinkActive="active-link" class="sidebar__submenu-link">
-                <i class="ri-file-text-fill"></i>
-                <span>Créer une épreuve manuellement</span>
-              </a>
-            </div>
+            <a [routerLink]="['/professeur/show_epreuve']" routerLinkActive="active-link" class="sidebar__link mt-8">
+              <i class="fas fa-folder-open"></i>
+              <span>Mes Epreuve crées</span>
+            </a>
           </div>
         </div>
       </div>

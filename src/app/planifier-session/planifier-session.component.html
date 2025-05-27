@@ -112,7 +112,7 @@
                             <p><i class="fas fa-graduation-cap mr-2 text-gray-400"></i>Option: <span class="font-medium">{{ affectation.nom_option }}</span></p>
                             <p><i class="fas fa-chalkboard-teacher mr-2 text-gray-400"></i>Prof: <span class="font-medium">{{ affectation.nom_professeur }}</span></p>
                             <p><i class="far fa-calendar-check mr-2 text-gray-400"></i>Examen: <span class="font-medium">{{ affectation.date_examen_etudiant | date:'dd/MM/yyyy' }}</span></p>
-                            <p><i class="far fa-clock mr-2 text-gray-400"></i>Heures: <span class="font-medium">{{ affectation.heure_debut_examen }} - {{ affectation.duree_examen_prevue }}</span></p>
+                            <p><i class="far fa-clock mr-2 text-gray-400"></i>Heure de début: <span class="font-medium">{{ affectation.heure_debut_examen }}</span></p>
                             <p><i class="fas fa-hourglass-half mr-2 text-gray-400"></i>Soumission: <span class="font-medium">{{ affectation.date_limite_soumission_prof | date:'dd/MM/yyyy' }}</span></p>
                             <p *ngIf="affectation.commentaires_service_examens" class="text-gray-400 text-xs mt-3 italic"><i class="fas fa-comment-dots mr-2"></i>{{ affectation.commentaires_service_examens }}</p>
                         </div>
@@ -152,7 +152,7 @@
                                         required
                                     >
                                         <option [ngValue]="null" disabled>Sélectionnez une matière</option>
-                                        <option *ngFor="let matiere of matieres" [ngValue]="matiere.id_matiere">{{ matiere.nom_matiere }}</option>
+                                        <option *ngFor="let matiere of matieres" [ngValue]="matiere.id_matiere" class="bg-gray-800 text-white hover:bg-blue-600">TEST {{ matiere.nom_matiere }}</option>
                                     </select>
                                     <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
                                         <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
@@ -163,22 +163,22 @@
                                 </div>
                             </div>
                             <div class="mb-4">
-                                <label for="id_option" class="block text-gray-300 text-sm font-bold mb-2">Option</label>
+                                <label for="id_option_etude" class="block text-gray-300 text-sm font-bold mb-2">Option</label>
                                 <div class="relative">
                                     <select
-                                        id="id_option"
+                                        id="id_option_etude"
                                         class="block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none pr-8"
-                                        formControlName="id_option"
+                                        formControlName="id_option_etude"
                                         required
                                     >
                                         <option [ngValue]="null" disabled>Sélectionnez une option</option>
-                                        <option *ngFor="let option of options" [ngValue]="option.id_option">{{ option.nom_option }}</option>
+                                        <option *ngFor="let option of options" [ngValue]="option.id_option_etude">{{ option.nom_option }}</option>
                                     </select>
                                     <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
                                         <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
                                     </div>
                                 </div>
-                                <div *ngIf="affectationForm.controls['id_option'].invalid && affectationForm.controls['id_option'].touched" class="text-red-400 text-xs mt-1">
+                                <div *ngIf="affectationForm.controls['id_option_etude'].invalid && affectationForm.controls['id_option_etude'].touched" class="text-red-400 text-xs mt-1">
                                     L'option est requise.
                                 </div>
                             </div>
@@ -192,7 +192,7 @@
                                         required
                                     >
                                         <option [ngValue]="null" disabled>Sélectionnez un professeur</option>
-                                        <option *ngFor="let professeur of professeurs" [ngValue]="professeur.id_professeur">{{ professeur.nom_professeur }}</option>
+                                        <option *ngFor="let professeur of professeurs" [ngValue]="professeur.id_professeur">{{ professeur.prenom }} {{ professeur.nom }}</option>
                                     </select>
                                     <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
                                         <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
@@ -279,4 +279,4 @@
         </div>
 
     </div>
-</main>```
+</main>

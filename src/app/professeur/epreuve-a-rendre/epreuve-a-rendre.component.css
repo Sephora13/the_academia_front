@@ -1,0 +1,82 @@
+/* Animations personnalis\u00E9es - R\u00E9utilis\u00E9es de filiere.component.css */
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-down {
+    animation: fadeInDown 0.6s ease-out forwards;
+}
+
+@keyframes scaleUp {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+}
+.animate-scale-up {
+    animation: scaleUp 0.4s ease-out forwards;
+    animation-delay: 0.1s;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-up {
+    animation: slideUp 0.6s ease-out forwards;
+    animation-delay: 0.2s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* D\u00E9lais pour les cartes d'\u00E9preuves pour un effet d'apparition progressif */
+.epreuve-card:nth-child(1) { animation-delay: 0.3s; }
+.epreuve-card:nth-child(2) { animation-delay: 0.4s; }
+.epreuve-card:nth-child(3) { animation-delay: 0.5s; }
+.epreuve-card:nth-child(4) { animation-delay: 0.6s; }
+.epreuve-card:nth-child(5) { animation-delay: 0.7s; }
+.epreuve-card:nth-child(6) { animation-delay: 0.8s; }
+.epreuve-card:nth-child(7) { animation-delay: 0.9s; }
+
+
+/* Styles pour les toasts (couleurs de fond pour le header/body) */
+.toast-header-bg {
+    background-color: theme('colors.gray.700'); /* Couleur par d\u00E9faut */
+}
+
+.toast-body-bg {
+    background-color: theme('colors.gray.800'); /* Couleur par d\u00E9faut */
+}
+
+/* Override pour les couleurs sp\u00E9cifiques des toasts */
+.bg-green-700 { background-color: theme('colors.green.700') !important; }
+.bg-green-800 { background-color: theme('colors.green.800') !important; }
+.bg-red-700 { background-color: theme('colors.red.700') !important; }
+.bg-red-800 { background-color: theme('colors.red.800') !important; }
+.bg-blue-700 { background-color: theme('colors.blue.700') !important; }
+.bg-blue-800 { background-color: theme('colors.blue.800') !important; }
+
+/* Ajustement de la marge principale pour correspondre au sidebar */
+#main {
+    margin-top: 10rem; /* Ajustez si n\u00E9cessaire selon votre header */
+    margin-left: 18rem; /* Correspond \u00E0 la largeur de votre sidebar */
+}
+
+/* Media query pour les petits \u00E9crans: ajuster la marge pour le contenu principal */
+@media (max-width: 768px) {
+    #main {
+        margin-left: 0; /* Pas de marge \u00E0 gauche sur mobile si le sidebar est cach\u00E9 ou en haut */
+        margin-top: 5rem; /* Ajustez la marge sup\u00E9rieure pour le header mobile */
+    }
+}
+
+#main {
+    margin-top: 10rem;
+    margin-left: 18rem;
+  }
+
+  
