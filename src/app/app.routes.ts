@@ -39,14 +39,15 @@ import { MatiereComponent } from './matiere/matiere.component';
 import { SessionExamenComponent } from './session-examen/session-examen.component';
 import { PlanifierSessionComponent } from './planifier-session/planifier-session.component';
 import { SuivreDepotComponent } from './suivre-depot/suivre-depot.component';
+import { ResultatsEpreuveComponent } from './resultats-epreuve/resultats-epreuve.component';
 import { TrackingComponent } from './tracking/tracking.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'home', component: HomeComponent },
   { path: 'auth', component: AuthentificationComponent },
-  { path: 'dashboard', component: DashboardAdminComponent, canActivate:[AuthGuard], data: { roles: ['admin'] }},
-  { path: 'student_side', component: DashboardEtudiantComponents, canActivate: [AuthGuard], data: { roles: ['etudiant']} },
+  { path: 'dashboard', component: DashboardAdminComponent, canActivate: [AuthGuard], data: { roles: ['admin'] } },
+  { path: 'student_side', component: DashboardEtudiantComponents, canActivate: [AuthGuard], data: { roles: ['etudiant'] } },
   { path: 'admin_side', component: SidebarAdminComponent },
   { path: 'signIn', component: SignInComponent },
   { path: 'register', component: RegisterAdminComponent },
@@ -57,39 +58,41 @@ export const routes: Routes = [
   { path: 'new_composition/:id', component: NewCompositionComponent },
   { path: 'composition_admin', component: CompositionAdminComponent },
   { path: 'create_composition', component: CreateCompositionComponent },
-  {path: 'not-authorized', component: UnauthorizedPageComponent},
-  {path: 'resultats', component: ResultatComponent},
-  {path : 'decouvrir', component: DecouvrirComponent},
-  {path: 'notification_etudiant', component: NotificationEtudiantComponent},
-  {path: 'exam_service', component:ExamServiceComponent,canActivate: [AuthGuard], data: { roles: ['exam_service']}},
-  {path:'activate_account',component:ActiveAccountComponent},
-  {path:'sign_them', component:SignThemComponent},
-  {path:'professor', component:ProfessorComponent},
-  {path:'students', component:EtudiantComponent},
-  {path: 'signProf', component: SignProfComponent},
-  {path:'coordinator', component:CoordinateursComponent},
-  {path:'coordinator_side', component:CoordDashboardComponent, canActivate: [AuthGuard], data: { roles: ['coordinateur']}},
-  {path:'create-prof', component:CreateProfComponent},
-  {path:'show_examService', component:ShowExamServiceComponent},
-  {path:'sign_coord', component:ShowSignCoordinatorComponent},
-  {path:'register_coord', component:SignCoordComponent},
-  {path:'register_examinator', component:SignExamserviceComponent},
-  {path:'resultat_etudiant',component:ResultatsEtudiantComponent},
-  {path: 'filieres', component:FiliereComponent},
-  {path: 'options', component:OptionComponent},
-  {path: 'matieres', component:MatiereComponent},
-  {path: 'gerer_sessions', component:SessionExamenComponent},
+  { path: 'not-authorized', component: UnauthorizedPageComponent },
+  { path: 'resultats', component: ResultatComponent },
+  { path: 'decouvrir', component: DecouvrirComponent },
+  { path: 'notification_etudiant', component: NotificationEtudiantComponent },
+  { path: 'exam_service', component: ExamServiceComponent, canActivate: [AuthGuard], data: { roles: ['exam_service'] } },
+  { path: 'activate_account', component: ActiveAccountComponent },
+  { path: 'sign_them', component: SignThemComponent },
+  { path: 'professor', component: ProfessorComponent },
+  { path: 'students', component: EtudiantComponent },
+  { path: 'signProf', component: SignProfComponent },
+  { path: 'coordinator', component: CoordinateursComponent },
+  { path: 'coordinator_side', component: CoordDashboardComponent, canActivate: [AuthGuard], data: { roles: ['coordinateur'] } },
+  { path: 'create-prof', component: CreateProfComponent },
+  { path: 'show_examService', component: ShowExamServiceComponent },
+  { path: 'sign_coord', component: ShowSignCoordinatorComponent },
+  { path: 'register_coord', component: SignCoordComponent },
+  { path: 'register_examinator', component: SignExamserviceComponent },
+  { path: 'resultat_etudiant', component: ResultatsEtudiantComponent },
+  { path: 'filieres', component: FiliereComponent },
+  { path: 'options', component: OptionComponent },
+  { path: 'matieres', component: MatiereComponent },
+  { path: 'gerer_sessions', component: SessionExamenComponent },
   { path: 'planifier_session/:id', component: PlanifierSessionComponent },
+  { path: 'suivi_depots', component: SuivreDepotComponent },
+  { path: 'resultats_epreuves', component: ResultatsEpreuveComponent },
   {path: 'suivi_depots', component:SuivreDepotComponent},
   {path: 'tracking', component:TrackingComponent},
   //{ path: '**', redirectTo: 'signIn', pathMatch: 'full' },
   {
     path: 'professeur',
     canActivate: [AuthGuard],
-    data: { roles: ['Professeur']},
+    data: { roles: ['Professeur'] },
     loadChildren: () =>
       import('./professeur/professeur.routes').then(m => m.PROFESSEUR_ROUTES)
-  }  
-  
+  }
+
 ];
 

@@ -1,0 +1,46 @@
+<main id="main" class="p-6 min-h-screen text-gray-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-6">
+            <div class="mb-4 sm:mb-0">
+                <h4 class="text-3xl font-bold text-blue-400 animate-fade-in-down">Créer une Épreuve</h4>
+                <ol class="flex text-sm text-gray-400 mt-1">
+                    <li class="mr-2"><a routerLink="/dashboard-professeur" class="hover:text-blue-300 transition duration-200">Tableau de Bord Professeur</a></li>
+                    <li class="mr-2">/</li>
+                    <li class="mr-2"><a routerLink="/epreuves-a-rendre" class="hover:text-blue-300 transition duration-200">Épreuves à Rendre</a></li>
+                    <li class="mr-2">/</li>
+                    <li class="text-blue-400">Créer une Épreuve</li>
+                </ol>
+            </div>
+        </div>
+
+        <div *ngIf="creationMode === 'choix'" class=" p-6 rounded-lg shadow-xl border border-gray-700 animate-slide-up text-center py-12">
+            <h5 class="text-2xl font-semibold text-gray-100 mb-6">Comment souhaitez-vous créer votre épreuve ?</h5>
+            <div class="flex flex-col md:flex-row justify-center gap-6">
+                <button class="px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300 ease-in-out flex items-center justify-center text-lg animate-scale-up"
+                        (click)="selectCreationMode('ia')">
+                    <i class="fas fa-robot mr-3"></i> Avec Assistance IA
+                </button>
+                <button class="px-8 py-4 bg-gray-600 text-white font-semibold rounded-lg shadow-md hover:bg-gray-700 transition duration-300 ease-in-out flex items-center justify-center text-lg animate-scale-up"
+                        (click)="selectCreationMode('manuel')">
+                    <i class="fas fa-pencil-alt mr-3"></i> Manuellement (Upload PDF)
+                </button>
+            </div>
+            <p class="text-gray-400 mt-6 text-sm">
+                <i class="fas fa-info-circle mr-2"></i> L'option "Manuellement" vous permettra de télécharger un PDF de l'épreuve et de sa grille de correction.
+            </p>
+        </div>
+
+        <div id="creerEpreuveToast" class="fixed top-4 right-4 z-[1000] w-full max-w-sm rounded-lg shadow-lg transition-opacity duration-300 ease-out opacity-0 pointer-events-none">
+            <div class="flex items-center justify-between p-3 border-b border-gray-700 rounded-t-lg toast-header-bg">
+                <strong class="font-bold text-blue-300 toast-title"></strong>
+                <button type="button" class="text-gray-400 hover:text-gray-100 text-xl" (click)="hideToast()" aria-label="Close">
+                    &times;
+                </button>
+            </div>
+            <div class="p-3 text-gray-200 toast-body-bg rounded-b-lg">
+                <span class="toast-message"></span>
+            </div>
+        </div>
+
+    </div>
+</main>

@@ -4,6 +4,8 @@ import { ProfesseurDashboardComponent } from './dashboard-prof/dashboard-prof.co
 import { MakeEpreuveByIaComponent } from './make-epreuve-by-ia/make-epreuve-by-ia.component';
 import {MakeEpreuveManuallyComponent} from './make-epreuve-manually/make-epreuve-manually.component'
 import {ShowEpreuveComponent} from './show-epreuve/show-epreuve.component'
+import { EpreuveARendreComponent } from './epreuve-a-rendre/epreuve-a-rendre.component';
+import { CreerEpreuveComponent } from './creer-epreuve/creer-epreuve.component'
 
 export const PROFESSEUR_ROUTES: Routes = [
   {
@@ -12,9 +14,11 @@ export const PROFESSEUR_ROUTES: Routes = [
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: ProfesseurDashboardComponent },
-      { path: 'make_epreuve_by_ia', component: MakeEpreuveByIaComponent },
-      { path: 'make_epreuve_manually', component: MakeEpreuveManuallyComponent },
-      { path: 'show_epreuve', component: ShowEpreuveComponent}
+      { path: 'make_epreuve_by_ia/:idAffectation', component: MakeEpreuveByIaComponent },
+      { path: 'make_epreuve_manually/:idAffectation', component: MakeEpreuveManuallyComponent },
+      { path: 'show_epreuve', component: ShowEpreuveComponent},
+      { path: 'epreuve_a_rendre', component: EpreuveARendreComponent},
+      { path: 'creer_epreuve/:idAffectation', component: CreerEpreuveComponent}
     ]
   }
 ];

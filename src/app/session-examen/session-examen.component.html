@@ -68,14 +68,13 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div *ngFor="let session of filteredSessions"
-                         class="session-card rounded-lg shadow-xl p-5 relative overflow-hidden
+                        class="session-card rounded-lg shadow-xl p-5 relative overflow-hidden
                                 transform hover:scale-105 transition-all duration-300 cursor-pointer
                                 border border-gray-700 animate-fade-in"
-                         (click)="viewSessionDetails(session.id_session)">
+                        (click)="viewSessionDetails(session.id_session)">
 
-                        <div class="absolute top-0 right-0 bg-gray-700 rounded-bl-lg p-2 flex space-x-2 z-10
-                                    transform translate-x-0 translate-y-0 opacity-100 transition-all duration-300
-                                    group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0">
+                        <!-- Boutons d'action - version toujours visible -->
+                        <div class="absolute top-0 right-0 bg-gray-700 rounded-bl-lg p-2 flex space-x-2 z-10">
                             <button class="p-1 rounded-full hover:bg-gray-600 transition duration-200 text-blue-400"
                                     title="Modifier" (click)="$event.stopPropagation(); openEditSessionModal(session)">
                                 <i class="fas fa-edit text-sm"></i>
@@ -96,13 +95,13 @@
                             Fin: <span class="font-medium">{{ session.date_fin | date:'dd/MM/yyyy' }}</span>
                         </p>
                         <div class="flex items-center justify-between mt-4 border-t border-gray-700 pt-3">
-                            <span class="text-xs font-bold px-3 py-1 rounded-full"
-                                  [ngClass]="{
-                                      'bg-green-600 text-white': session.statut === 'Terminée',
-                                      'bg-yellow-600 text-white': session.statut === 'En cours',
-                                      'bg-blue-600 text-white': session.statut === 'Planifiée',
-                                      'bg-red-600 text-white': session.statut === 'Annulée'
-                                  }">
+                            <span class="text-xs font-bold px-3 py-1 rounded-full mr-5"
+                                [ngClass]="{
+                                    'bg-green-600 text-white': session.statut === 'Terminée',
+                                    'bg-yellow-600 text-white': session.statut === 'En cours',
+                                    'bg-blue-600 text-white': session.statut === 'Planifiée',
+                                    'bg-red-600 text-white': session.statut === 'Annulée'
+                                }">
                                 {{ session.statut }}
                             </span>
                             <p class="text-gray-500 text-xs">

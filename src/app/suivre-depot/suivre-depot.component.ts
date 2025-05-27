@@ -1,65 +1,36 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule } from '@angular/forms';
-import { Observable, of, forkJoin } from 'rxjs';
-import { delay, map } from 'rxjs/operators';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { Observable, forkJoin } from 'rxjs';
 import { Router } from '@angular/router';
 
-// Declarations for parent components
 import { HeaderComponent } from '../header/header.component';
 import { DashboardExamServiceComponent } from '../dashboard-exam-service/dashboard-exam-service.component';
+import { 
+  AffectationEpreuveService,
+  AffectationEpreuve
+} from '../services/affectation-epreuve.service';
+import { 
+  SessionExamensService,
+  SessionExamen 
+} from '../services/session-examens.service';
+import { MatiereService } from '../services/matiere.service';
+import { OptionEtudeService } from '../services/option-etude.service';
+import { GetPasswordService } from '../services/get-password.service';
 
-// --- Interface definitions for (simulated) data ---
-interface SessionExamenRead {
-  id_session: number;
+interface Professor {
   nom: string;
-  date_debut: Date;
-  date_fin: Date;
-  statut: 'Planifiée' | 'En cours' | 'Terminée' | 'Annulée';
-  created_at: Date;
-  updated_at: Date;
+  prenom: string;
+  email: string;
 }
 
-interface Matiere {
-  id_matiere: number;
+interface AffectationEpreuveForSuivi extends AffectationEpreuve {
+  nom_session: string;
   nom_matiere: string;
-}
-
-interface Option {
-  id_option: number;
   nom_option: string;
-}
-
-interface Professeur {
-  id_professeur: number;
   nom_professeur: string;
+  statut_remise?: 'Remis à temps' | 'Remis en retard' | 'Non remis';
 }
-
-// Interface pour les affectations, enrichie pour le suivi
-interface AffectationEpreuveForSuivi {
-  id_affectation: number;
-  id_session: number;
-  nom_session: string; // Ajout\u00E9 pour l'affichage direct
-  id_matiere: number;
-  nom_matiere: string;
-  id_option: number;
-  nom_option: string;
-  id_professeur: number;
-  nom_professeur: string;
-  date_limite_soumission: Date;
-  date_examen_etudiant: Date;
-  heure_debut_examen: string;
-  heure_fin_examen: string;
-  statut_affectation: 'Planifiée' | 'Assignée' | 'Terminée' | 'Annulée';
-  commentaires?: string;
-  date_remise_professeur: Date | null; // Date r\u00E9elle de remise par le professeur
-  statut_remise?: 'Remis \u00E0 temps' | 'Remis en retard' | 'Non remis'; // Statut calcul\u00E9
-  created_at: Date;
-  updated_at: Date;
-}
-
-// --- End of interface definitions ---
-
 
 @Component({
   selector: 'app-suivre-depot',
@@ -79,326 +50,193 @@ export class SuivreDepotComponent implements OnInit {
   filteredSuiviDepots: AffectationEpreuveForSuivi[] = [];
   searchTerm: string = '';
   selectedSessionId: number | null = null;
-  selectedStatutRemise: 'Remis \u00E0 temps' | 'Remis en retard' | 'Non remis' | null = null;
+  selectedStatutRemise: 'Remis à temps' | 'Remis en retard' | 'Non remis' | null = null;
+  isLoading = true;
 
-  sessions: SessionExamenRead[] = []; // Pour le filtre de session
-  availableStatutRemise: ('Remis \u00E0 temps' | 'Remis en retard' | 'Non remis')[] = ['Remis \u00E0 temps', 'Remis en retard', 'Non remis'];
+  sessions: SessionExamen[] = [];
+  professors: Professor[] = [];
+  availableStatutRemise = ['Remis à temps', 'Remis en retard', 'Non remis'];
 
   private toastTimeout: any;
 
-  // Donn\u00E9es simul\u00E9es (doivent \u00EAtre coh\u00E9rentes avec les affectations et sessions)
-  private mockSessions: SessionExamenRead[] = [
-    {
-      id_session: 1,
-      nom: 'Session Hiver 2024',
-      date_debut: new Date('2024-01-15T09:00:00Z'),
-      date_fin: new Date('2024-01-25T17:00:00Z'),
-      statut: 'Terminée',
-      created_at: new Date('2023-10-01T10:00:00Z'),
-      updated_at: new Date('2024-01-25T18:00:00Z')
-    },
-    {
-      id_session: 2,
-      nom: 'Session Printemps 2025',
-      date_debut: new Date('2025-03-01T09:00:00Z'),
-      date_fin: new Date('2025-03-15T17:00:00Z'),
-      statut: 'Planifiée',
-      created_at: new Date('2024-11-01T10:00:00Z'),
-      updated_at: new Date('2024-11-01T10:00:00Z')
-    },
-    {
-      id_session: 3,
-      nom: 'Session Été 2024',
-      date_debut: new Date('2024-07-01T09:00:00Z'),
-      date_fin: new Date('2024-07-10T17:00:00Z'),
-      statut: 'En cours',
-      created_at: new Date('2024-04-15T10:00:00Z'),
-      updated_at: new Date('2024-07-05T11:30:00Z')
-    },
-  ];
-
-  private mockAffectationsForSuivi: AffectationEpreuveForSuivi[] = [
-    {
-      id_affectation: 1,
-      id_session: 1, nom_session: 'Session Hiver 2024',
-      id_matiere: 1, nom_matiere: 'Mathématiques',
-      id_option: 1, nom_option: 'Sciences',
-      id_professeur: 101, nom_professeur: 'Dr. Dupont',
-      date_limite_soumission: new Date('2024-01-20T23:59:59Z'),
-      date_examen_etudiant: new Date('2024-01-22T09:00:00Z'),
-      heure_debut_examen: '09:00',
-      heure_fin_examen: '11:00',
-      statut_affectation: 'Terminée',
-      commentaires: 'Examen final',
-      date_remise_professeur: new Date('2024-01-19T15:30:00Z'), // Remis \u00E0 temps
-      created_at: new Date('2023-12-01T10:00:00Z'),
-      updated_at: new Date('2024-01-19T15:30:00Z')
-    },
-    {
-      id_affectation: 2,
-      id_session: 1, nom_session: 'Session Hiver 2024',
-      id_matiere: 3, nom_matiere: 'Informatique',
-      id_option: 1, nom_option: 'Sciences',
-      id_professeur: 102, nom_professeur: 'Mme. Martin',
-      date_limite_soumission: new Date('2024-01-23T23:59:59Z'),
-      date_examen_etudiant: new Date('2024-01-24T14:00:00Z'),
-      heure_debut_examen: '14:00',
-      heure_fin_examen: '16:00',
-      statut_affectation: 'Terminée',
-      commentaires: 'Projet de programmation',
-      date_remise_professeur: new Date('2024-01-24T10:00:00Z'), // Remis en retard
-      created_at: new Date('2023-12-05T10:00:00Z'),
-      updated_at: new Date('2024-01-24T10:00:00Z')
-    },
-    {
-      id_affectation: 3,
-      id_session: 2, nom_session: 'Session Printemps 2025',
-      id_matiere: 2, nom_matiere: 'Physique',
-      id_option: 1, nom_option: 'Sciences',
-      id_professeur: 103, nom_professeur: 'M. Dubois',
-      date_limite_soumission: new Date('2025-03-10T23:59:59Z'),
-      date_examen_etudiant: new Date('2025-03-12T09:00:00Z'),
-      heure_debut_examen: '09:00',
-      heure_fin_examen: '12:00',
-      statut_affectation: 'Planifiée',
-      commentaires: 'Examen th\u00E9orique',
-      date_remise_professeur: null, // Non remis
-      created_at: new Date('2024-12-01T10:00:00Z'),
-      updated_at: new Date('2024-12-01T10:00:00Z')
-    },
-    {
-      id_affectation: 4,
-      id_session: 3, nom_session: 'Session \u00C9t\u00E9 2024',
-      id_matiere: 4, nom_matiere: 'Chimie',
-      id_option: 1, nom_option: 'Sciences',
-      id_professeur: 104, nom_professeur: 'Mlle. Lefevre',
-      date_limite_soumission: new Date('2024-07-05T23:59:59Z'),
-      date_examen_etudiant: new Date('2024-07-07T10:00:00Z'),
-      heure_debut_examen: '10:00',
-      heure_fin_examen: '13:00',
-      statut_affectation: 'Assign\u00E9e',
-      commentaires: 'Examen pratique',
-      date_remise_professeur: null, // Non remis
-      created_at: new Date('2024-05-01T10:00:00Z'),
-      updated_at: new Date('2024-06-15T10:00:00Z')
-    },
-    {
-      id_affectation: 5,
-      id_session: 3, nom_session: 'Session \u00C9t\u00E9 2024',
-      id_matiere: 5, nom_matiere: 'Fran\u00E7ais',
-      id_option: 2, nom_option: 'Litt\u00E9raire',
-      id_professeur: 101, nom_professeur: 'Dr. Dupont',
-      date_limite_soumission: new Date('2024-07-08T23:59:59Z'),
-      date_examen_etudiant: new Date('2024-07-09T09:00:00Z'),
-      heure_debut_examen: '09:00',
-      heure_fin_examen: '11:00',
-      statut_affectation: 'Assign\u00E9e',
-      commentaires: 'Rapport de lecture',
-      date_remise_professeur: new Date('2024-07-08T10:00:00Z'), // Remis \u00E0 temps
-      created_at: new Date('2024-05-05T10:00:00Z'),
-      updated_at: new Date('2024-07-08T10:00:00Z')
-    }
-  ];
-  private nextSuiviId = 6; // Pour les IDs de suivi si n\u00E9cessaire, mais on utilise id_affectation ici
-
   constructor(
-    private router: Router
+    private router: Router,
+    private affectationService: AffectationEpreuveService,
+    private sessionService: SessionExamensService,
+    private matiereService: MatiereService,
+    private optionService: OptionEtudeService,
+    private professorService: GetPasswordService
   ) { }
 
   ngOnInit(): void {
-    this.loadSuiviDepots();
+    this.loadData();
   }
 
-  /**
-   * Charge les donn\u00E9es de suivi des d\u00E9p\u00F4ts et pr\u00E9-calcule le statut de remise.
-   */
-  loadSuiviDepots(): void {
-    forkJoin({
-      sessions: this._get_all_sessions_examen(),
-      affectations: this._get_all_affectations_for_suivi()
-    }).subscribe({
-      next: (results) => {
-        this.sessions = results.sessions;
-        this.suiviDepots = results.affectations.map(affectation => {
-          // Calculer le statut de remise pour chaque affectation
-          const statutRemise = this.calculateStatutRemise(affectation);
-          return { ...affectation, statut_remise: statutRemise };
-        });
-        this.filterSuiviDepots(); // Appliquer le filtre initial
-        this.showToast('Info', 'Données de suivi chargées (simulé).', 'info');
-      },
-      error: (err) => {
-        console.error('Erreur lors du chargement des donn\u00E9es de suivi (simulé) :', err);
-        this.showToast('Erreur', 'Impossible de charger les donn\u00E9es de suivi (simulé).', 'danger');
+  async loadData(): Promise<void> {
+    try {
+      const results = await forkJoin([
+        this.sessionService.listerSessions(),
+        this.affectationService.listerAffectations(),
+        this.professorService.recuProf()
+      ]).toPromise();
+  
+      if (!results) {
+        throw new Error('Aucune donnée reçue');
       }
-    });
+  
+      const [sessionsRes, affectationsRes, professorsRes] = results;
+  
+      this.sessions = sessionsRes?.message || [];
+      this.professors = professorsRes || [];
+  
+      const affectationsWithDetails = await Promise.all(
+        (affectationsRes?.message || []).map(async (aff: AffectationEpreuve) => {
+          const professor = this.getProfessorInfo(aff.id_professeur);
+          
+          return {
+            ...aff,
+            nom_session: this.getSessionName(aff.id_session_examen),
+            nom_matiere: await this.getMatiereName(aff.id_matiere),
+            nom_option: await this.getOptionName(aff.id_option_etude),
+            nom_professeur: professor ? `${professor.prenom} ${professor.nom}` : 'Professeur inconnu',
+            statut_remise: this.calculateStatutRemise(aff)
+          };
+        })
+      );
+  
+      this.suiviDepots = affectationsWithDetails;
+      this.filterSuiviDepots();
+      this.isLoading = false;
+  
+    } catch (error) {
+      console.error('Erreur de chargement:', error);
+      this.showToast('Erreur', 'Échec du chargement des données', 'danger');
+      this.isLoading = false;
+    }
   }
 
-  /**
-   * Calcule le statut de remise d'une affectation.
-   * @param affectation L'affectation \u00E0 \u00E9valuer.
-   * @returns Le statut de remise ('Remis \u00E0 temps', 'Remis en retard', 'Non remis').
-   */
-  calculateStatutRemise(affectation: AffectationEpreuveForSuivi): 'Remis \u00E0 temps' | 'Remis en retard' | 'Non remis' {
-    if (!affectation.date_remise_professeur) {
-      return 'Non remis';
+  private getProfessorInfo(id_professeur: number): Professor | undefined {
+    // Cette fonction doit être adaptée selon comment l'ID professeur est stocké dans votre système
+    // Ici on suppose que l'index du tableau correspond à l'ID (à ajuster)
+    return this.professors[id_professeur - 1];
+  }
+
+  private getSessionName(sessionId: number): string {
+    const session = this.sessions.find(s => s.id_session_examen === sessionId);
+    return session?.nom_session || 'Session inconnue';
+  }
+
+  private async getMatiereName(matiereId: number): Promise<string> {
+    try {
+      const res = await this.matiereService.lireMatiere(matiereId).toPromise();
+      return res?.message?.nom_matiere || 'Matière inconnue';
+    } catch (error) {
+      return 'Matière inconnue';
     }
-
-    const dateRemise = new Date(affectation.date_remise_professeur);
-    const dateLimite = new Date(affectation.date_limite_soumission);
-
-    // Pour comparer uniquement la date (ignorer l'heure de la date limite si elle est 23:59:59)
-    dateLimite.setHours(23, 59, 59, 999);
-
-    if (dateRemise <= dateLimite) {
-      return 'Remis \u00E0 temps';
-    } else {
-      return 'Remis en retard';
+  }
+  
+  private async getOptionName(optionId: number): Promise<string> {
+    try {
+      const res = await this.optionService.lireOption(optionId).toPromise();
+      
+      // Vérification de type explicite
+      if (res && typeof res.message !== 'string' && !Array.isArray(res.message)) {
+        return res.message.nom_option;
+      }
+      return 'Option inconnue';
+      
+    } catch (error) {
+      return 'Option inconnue';
     }
   }
 
-  /**
-   * Filtre les entr\u00E9es de suivi affich\u00E9es en fonction du terme de recherche, de la session et du statut de remise.
-   */
+  calculateStatutRemise(affectation: AffectationEpreuve): 'Remis à temps' | 'Remis en retard' | 'Non remis' {
+    if (!affectation.id_epreuve) return 'Non remis';
+
+    const dateLimite = new Date(affectation.date_limite_soumission_prof);
+    const dateRemise = new Date(affectation.updated_at);
+
+    dateLimite.setHours(23, 59, 59);
+    return dateRemise <= dateLimite ? 'Remis à temps' : 'Remis en retard';
+  }
+
   filterSuiviDepots(): void {
     let tempSuivi = [...this.suiviDepots];
 
-    // Filtrer par session s\u00E9lectionn\u00E9e
     if (this.selectedSessionId !== null) {
-      tempSuivi = tempSuivi.filter(suivi => suivi.id_session === this.selectedSessionId);
+      tempSuivi = tempSuivi.filter(s => s.id_session_examen === this.selectedSessionId);
     }
 
-    // Filtrer par statut de remise s\u00E9lectionn\u00E9
     if (this.selectedStatutRemise !== null) {
-      tempSuivi = tempSuivi.filter(suivi => suivi.statut_remise === this.selectedStatutRemise);
+      tempSuivi = tempSuivi.filter(s => s.statut_remise === this.selectedStatutRemise);
     }
 
-    // Filtrer par terme de recherche
     if (this.searchTerm) {
-      const lowerCaseSearchTerm = this.searchTerm.toLowerCase();
-      tempSuivi = tempSuivi.filter(suivi =>
-        suivi.nom_session.toLowerCase().includes(lowerCaseSearchTerm) ||
-        suivi.nom_matiere.toLowerCase().includes(lowerCaseSearchTerm) ||
-        suivi.nom_professeur.toLowerCase().includes(lowerCaseSearchTerm) ||
-        (suivi.commentaires && suivi.commentaires.toLowerCase().includes(lowerCaseSearchTerm)) ||
-        suivi.statut_remise?.toLowerCase().includes(lowerCaseSearchTerm)
+      const term = this.searchTerm.toLowerCase();
+      tempSuivi = tempSuivi.filter(s =>
+        s.nom_session.toLowerCase().includes(term) ||
+        s.nom_matiere.toLowerCase().includes(term) ||
+        s.nom_professeur.toLowerCase().includes(term) ||
+        (s.commentaires_service_examens?.toLowerCase().includes(term)) ||
+        s.statut_remise?.toLowerCase().includes(term)
       );
     }
+
     this.filteredSuiviDepots = tempSuivi;
   }
 
-  /**
-   * Simule le marquage d'une \u00E9preuve comme "remise".
-   * Dans un vrai syst\u00E8me, cela appellerait un service pour mettre \u00E0 jour la base de donn\u00E9es.
-   * @param idSuivi L'ID de l'entr\u00E9e de suivi (ici, id_affectation).
-   */
-  markAsRemis(idSuivi: number): void {
-    // Simuler la mise \u00E0 jour
-    this._mark_affectation_as_remis(idSuivi).subscribe({
-      next: (updatedSuivi) => {
-        if (updatedSuivi) {
-          this.showToast('Succès', 'Épreuve marquée comme remise !', 'success');
-          this.loadSuiviDepots(); // Recharger les donn\u00E9es pour rafra\u00EEchir le statut
-        } else {
-          this.showToast('Erreur', 'Impossible de marquer l\'\u00E9preuve comme remise.', 'danger');
+  markAsRemis(idAffectation: number): void {
+    this.affectationService.ajouterEpreuve(idAffectation, 1).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.loadData();
+          this.showToast('Succès', 'Épreuve marquée comme remise', 'success');
         }
       },
       error: (err) => {
-        console.error('Erreur lors du marquage comme remis (simulé) :', err);
-        this.showToast('Erreur', 'Une erreur est survenue lors du marquage (simulé).', 'danger');
+        console.error('Erreur:', err);
+        this.showToast('Erreur', 'Échec de la mise à jour', 'danger');
       }
     });
   }
 
-  /**
-   * Redirige vers la page de d\u00E9tails de l'affectation si n\u00E9cessaire.
-   * @param idAffectation L'ID de l'affectation.
-   */
   viewAffectationDetails(idAffectation: number): void {
-    // Exemple de navigation, \u00E0 adapter \u00E0 votre routage r\u00E9el
-    // this.router.navigate(['/affectation-details', idAffectation]);
-    this.showToast('Info', `Redirection vers les d\u00E9tails de l'affectation ${idAffectation} (non impl\u00E9ment\u00E9).`, 'info');
-    console.log(`Naviguer vers les d\u00E9tails de l'affectation ${idAffectation}`);
+    this.router.navigate(['/affectations', idAffectation]);
   }
 
-  /**
-   * Affiche un message Toast.
-   * @param title Titre du Toast.
-   * @param message Contenu du message.
-   * @param type Type de message pour le style (success, danger, info).
-   */
   showToast(title: string, message: string, type: 'success' | 'danger' | 'info'): void {
     const toastElement = document.getElementById('suivreDepotToast');
     if (toastElement) {
-      const toastTitleElement = toastElement.querySelector('.toast-title');
-      const toastMessageElement = toastElement.querySelector('.toast-message');
+      const toastTitle = toastElement.querySelector('.toast-title');
+      const toastMessage = toastElement.querySelector('.toast-message');
 
-      if (toastTitleElement && toastMessageElement) {
-        toastTitleElement.textContent = title;
-        toastMessageElement.textContent = message;
+      if (toastTitle && toastMessage) {
+        toastTitle.textContent = title;
+        toastMessage.textContent = message;
 
-        const header = toastElement.querySelector('.toast-header-bg') as HTMLElement;
-        const body = toastElement.querySelector('.toast-body-bg') as HTMLElement;
+        const headerClass = type === 'success' ? 'bg-green-700' : 
+                          type === 'danger' ? 'bg-red-700' : 'bg-blue-700';
+        
+        const bodyClass = type === 'success' ? 'bg-green-800' : 
+                         type === 'danger' ? 'bg-red-800' : 'bg-blue-800';
 
-        header.classList.remove('bg-green-700', 'bg-red-700', 'bg-blue-700');
-        body.classList.remove('bg-green-800', 'bg-red-800', 'bg-blue-800');
+        toastElement.querySelector('.toast-header-bg')?.classList.add(headerClass);
+        toastElement.querySelector('.toast-body-bg')?.classList.add(bodyClass);
 
-        if (type === 'success') {
-          header.classList.add('bg-green-700');
-          body.classList.add('bg-green-800');
-        } else if (type === 'danger') {
-          header.classList.add('bg-red-700');
-          body.classList.add('bg-red-800');
-        } else if (type === 'info') {
-          header.classList.add('bg-blue-700');
-          body.classList.add('bg-blue-800');
-        }
-
-        toastElement.classList.remove('opacity-0', 'pointer-events-none');
+        toastElement.classList.remove('opacity-0');
         toastElement.classList.add('opacity-100');
 
-        if (this.toastTimeout) {
-          clearTimeout(this.toastTimeout);
-        }
-        this.toastTimeout = setTimeout(() => {
-          this.hideToast();
-        }, 3000);
+        if (this.toastTimeout) clearTimeout(this.toastTimeout);
+        this.toastTimeout = setTimeout(() => this.hideToast(), 3000);
       }
     }
   }
 
-  /**
-   * Cache le message Toast.
-   */
   hideToast(): void {
     const toastElement = document.getElementById('suivreDepotToast');
     if (toastElement) {
       toastElement.classList.remove('opacity-100');
-      toastElement.classList.add('opacity-0', 'pointer-events-none');
+      toastElement.classList.add('opacity-0');
     }
-  }
-
-  // --- M\u00E9thodes de simulation du service ---
-
-  private _get_all_sessions_examen(): Observable<SessionExamenRead[]> {
-    return of([...this.mockSessions]).pipe(delay(300));
-  }
-
-  private _get_all_affectations_for_suivi(): Observable<AffectationEpreuveForSuivi[]> {
-    return of([...this.mockAffectationsForSuivi]).pipe(delay(500));
-  }
-
-  private _mark_affectation_as_remis(idAffectation: number): Observable<AffectationEpreuveForSuivi | null> {
-    const index = this.mockAffectationsForSuivi.findIndex(a => a.id_affectation === idAffectation);
-    if (index > -1) {
-      const updatedAffectation = {
-        ...this.mockAffectationsForSuivi[index],
-        date_remise_professeur: new Date(), // Marque avec la date/heure actuelle
-        updated_at: new Date()
-      };
-      this.mockAffectationsForSuivi[index] = updatedAffectation;
-      return of(updatedAffectation).pipe(delay(500));
-    }
-    return of(null).pipe(delay(500));
   }
 }
