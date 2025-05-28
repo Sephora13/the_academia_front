@@ -34,8 +34,8 @@
                             (change)="filterEpreuvesARendre()"
                         >
                             <option [ngValue]="null">Toutes les Sessions</option>
-                            <option *ngFor="let session of sessions" [ngValue]="session.id_session">
-                                {{ session.nom }}
+                            <option *ngFor="let session of sessions" [ngValue]="session.id">
+                                {{ session.nom_session }}
                             </option>
                         </select>
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
@@ -71,7 +71,7 @@
                             </h6>
                             <span class="text-xs font-bold px-3 py-1 rounded-full"
                                   [ngClass]="{
-                                      'bg-yellow-600 text-white': epreuve.statut === 'En attente de création',
+                                      'bg-yellow-600 text-white': epreuve.statut === 'En attente',
                                       'bg-green-600 text-white': epreuve.statut === 'Remise',
                                       'bg-red-600 text-white': epreuve.statut === 'En retard'
                                   }">
@@ -84,7 +84,7 @@
                             <p><i class="far fa-hourglass-half mr-2 text-gray-400"></i>Date Limite: <span class="font-medium">{{ epreuve.date_limite_soumission | date:'dd/MM/yyyy HH:mm' }}</span></p>
                         </div>
                         <div class="flex justify-end mt-4 pt-3 border-t border-gray-600">
-                            <button *ngIf="epreuve.statut === 'En attente de création'"
+                            <button *ngIf="epreuve.statut === 'En attente'"
                                     class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition duration-300"
                                     (click)="goToCreateEpreuve(epreuve.id_affectation)"
                                     title="Créer cette épreuve">
@@ -113,4 +113,5 @@
             </div>
         </div>
 
-    </div></main>
+    </div>
+</main>

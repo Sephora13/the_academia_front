@@ -99,6 +99,10 @@ export class AffectationEpreuveService {
     );
   }
 
+  listerParProfesseur(professeurId: number): Observable<ApiResponse<AffectationEpreuve[]>> {
+    return this.http.get<ApiResponse<AffectationEpreuve[]>>(`${this.apiUrl}/by-professeur/${professeurId}`);
+  }
+  
   private formatDates(payload: any): any {
     return {
       ...payload,
