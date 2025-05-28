@@ -89,6 +89,7 @@ export class PlanifierSessionComponent implements OnInit {
       date_limite_soumission_prof: ['', Validators.required],
       date_examen_etudiant: ['', Validators.required],
       heure_debut_examen: ['', Validators.required],
+      heure_fin_examen:   ['', Validators.required],
       duree_examen_prevue: ['', [Validators.required, Validators.min(1)]],
       statut_affectation: ['assignee', Validators.required],
       commentaires_service_examens: ['']

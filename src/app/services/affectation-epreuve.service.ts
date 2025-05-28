@@ -88,6 +88,15 @@ export class AffectationEpreuveService {
     return this.http.put<ApiResponse<AffectationEpreuve>>(`${this.apiUrl}/${id}`, formattedPayload);
   }
 
+  mettreAJourIdProfDansAffectation(id: number, epreuve_id: number): Observable<ApiResponse<string>> {
+    const url = `${this.apiUrl}/${id}/add-epreuve`;
+  
+    const params = { epreuve_id: epreuve_id.toString() };
+  
+    return this.http.put<ApiResponse<string>>(url, null, { params });
+  }
+  
+
   supprimerAffectation(id: number): Observable<ApiResponse<string>> {
     return this.http.delete<ApiResponse<string>>(`${this.apiUrl}/${id}`);
   }

@@ -13,12 +13,14 @@
         <form class="form-grid">
           <div class="field">
             <label for="matiere">📚 Matière</label>
-            <input id="matiere" type="text" placeholder="Ex: Mathématiques" [(ngModel)]="matiere" name="matiere" />
+            <input id="matiere" type="text" placeholder="Ex: Mathématiques" 
+                   [(ngModel)]="matiere" name="matiere" readonly />
           </div>
 
           <div class="field">
             <label for="niveau">🏷️ Niveau</label>
-            <input id="niveau" type="text" placeholder="Ex: Terminale" [(ngModel)]="niveau" name="niveau" />
+            <input id="niveau" type="text" placeholder="Ex: Terminale" 
+                   [(ngModel)]="niveau" name="niveau" readonly />
           </div>
 
           <div class="field">
@@ -27,8 +29,9 @@
           </div>
 
           <div class="field">
-            <label for="duree">⏳ Durée (Ex: 2h30min)</label>
-            <input id="duree" type="text" placeholder="Ex: 2h30min" [(ngModel)]="duree" name="duree" />
+            <label for="duree">⏳ Durée <span class="hint">(Format: XXhXXmin)</span></label>
+            <input id="duree" type="text" placeholder="Ex: 2h30min" 
+                   [(ngModel)]="duree" name="duree" />
           </div>
 
           <div class="field full-width">
