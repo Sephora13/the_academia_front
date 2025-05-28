@@ -71,3 +71,103 @@ button {
 button:hover {
   background-color: #0056b3;
 }
+
+.active-status {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.inactive-status {
+  color: #ffc107;
+}
+
+.future-status {
+  color: #6c757d;
+}
+
+.disabled {
+  background-color: #6c757d !important;
+  cursor: not-allowed;
+}
+
+.no-composition {
+  text-align: center;
+  padding: 20px;
+  font-size: 1.2rem;
+  color: #6c757d;
+}
+
+/* Loader styles */
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+.loader {
+border: 4px solid #f3f3f3;
+border-top: 4px solid var(--first-color);
+border-radius: 50%;
+width: 40px;
+height: 40px;
+animation: spin 1s linear infinite;
+margin-bottom: 1rem;
+}
+
+@keyframes spin {
+0% { transform: rotate(0deg); }
+100% { transform: rotate(360deg); }
+}
+
+.loader-container p {
+  font-size: var(--normal-font-size);
+  color: var(--text-color);
+}
+
+.spinner {
+width: 40px;
+height: 40px;
+
+position: relative;
+margin: 5px auto;
+}
+
+.spinner.double-bounce1, .spinner.double-bounce2 {
+width: 100%;
+height: 100%;
+border-radius: 50%;
+background-color: var(--first-color);
+opacity: 0.6;
+position: absolute;
+top: 0;
+left: 0;
+
+-webkit-animation: sk-bounce 2.0s infinite ease-in-out;
+animation: sk-bounce 2.0s infinite ease-in-out;
+}
+
+.spinner.double-bounce2 {
+-webkit-animation-delay: -1.0s;
+animation-delay: -1.0s;
+}
+
+@-webkit-keyframes sk-bounce {
+0%, 100% { -webkit-transform: scale(0.0) }
+50% { -webkit-transform: scale(1.0) }
+}
+
+@keyframes sk-bounce {
+0%, 100% { 
+  transform: scale(0.0);
+  -webkit-transform: scale(0.0);
+} 50% { 
+  transform: scale(1.0);
+  -webkit-transform: scale(1.0);
+}
+}

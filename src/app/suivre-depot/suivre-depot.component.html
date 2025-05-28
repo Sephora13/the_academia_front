@@ -85,9 +85,13 @@
                                 <td class="py-3 px-4 text-gray-400">{{ suivi.nom_professeur }}</td>
                                 <td class="py-3 px-4 text-gray-400">{{ suivi.date_limite_soumission_prof | date:'dd/MM/yyyy' }}</td>
                                 <td class="py-3 px-4 text-gray-400">
-                                    <span *ngIf="suivi.updated_at">{{ suivi.updated_at | date:'dd/MM/yyyy' }}</span>
-                                    <span *ngIf="!suivi.updated_at" class="text-gray-500">Non remis</span>
-                                </td>
+                                    <ng-container *ngIf="suivi.updated_at !== suivi.created_at; else notRemis">
+                                      <span>{{ suivi.updated_at | date:'dd/MM/yyyy' }}</span>
+                                    </ng-container>
+                                    <ng-template #notRemis>
+                                      <span class="text-gray-500">Non remis</span>
+                                    </ng-template>
+                                </td>                                  
                                 <td class="py-3 px-4">
                                     <span class="text-xs font-bold px-3 py-1 rounded-full"
                                           [ngClass]="{
@@ -100,13 +104,8 @@
                                 </td>
                                 <td class="py-3 px-4 text-gray-400">{{ suivi.commentaires_service_examens || 'N/A' }}</td>
                                 <td class="py-3 px-4 text-center">
-                                    <button *ngIf="suivi.statut_remise === 'Non remis'"
-                                            class="px-3 py-1 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition duration-300"
-                                            title="Marquer comme Remis"
-                                            (click)="markAsRemis(suivi.id_affectation_epreuve)">
-                                        Marquer Remis
-                                    </button>
-                                    <button class="p-2 rounded-full hover:bg-gray-700 transition duration-200 text-blue-400 ml-2"
+                                    <span *ngIf="suivi.statut_remise === 'Non remis'">-</span>
+                                    <button *ngIf="suivi.statut_remise === 'Remis à temps'" class="p-2 rounded-full hover:bg-gray-700 transition duration-200 text-blue-400 ml-2"
                                             title="Voir Détails Affectation"
                                             (click)="viewAffectationDetails(suivi.id_affectation_epreuve)">
                                         <i class="fas fa-info-circle"></i>

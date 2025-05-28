@@ -212,6 +212,11 @@ table tbody td {
     }
 }
 
+select {
+    --tw-text-opacity: 0;
+    color: rgb(255 255 255 / var(--tw-text-opacity));   /* ⇒ transparent */
+  }
+  
 select option {
     background: #1f2937 !important;
     /* bg-gray-800 */
@@ -233,3 +238,19 @@ select {
     margin-top: 10rem;
     margin-left: 18rem;
 }
+
+/* --- correctif lisibilité des selects sombre --- */
+select {
+    color: #f3f4f6 !important;           /* text-gray-100 */
+}
+  
+select option,
+select optgroup               { color: #f3f4f6 !important; }   /* liste ouverte */
+select option:hover,
+select option:checked         { background-color: #3b82f6 !important; }
+  
+  /* retire l’opacité forcée que certains plugins Tailwind posent */
+select, select option {
+    --tw-text-opacity: 1 !important;
+  }
+  

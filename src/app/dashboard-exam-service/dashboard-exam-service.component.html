@@ -23,26 +23,12 @@
             <i class="ri-pie-chart-2-fill"></i>
             <span>Tableau de bord</span>
           </a>
-        </div>
-      </div>
-
-      <!-- Sessions d’examen -->
-      <div>
-        <h3 class="sidebar__title">Sessions d’examen</h3>
-        <div class="sidebar__list">
           <a (click)="navigateTo('gerer_sessions')" 
              class="sidebar__link" 
              [ngClass]="{'bg-indigo-600 text-white': activeLink === 'gerer_sessions'}">
             <i class="ri-file-list-3-fill"></i>
             <span>Gérer mes sessions</span>
           </a>
-        </div>
-      </div>
-
-      <!-- Épreuves -->
-      <div>
-        <h3 class="sidebar__title">Épreuves</h3>
-        <div class="sidebar__list">
           <a (click)="navigateTo('suivi_depots')" 
              class="sidebar__link" 
              [ngClass]="{'bg-indigo-600 text-white': activeLink === 'suivi_depots'}">

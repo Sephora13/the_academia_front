@@ -1,16 +1,40 @@
 <app-sidebar></app-sidebar>
-<!--=============== MAIN ===============-->
-<main class="main container " id="main">
+
+<div *ngIf="loading" class="loader-container">
+  <div class="spinner">
+    <div class="double-bounce1"></div>
+    <div class="double-bounce2"></div>
+  </div>
+  <p>⏳ Chargement des compositions en cours...</p>
+</div>
+<main class="main container" id="main" *ngIf="!loading">
   <div class="container">
-    <h1 class="composition"> <strong>📚 Nouvelles Compositions</strong></h1>
+    <h1 class="composition"><strong>📚 Nouvelles Compositions</strong></h1>
 
     <div *ngFor="let compo of compositions" class="composition-card">
       <div class="infos">
         <h3>{{ compo.titre }}</h3>
-        <p>Date prévue : {{ compo.date }}</p>
+        <p>Date prévue : {{ compo.date | date:'dd/MM/yyyy à HH:mm' }}</p>
+        <p *ngIf="compo.status === 'active' && compo.canStart" class="active-status">
+          ✅ Disponible maintenant
+        </p>
+        <p *ngIf="compo.status === 'active' && !compo.canStart" class="inactive-status">
+          ⏳ Composition désactivée
+        </p>
+        <p *ngIf="compo.status === 'future'" class="future-status">
+          ⌛ Disponible à partir de {{ compo.date | date:'dd/MM/yyyy à HH:mm' }}
+        </p>
       </div>
-      <button (click)="lancerComposition(compo.id)">Démarrer</button>
+      <button 
+        (click)="lancerComposition(compo.id)" 
+        [disabled]="!compo.canStart"
+        [class.disabled]="!compo.canStart">
+        Démarrer
+      </button>
+    </div>
+
+    <div *ngIf="compositions.length === 0" class="no-composition">
+      Aucune composition prévue pour le moment.
     </div>
   </div>
 </main>
-

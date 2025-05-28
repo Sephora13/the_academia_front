@@ -118,7 +118,7 @@ export class SuivreDepotComponent implements OnInit {
   private getProfessorInfo(id_professeur: number): Professor | undefined {
     // Cette fonction doit être adaptée selon comment l'ID professeur est stocké dans votre système
     // Ici on suppose que l'index du tableau correspond à l'ID (à ajuster)
-    return this.professors[id_professeur - 1];
+    return this.professors[id_professeur - 2];
   }
 
   private getSessionName(sessionId: number): string {
@@ -152,13 +152,19 @@ export class SuivreDepotComponent implements OnInit {
 
   calculateStatutRemise(affectation: AffectationEpreuve): 'Remis à temps' | 'Remis en retard' | 'Non remis' {
     if (!affectation.id_epreuve) return 'Non remis';
-
+  
+    const createdAt = new Date(affectation.created_at);
+    const updatedAt = new Date(affectation.updated_at);
+  
+    // Si l'affectation n'a jamais été modifiée
+    if (updatedAt.getTime() === createdAt.getTime()) return 'Non remis';
+  
     const dateLimite = new Date(affectation.date_limite_soumission_prof);
-    const dateRemise = new Date(affectation.updated_at);
-
-    dateLimite.setHours(23, 59, 59);
-    return dateRemise <= dateLimite ? 'Remis à temps' : 'Remis en retard';
+    dateLimite.setHours(23, 59, 59); // La remise peut se faire jusqu'à la fin du jour
+  
+    return updatedAt <= dateLimite ? 'Remis à temps' : 'Remis en retard';
   }
+  
 
   filterSuiviDepots(): void {
     let tempSuivi = [...this.suiviDepots];
