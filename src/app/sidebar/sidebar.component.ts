@@ -2,7 +2,7 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { HeaderComponent } from '../header/header.component';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import { AuthentificationService } from '../services/authentification.service';
+import { AuthentificationService } from '../services/authentification/authentification.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 

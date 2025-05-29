@@ -2,9 +2,9 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { forkJoin } from 'rxjs';
-import { EpreuveService } from '../services/epreuve.service';
-import { AffectationEpreuveService } from '../services/affectation-epreuve.service';
-import { AuthentificationService } from '../services/authentification.service';
+import { EpreuveService } from '../services/epreuve/epreuve.service';
+import { AffectationEpreuveService } from '../services/affectation/affectation-epreuve.service';
+import { AuthentificationService } from '../services/authentification/authentification.service';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 
 @Component({

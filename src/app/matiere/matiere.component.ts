@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule } from '@angular/forms';
 import { Observable, of, forkJoin } from 'rxjs';
-import { MatiereService } from '../services/matiere.service'; // Importez le service
+import { MatiereService } from '../services/matiere/matiere.service'; // Importez le service
 
 // Déclarations pour les composants parents
 import { HeaderComponent } from '../header/header.component';

@@ -1,5 +1,5 @@
 import { Component, ElementRef, Inject, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
-import { SignalingService } from '../services/signaling.service';
+import { SignalingService } from '../services/signaling/signaling.service';
 import { isPlatformBrowser } from '@angular/common';
 import { CoordinateurSideComponent } from '../coordinateur-side/coordinateur-side.component';
 

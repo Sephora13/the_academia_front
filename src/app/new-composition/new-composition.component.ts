@@ -3,23 +3,25 @@ import { AfterViewInit, Component, ElementRef,Inject, OnInit, PLATFORM_ID, Query
 import * as ace from "ace-builds";
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthentificationService } from '../services/authentification.service';
-import { CompositionService } from '../services/composition.service';
-import { SignalingService } from '../services/signaling.service';
+import { AuthentificationService } from '../services/authentification/authentification.service';
+import { CompositionService } from '../services/composition/composition.service';
+import { SignalingService } from '../services/signaling/signaling.service';
 
 
 @Component({
   selector: 'app-new-composition',
   standalone: true,
   imports: [CommonModule],
-  template: `<video #localVideo autoplay muted playsinline></video>`,
+  template: '<video #localVideo autoplay muted playsinline></video>',
   templateUrl: './new-composition.component.html',
   styleUrls: ['./new-composition.component.css']
 })
 export class NewCompositionComponent implements AfterViewInit, OnInit {
+  webcamBlocked = false;
   @ViewChild('localVideo') localVideo!: ElementRef<HTMLVideoElement>;
   private localStream!: MediaStream;
   private peerConnection!: RTCPeerConnection;
+  private tabSwitchCount = 0;
 
   constructor(
     private httpClient: HttpClient,
@@ -55,43 +57,31 @@ export class NewCompositionComponent implements AfterViewInit, OnInit {
   
 
   async ngOnInit() {
+     // Bloquer clic droit
+     document.addEventListener('contextmenu', this.preventDefaultEvent);
+
+     // Bloquer copier/coller
+     document.addEventListener('copy', this.preventDefaultEvent);
+     document.addEventListener('paste', this.preventDefaultEvent);
+ 
+     // Détecter changement d'onglet
+     document.addEventListener('visibilitychange', () => {
+       if (document.visibilityState === 'hidden') {
+         this.tabSwitchCount++;
+         if (this.tabSwitchCount === 1) {
+           alert('Veuillez rester sur cette page !');
+         } else if (this.tabSwitchCount === 2) {
+          alert('vous avez été éjecté de la composition')
+           this.router.navigate(['/student_side']);
+         }
+       }
+     });
     this.loadExamInfo();
     this.loadQuestions();
+  }
 
-    if (!isPlatformBrowser(this.platformId)) return;
-
-    try {
-      this.signaling.setRole('meeting');
-
-      this.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      this.localVideo.nativeElement.srcObject = this.localStream;
-
-      this.peerConnection = new RTCPeerConnection({
-        iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
-      });
-
-      this.localStream.getTracks().forEach(track => {
-        this.peerConnection.addTrack(track, this.localStream);
-      });
-
-      this.peerConnection.onicecandidate = (event) => {
-        if (event.candidate) {
-          console.log('[Meeting] Sending ICE candidate:', event.candidate);
-          this.signaling.sendCandidate(event.candidate);
-        }
-      };
-
-      this.signaling.answer$.subscribe(async answer => {
-        console.log('[Meeting] Answer received');
-        await this.peerConnection.setRemoteDescription(answer);
-      });
-
-      const offer = await this.peerConnection.createOffer();
-      await this.peerConnection.setLocalDescription(offer);
-      this.signaling.sendOffer(offer);
-    } catch (error) {
-      console.error('[Meeting] Error:', error);
-    }
+  preventDefaultEvent(event: Event) {
+    event.preventDefault();
   }
   
 
@@ -199,7 +189,45 @@ export class NewCompositionComponent implements AfterViewInit, OnInit {
     });
   }
 
-  ngAfterViewInit(): void {
+  async ngAfterViewInit() {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+  try {
+    this.signaling.setRole('meeting');
+
+    this.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    this.localVideo.nativeElement.srcObject = this.localStream;
+    this.webcamBlocked = false; // L'accès est autorisé
+
+    this.peerConnection = new RTCPeerConnection({
+      iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+    });
+
+    this.localStream.getTracks().forEach(track => {
+      this.peerConnection.addTrack(track, this.localStream);
+    });
+
+    this.peerConnection.onicecandidate = (event) => {
+      if (event.candidate) {
+        console.log('[Meeting] Sending ICE candidate:', event.candidate);
+        this.signaling.sendCandidate(event.candidate);
+      }
+    };
+
+    this.signaling.answer$.subscribe(async answer => {
+      console.log('[Meeting] Answer received');
+      await this.peerConnection.setRemoteDescription(answer);
+    });
+
+    const offer = await this.peerConnection.createOffer();
+    await this.peerConnection.setLocalDescription(offer);
+    this.signaling.sendOffer(offer);
+  } catch (error) {
+    console.error('[Meeting] Webcam non accessible :', error);
+    this.webcamBlocked = true; // Webcam bloquée
+  }
+
+  
     this.codeEditors.changes.subscribe(() => {
       this.codeEditors.forEach((editorRef, index) => {
         const aceEditor = ace.edit(editorRef.nativeElement);

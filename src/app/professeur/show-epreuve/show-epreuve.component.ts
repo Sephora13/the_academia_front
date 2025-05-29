@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; // Nécessaire pour ngModel
 import { Router, RouterModule } from '@angular/router';
-import { AuthentificationService } from '../../services/authentification.service';
+import { AuthentificationService } from '../../services/authentification/authentification.service';
 import { MakeEpreuveByIaService } from '../../services/professeur/make-epreuve-by-ia.service';
 import { Observable, of, forkJoin } from 'rxjs';
 import { delay } from 'rxjs/operators';

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthentificationService } from '../services/authentification.service';
+import { AuthentificationService } from '../services/authentification/authentification.service';
 import { Router } from '@angular/router';
 import { first } from 'rxjs/operators';
 import { SidebarAdminComponent } from '../sidebar-admin/sidebar-admin.component';
@@ -38,8 +38,8 @@ export class CreateProfComponent implements OnInit {
           this.name,
           this.prenom,
           this.email,
-          this.filiere,
           this.password,
+          this.filiere,
           this.matiere,
         ).pipe(first()).toPromise();
     

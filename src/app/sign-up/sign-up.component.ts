@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthentificationService } from '../services/authentification.service';
+import { AuthentificationService } from '../services/authentification/authentification.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { first } from 'rxjs/operators';

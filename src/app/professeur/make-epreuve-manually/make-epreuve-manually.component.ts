@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { MakeEpreuveByIaService } from '../../services/professeur/make-epreuve-by-ia.service';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { AuthentificationService } from '../../services/authentification.service';
+import { AuthentificationService } from '../../services/authentification/authentification.service';
 
 @Component({
   selector: 'app-make-epreuve-manually',

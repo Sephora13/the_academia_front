@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { MatiereService } from './matiere.service';
+import { MatiereService } from '../matiere.service';
 
 describe('MatiereService', () => {
   let service: MatiereService;

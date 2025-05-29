@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { AppConfig } from '../config/config';
+import { AppConfig } from '../../config/config';
 
 interface OptionEtude {
   id_option: number;

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule } from '@angular/forms';
 import { HeaderComponent } from '../header/header.component';
 import { DashboardExamServiceComponent } from '../dashboard-exam-service/dashboard-exam-service.component'; 
-import { FiliereService } from '../services/filiere.service';
+import { FiliereService } from '../services/filiere/filiere.service';
 
 // Interfaces pour les données de filière
 interface FiliereRead {
