@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { MakeEpreuveByIaService } from '../../services/professeur/make-epreuve-by-ia.service';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { AuthentificationService } from '../../services/authentification.service';
+import { AffectationEpreuveService } from '../../services/affectation-epreuve.service';
 
 @Component({
   selector: 'app-make-epreuve-manually',
@@ -25,15 +26,19 @@ export class MakeEpreuveManuallyComponent implements OnInit {
   isSaveButtonEnabled = false;
   analyzedEpreuveText: string | null = null;
   professeurId: number | null = null;
+  idAffectation: number | null = null;
 
   constructor(
     private makeEpreuveService: MakeEpreuveByIaService,
     private router: Router,
+    private route: ActivatedRoute,
     private auth: AuthentificationService,
+    private affectationService: AffectationEpreuveService,
   ) {}
 
   ngOnInit(): void {
     this.user = this.auth.getUserInfo();
+    this.idAffectation = +this.route.snapshot.paramMap.get('idAffectation')!;
 
     if (this.user && this.user.id) {
       this.professeurId = this.user.id;
@@ -150,7 +155,19 @@ export class MakeEpreuveManuallyComponent implements OnInit {
         if (response && response.success) {
           console.log(response); 
           this.message = 'Épreuve enregistrée avec succès !';
-          // this.router.navigate(['/view-created-exams']);
+          const epreuveId = response.message?.id_epreuve;
+          if (epreuveId) {
+            this.affectationService.mettreAJourIdProfDansAffectation(this.idAffectation!, epreuveId).subscribe({
+              next: (response) => {
+                if (response.success){
+                  console.log('affectation mise à jour');
+                  this.router.navigate(['/professeur/show_epreuve']);
+                } else {
+                  console.error('Erreur lors de la tentative de mise à jour de affectation :', response.message);
+                }
+              }
+            })
+          }
         } else if (response && !response.success) {
           this.message = 'L\'enregistrement a échoué : ' + (response.message || 'Raison inconnue.');
         }
