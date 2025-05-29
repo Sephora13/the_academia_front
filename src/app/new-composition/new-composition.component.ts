@@ -30,7 +30,7 @@ export class NewCompositionComponent implements AfterViewInit, OnInit {
     private signaling: SignalingService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
-    this.id_epreuve = this.route.snapshot.params['id'];
+    this.id_epreuve = Number(this.route.snapshot.params['id']);
   }
   
   user: { id: number, nom: string, prenom: string } | null = null;
@@ -275,7 +275,7 @@ export class NewCompositionComponent implements AfterViewInit, OnInit {
       next: (res) => {
         console.log("✅ Copie soumise avec succès", res);
   
-        const idCopie = res?.message?.id_copie_numerique;
+        const idCopie = res?.id_copie_numerique;
         if (!idCopie) {
           console.error("❌ ID de la copie non reçu.");
           this.loading = false;
@@ -297,6 +297,9 @@ export class NewCompositionComponent implements AfterViewInit, OnInit {
           },
           error: (err) => {
             console.error("❌ Erreur de correction :", err);
+            if (err.error?.detail) {
+              console.log("🧾 Détail de l'erreur :", err.error.detail);
+            }            
             alert("❌ Erreur lors de la correction.");
             this.loading = false;
           }
@@ -305,6 +308,9 @@ export class NewCompositionComponent implements AfterViewInit, OnInit {
       },
       error: (err) => {
         console.error("❌ Erreur soumission copie :", err);
+        if (err.error?.detail) {
+          console.log("🧾 Détail de l'erreur :", err.error.detail);
+        }
         alert("❌ Échec de la soumission.");
         this.loading = false;
       }
