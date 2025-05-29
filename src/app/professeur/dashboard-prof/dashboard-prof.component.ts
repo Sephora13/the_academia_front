@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
-import { AuthentificationService } from '../../services/authentification.service';
+import { AuthentificationService } from '../../services/authentification/authentification.service';
 
 @Component({
   selector: 'app-professeur-dashboard',

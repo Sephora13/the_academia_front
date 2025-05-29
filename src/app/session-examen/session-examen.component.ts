@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
-import { SessionExamensService } from '../services/session-examens.service';
+import { SessionExamensService } from '../services/session/session-examens.service';
 
 // Déclarations pour les composants parents
 import { HeaderComponent } from '../header/header.component';

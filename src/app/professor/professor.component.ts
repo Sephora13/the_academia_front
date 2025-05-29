@@ -3,7 +3,7 @@ import { SidebarAdminComponent } from '../sidebar-admin/sidebar-admin.component'
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { GetPasswordService } from '../services/get-password.service';
+import { GetPasswordService } from '../services/get_info/get-password.service';
 
 @Component({
   selector: 'app-professor',

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthentificationService } from '../services/authentification.service';
+import { AuthentificationService } from '../services/authentification/authentification.service';
 import { SidebarAdminComponent } from '../sidebar-admin/sidebar-admin.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';

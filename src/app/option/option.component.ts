@@ -5,8 +5,8 @@ import { forkJoin } from 'rxjs';
 
 import { HeaderComponent } from '../header/header.component';
 import { DashboardExamServiceComponent } from '../dashboard-exam-service/dashboard-exam-service.component';
-import { OptionEtudeService } from '../services/option-etude.service';
-import { FiliereService } from '../services/filiere.service';
+import { OptionEtudeService } from '../services/option/option-etude.service';
+import { FiliereService } from '../services/filiere/filiere.service';
 
 // Interfaces pour les données
 interface FiliereRead {

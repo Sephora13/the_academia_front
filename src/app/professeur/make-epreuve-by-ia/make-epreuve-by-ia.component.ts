@@ -7,10 +7,10 @@ import { forkJoin } from 'rxjs';
 
 
 import { MakeEpreuveByIaService } from '../../services/professeur/make-epreuve-by-ia.service'; // Importe le service API
-import { AuthentificationService } from '../../services/authentification.service';
-import { AffectationEpreuveService } from '../../services/affectation-epreuve.service';
-import { MatiereService } from '../../services/matiere.service';
-import { OptionEtudeService } from '../../services/option-etude.service';
+import { AuthentificationService } from '../../services/authentification/authentification.service';
+import { AffectationEpreuveService } from '../../services/affectation/affectation-epreuve.service';
+import { MatiereService } from '../../services/matiere/matiere.service';
+import { OptionEtudeService } from '../../services/option/option-etude.service';
 
 // Définir une interface pour les messages du chat pour une meilleure structuration
 interface ChatMessage {

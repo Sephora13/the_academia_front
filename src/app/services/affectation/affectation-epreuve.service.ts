@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { AppConfig } from '../config/config';
+import { AppConfig } from '../../config/config';
 import { formatDate } from '@angular/common';
 
 // Interfaces correspondant au modèle API

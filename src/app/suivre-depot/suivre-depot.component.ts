@@ -9,14 +9,14 @@ import { DashboardExamServiceComponent } from '../dashboard-exam-service/dashboa
 import { 
   AffectationEpreuveService,
   AffectationEpreuve
-} from '../services/affectation-epreuve.service';
+} from '../services/affectation/affectation-epreuve.service';
 import { 
   SessionExamensService,
   SessionExamen 
-} from '../services/session-examens.service';
-import { MatiereService } from '../services/matiere.service';
-import { OptionEtudeService } from '../services/option-etude.service';
-import { GetPasswordService } from '../services/get-password.service';
+} from '../services/session/session-examens.service';
+import { MatiereService } from '../services/matiere/matiere.service';
+import { OptionEtudeService } from '../services/option/option-etude.service';
+import { GetPasswordService } from '../services/get_info/get-password.service';
 
 interface Professor {
   nom: string;

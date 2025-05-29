@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
-import { AuthentificationService } from '../../services/authentification.service';
+import { AuthentificationService } from '../../services/authentification/authentification.service';
 
 @Component({
   selector: 'app-professeur-sidebar',

@@ -9,14 +9,14 @@ import { HeaderComponent } from '../header/header.component';
 import { DashboardExamServiceComponent } from '../dashboard-exam-service/dashboard-exam-service.component';
 
 // Services
-import { SessionExamensService } from '../services/session-examens.service';
-import { AffectationEpreuveService } from '../services/affectation-epreuve.service';
-import { MatiereService } from '../services/matiere.service';
-import { OptionEtudeService } from '../services/option-etude.service';
-import { GetPasswordService } from '../services/get-password.service';
+import { SessionExamensService } from '../services/session/session-examens.service';
+import { AffectationEpreuveService } from '../services/affectation/affectation-epreuve.service';
+import { MatiereService } from '../services/matiere/matiere.service';
+import { OptionEtudeService } from '../services/option/option-etude.service';
+import { GetPasswordService } from '../services/get_info/get-password.service';
 
 // Interfaces
-import { SessionExamen } from '../services/session-examens.service';
+import { SessionExamen } from '../services/session/session-examens.service';
 
 interface AffectationEpreuveRead {
   id_affectation_epreuve: number;
