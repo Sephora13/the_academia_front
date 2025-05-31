@@ -1,148 +1,147 @@
 <main id="main" class="p-6 min-h-screen text-gray-100">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <!-- En-tête amélioré avec effet de profondeur -->
-      <div class="flex flex-col sm:flex-row justify-between items-center mb-8">
-          <div class="mb-4 sm:mb-0">
-              <h4 class="text-3xl font-bold text-blue-400 animate-fade-in-down bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-                  Épreuves à Rendre
-              </h4>
-          </div>
-      </div>
-
-      <!-- Section principale avec verre morphisme -->
-      <div class="w-full">
-          <div class=" backdrop-blur-lg rounded-xl shadow-2xl border border-gray-700/30 animate-slide-up p-6">
-              <!-- En-tête de section amélioré -->
-              <div class="mb-6">
-                  <h5 class="text-xl font-semibold text-gray-100 mb-2 flex items-center">
-                      <i class="fas fa-tasks mr-3 text-blue-400"></i>
-                      Mes Affectations d'Épreuves
-                  </h5>
-                  <p class="text-gray-400 text-sm">
-                      Gérer les épreuves qui vous ont été assignées - <span class="text-blue-400">{{ filteredEpreuvesARendre.length }} résultat(s)</span>
-                  </p>
-              </div>
-
-              <!-- Barre de contrôle améliorée -->
-              <div class="flex flex-col md:flex-row gap-4 mb-8">
-                  <!-- Recherche avec icône intégrée -->
-                  <div class="flex-grow relative">
-                      <input type="text" 
-                             class="w-full px-4 pl-12 py-3 bg-gray-700/50 border border-gray-600/30 rounded-lg text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
-                             placeholder="Rechercher une épreuve..."
-                             [(ngModel)]="searchTerm"
-                             (input)="filterEpreuvesARendre()">
-                      <i class="fas fa-search absolute left-4 top-3.5 text-gray-500"></i>
-                  </div>
-
-                  <!-- Filtres avec style cohérent -->
-                  <div class="flex gap-4 w-full md:w-auto">
-                      <div class="relative flex-1">
-                          <select [(ngModel)]="selectedSessionId" 
-                                  (change)="filterEpreuvesARendre()"
-                                  class="w-full px-4 py-3 bg-gray-700/50 border border-gray-600/30 rounded-lg text-gray-100 appearance-none focus:ring-2 focus:ring-blue-500/50 pr-10 cursor-pointer">
-                              <option [ngValue]="null">Toutes sessions</option>
-                              <option *ngFor="let session of sessions" [ngValue]="session.id_session">
-                                  {{ session.nom }}
-                              </option>
-                          </select>
-                          <i class="fas fa-chevron-down absolute right-4 top-4 text-gray-500 pointer-events-none"></i>
-                      </div>
-
-                      <div class="relative flex-1">
-                          <select [(ngModel)]="selectedStatut" 
-                                  (change)="filterEpreuvesARendre()"
-                                  class="w-full px-4 py-3 bg-gray-700/50 border border-gray-600/30 rounded-lg text-gray-100 appearance-none focus:ring-2 focus:ring-blue-500/50 pr-10 cursor-pointer">
-                              <option [ngValue]="null">Tous statuts</option>
-                              <option *ngFor="let statut of availableStatuts" [ngValue]="statut">{{ statut }}</option>
-                          </select>
-                          <i class="fas fa-filter absolute right-4 top-4 text-gray-500 pointer-events-none"></i>
-                      </div>
-                  </div>
-              </div>
-
-              <!-- Liste des épreuves avec nouveau design -->
-              <div *ngIf="filteredEpreuvesARendre.length === 0" class="text-center py-12">
-                  <div class="mb-4 text-gray-500">
-                      <i class="fas fa-inbox text-4xl"></i>
-                  </div>
-                  <p class="text-gray-400">Aucune épreuve à afficher</p>
-              </div>
-
-              <div *ngIf="filteredEpreuvesARendre.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                  <!-- Carte réinventée -->
-                  <div *ngFor="let epreuve of filteredEpreuvesARendre" 
-                       class="group hover:bg-gray-800/50 border border-gray-700/20 rounded-xl p-5 transition-all duration-300 hover:shadow-xl hover:border-blue-500/30 relative overflow-hidden">
-                       
-                       <!-- Ruban de statut -->
-                       <div class="absolute top-3 right-3">
-                           <span class="px-3 py-1 rounded-full text-xs font-semibold flex items-center"
-                                 [ngClass]="{
-                                     'bg-yellow-500/20 text-yellow-400': epreuve.statut === 'En attente de création',
-                                     'bg-green-500/20 text-green-400': epreuve.statut === 'Remise',
-                                     'bg-red-500/20 text-red-400': epreuve.statut === 'En retard'
-                                 }">
-                               <i class="fas fa-circle text-[6px] mr-2"></i>
-                               {{ epreuve.statut }}
-                           </span>
-                       </div>
-
-                       <!-- Contenu principal -->
-                       <div class="space-y-4">
-                           <div class="flex items-start justify-between">
-                               <div>
-                                   <h6 class="text-lg font-semibold text-gray-100 mb-1 flex items-center">
-                                       <i class="fas fa-clipboard-list mr-2 text-blue-400"></i>
-                                       {{ epreuve.titre_epreuve }}
-                                   </h6>
-                                   <p class="text-sm text-gray-400">Nom de la matiere</p>
-                               </div>
-                           </div>
-
-                           <!-- Métadonnées -->
-                           <div class="space-y-2">
-                               <div class="flex items-center text-sm text-gray-400">
-                                   <i class="fas fa-calendar-day mr-3 text-gray-500"></i>
-                                   date_limite_soumission
-                               </div>
-                               <div class="flex items-center text-sm text-gray-400">
-                                   <i class="fas fa-layer-group mr-3 text-gray-500"></i>
-                                   Nom session
-                               </div>
-                           </div>
-
-                           <!-- Actions contextuelles -->
-                           <div class="pt-4 border-t border-gray-700/30">
-                               <div *ngIf="epreuve.statut === 'En attente de création'" 
-                                    class="flex justify-end">
-                                   <button (click)="goToCreateEpreuve(epreuve.id_affectation)"
-                                           class="px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg text-sm flex items-center transition-all group/button">
-                                       <i class="fas fa-plus-circle mr-2 transition-transform group-hover/button:rotate-90"></i>
-                                       Commencer
-                                   </button>
-                               </div>
-                               <div *ngIf="epreuve.statut !== 'En attente de création'" 
-                                    class="text-xs text-gray-500 italic">
-                                   {{ epreuve.statut === 'Remise' ? 'Soumis le ' + (epreuve.date | date:'dd/MM/yyyy') : 'En attente depuis daysSince(epreuve.date_limite_soumission) j' }}
-                               </div>
-                           </div>
-                       </div>
-                  </div>
-              </div>
-          </div>
-      </div>
-
-      <!-- Toast modernisé -->
-      <div id="epreuveARendreToast" class="fixed top-6 right-6 z-[1000]">
-          <div class="bg-gray-800 border border-gray-700/30 rounded-xl shadow-2xl backdrop-blur-lg overflow-hidden min-w-[300px] transform transition-all opacity-0 translate-y-4">
-              <div class="p-4 border-b border-gray-700/30 flex items-center justify-between">
-                  <strong class="font-semibold text-blue-400 toast-title"></strong>
-                  <button class="text-gray-500 hover:text-gray-300 transition-colors" (click)="hideToast()">
-                      <i class="fas fa-times"></i>
-                  </button>
-              </div>
-              <div class="p-4 text-sm text-gray-300 toast-message"></div>
-          </div>
-      </div>
-  </div>
-</main>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- En-tête -->
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-8">
+            <div class="mb-4 sm:mb-0">
+                <h4 class="text-3xl font-bold text-blue-400 animate-fade-in-down bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+                    Mes Épreuves
+                </h4>
+            </div>
+        </div>
+  
+        <!-- Section principale -->
+        <div class="w-full">
+            <div class="backdrop-blur-lg rounded-xl shadow-2xl border border-gray-700/30 animate-slide-up p-6">
+                <!-- En-tête de section -->
+                <div class="mb-6">
+                    
+                    <p class="text-gray-400 text-sm">
+                        Gérer les épreuves qui vous ont été assignées - 
+                        <span class="text-blue-400">{{ filteredEpreuvesARendre.length }} résultat(s)</span>
+                    </p>
+                </div>
+  
+                <!-- Barre de contrôle -->
+                <div class="flex flex-col md:flex-row gap-4 mb-8">
+                    <!-- Recherche -->
+                    <div class="flex-grow relative">
+                        <input type="text" 
+                               class="w-full px-4 pl-12 py-3 bg-gray-700/50 border border-gray-600/30 rounded-lg text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                               placeholder="Rechercher une épreuve..."
+                               [(ngModel)]="searchTerm"
+                               (input)="filterEpreuvesARendre()">
+                        <i class="fas fa-search absolute left-4 top-3.5 text-gray-500"></i>
+                    </div>
+  
+                    <!-- Filtres -->
+                    <div class="flex gap-4 w-full md:w-auto">
+                        <div class="relative flex-1">
+                            <select [(ngModel)]="selectedSessionId" 
+                                    (change)="filterEpreuvesARendre()"
+                                    class="w-full px-4 py-3 bg-gray-700/50 border border-gray-600/30 rounded-lg text-gray-100 appearance-none focus:ring-2 focus:ring-blue-500/50 pr-10 cursor-pointer">
+                                <option [ngValue]="null">Toutes sessions</option>
+                                <option *ngFor="let session of sessions" [ngValue]="session.id_session">
+                                    {{ session.nom }}
+                                </option>
+                            </select>
+                            <i class="fas fa-chevron-down absolute right-4 top-4 text-gray-500 pointer-events-none"></i>
+                        </div>
+  
+                        <div class="relative flex-1">
+                            <select [(ngModel)]="selectedStatut" 
+                                    (change)="filterEpreuvesARendre()"
+                                    class="w-full px-4 py-3 bg-gray-700/50 border border-gray-600/30 rounded-lg text-gray-100 appearance-none focus:ring-2 focus:ring-blue-500/50 pr-10 cursor-pointer">
+                                <option [ngValue]="null">Tous statuts</option>
+                                <option *ngFor="let statut of availableStatuts" [ngValue]="statut">{{ statut }}</option>
+                            </select>
+                            <i class="fas fa-filter absolute right-4 top-4 text-gray-500 pointer-events-none"></i>
+                        </div>
+                    </div>
+                </div>
+  
+                <!-- Liste des épreuves -->
+                <div *ngIf="filteredEpreuvesARendre.length === 0" class="text-center py-12">
+                    <div class="mb-4 text-gray-500">
+                        <i class="fas fa-inbox text-4xl"></i>
+                    </div>
+                    <p class="text-gray-400">Aucune épreuve à afficher</p>
+                </div>
+  
+                <div *ngIf="filteredEpreuvesARendre.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <!-- Carte d'épreuve -->
+                    <div *ngFor="let epreuve of filteredEpreuvesARendre" 
+                         class="group hover:bg-gray-800/50 border border-gray-700/20 rounded-xl p-5 transition-all duration-300 hover:shadow-xl hover:border-blue-500/30 relative overflow-hidden">
+                         
+                         <!-- Ruban de statut -->
+                         <div class="absolute top-3 right-3">
+                             <span class="px-3 py-1 rounded-full text-xs font-semibold flex items-center"
+                                   [ngClass]="{
+                                       'bg-yellow-500/20 text-yellow-400': epreuve.statut === 'En attente de création',
+                                       'bg-green-500/20 text-green-400': epreuve.statut === 'Remise',
+                                       'bg-red-500/20 text-red-400': epreuve.statut === 'En retard'
+                                   }">
+                                 <i class="fas fa-circle text-[6px] mr-2"></i>
+                                 {{ epreuve.statut }}
+                             </span>
+                         </div>
+  
+                         <!-- Contenu principal -->
+                         <div class="space-y-4">
+                             <div class="flex items-start justify-between">
+                                 <div>
+                                     <h6 class="text-lg font-semibold text-gray-100 mb-1 flex items-center">
+                                         <i class="fas fa-clipboard-list mr-2 text-blue-400"></i>
+                                         {{ epreuve.nom_matiere }}
+                                     </h6>
+                                 </div>
+                             </div>
+  
+                             <!-- Métadonnées -->
+                             <div class="space-y-2">
+                                 <div class="flex items-center text-sm text-gray-400">
+                                     <i class="fas fa-calendar-day mr-3 text-gray-500"></i>
+                                     {{ epreuve.date_limite_soumission | date:'dd/MM/yyyy' }}
+                                 </div>
+                                 <div class="flex items-center text-sm text-gray-400">
+                                     <i class="fas fa-layer-group mr-3 text-gray-500"></i>
+                                     {{ epreuve.nom_session }}
+                                 </div>
+                             </div>
+  
+                             <!-- Actions -->
+                             <div class="pt-4 border-t border-gray-700/30">
+                                 <div *ngIf="epreuve.statut === 'En attente de création'" 
+                                      class="flex justify-end">
+                                     <button 
+                                             class="px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg text-sm flex items-center transition-all group/button">
+                                         <i class="fas fa-plus-circle mr-2 transition-transform group-hover/button:rotate-90"></i>
+                                         Commencer
+                                     </button>
+                                 </div>
+                                 <div *ngIf="epreuve.statut !== 'En attente de création'" 
+                                      class="text-xs text-gray-500 italic">
+                                     {{ epreuve.statut === 'Remise' 
+                                        ? 'Soumis le ' + (epreuve.date_limite_soumission | date:'dd/MM/yyyy') 
+                                        : 'En retard' }}
+                                 </div>
+                             </div>
+                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+  
+        <!-- Toast -->
+        <div id="epreuveARendreToast" class="fixed top-6 right-6 z-[1000]">
+            <div class="bg-gray-800 border border-gray-700/30 rounded-xl shadow-2xl backdrop-blur-lg overflow-hidden min-w-[300px] transform transition-all opacity-0 translate-y-4">
+                <div class="p-4 border-b border-gray-700/30 flex items-center justify-between">
+                    <strong class="font-semibold text-blue-400 toast-title"></strong>
+                    <button class="text-gray-500 hover:text-gray-300 transition-colors">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="p-4 text-sm text-gray-300 toast-message"></div>
+            </div>
+        </div>
+    </div>
+  </main>

@@ -1,24 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // Nécessaire pour ngModel
+import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { AuthentificationService } from '../../services/authentification/authentification.service';
-import { MakeEpreuveByIaService } from '../../services/professeur/make-epreuve-by-ia.service';
-import { Observable, of, forkJoin } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import { AffectationEpreuveService } from '../../services/affectation/affectation-epreuve.service';
+import { MatiereService } from '../../services/matiere/matiere.service';
+import { SessionExamensService } from '../../services/session/session-examens.service';
 
-// --- Définition des interfaces pour les données ---
-interface Epreuve {
-  id_epreuve: number;
-  titre_epreuve: string;
-  duree: string;
-  niveau: string;
-  date: Date;
-  id_professeur: number;
+interface EpreuveARendre {
   id_affectation: number;
-  icon?: string;
-  id_session: number | null;
-  statut: string | null;
+  titre_epreuve: string;
+  nom_session: string;
+  nom_matiere: string;
+  date_limite_soumission: Date;
+  statut: 'En attente de création' | 'Remise' | 'En retard';
+  id_epreuve?: number;
 }
 
 interface SessionExamen {
@@ -29,18 +26,14 @@ interface SessionExamen {
 @Component({
   selector: 'app-show-epreuve',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    RouterModule
-  ],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './show-epreuve.component.html',
   styleUrls: ['./show-epreuve.component.css']
 })
 export class ShowEpreuveComponent implements OnInit {
   user: { id: number, nom: string, prenom: string } | null = null;
-  epreuves: Epreuve[] = [];
-  filteredEpreuvesARendre: Epreuve[] = [];
+  epreuves: EpreuveARendre[] = [];
+  filteredEpreuvesARendre: EpreuveARendre[] = [];
   searchTerm: string = '';
   selectedSessionId: number | null = null;
   selectedStatut: 'En attente de création' | 'Remise' | 'En retard' | null = null;
@@ -53,7 +46,9 @@ export class ShowEpreuveComponent implements OnInit {
   constructor(
     private router: Router,
     private auth: AuthentificationService,
-    private makeEpreuveByIaService: MakeEpreuveByIaService
+    private affectationService: AffectationEpreuveService,
+    private matiereService: MatiereService,
+    private sessionService: SessionExamensService
   ) {}
 
   ngOnInit(): void {
@@ -71,28 +66,69 @@ export class ShowEpreuveComponent implements OnInit {
     this.loading = true;
     this.error = null;
 
-    this.makeEpreuveByIaService.getEpreuvesByProfesseurId(idProfesseur).subscribe({
-      next: (response) => {
-        if (response.success && Array.isArray(response.message)) {
-          this.epreuves = response.message.map((epreuveItem: any) => ({
-            id_epreuve: epreuveItem.id_epreuve,
-            titre: epreuveItem.titre,
-            duree: epreuveItem.duree,
-            niveau: epreuveItem.niveau,
-            date: new Date(epreuveItem.created_at),
-            id_professeur: epreuveItem.id_professeur,
-            icon: 'https://cdn-icons-png.flaticon.com/128/1945/1945985.png'
-          }));
-          this.filterEpreuvesARendre(); // Appliquer le filtre initial
+    // Charger les données nécessaires
+    forkJoin({
+      affectations: this.affectationService.listerParProfesseur(idProfesseur),
+      matieres: this.matiereService.lireMatieres(),
+      sessions: this.sessionService.listerSessions()
+    }).subscribe({
+      next: (results: any) => {
+        if (results.affectations.success && results.matieres.success && results.sessions.success) {
+          const affectations = results.affectations.message;
+          const matieres = results.matieres.message;
+          this.sessions = results.sessions.message;
+
+          // Préparer les promesses pour les noms de session
+          const sessionPromises = affectations.map((affectation: any) => 
+            this.sessionService.getSession(affectation.id_session_examen).toPromise()
+          );
+
+          // Résoudre toutes les promesses de session
+          Promise.all(sessionPromises).then(sessionResponses => {
+            this.epreuves = affectations.map((affectation: any, index: number) => {
+              const sessionResponse = sessionResponses[index];
+              const matiere = matieres.find((m: any) => m.id_matiere === affectation.id_matiere);
+              const nom_session = sessionResponse?.success 
+                ? sessionResponse.message.nom_session 
+                : 'Session inconnue';
+
+              // Calculer le statut
+              const now = new Date();
+              const dateLimite = new Date(affectation.date_limite_soumission_prof);
+              let statut: 'En attente de création' | 'Remise' | 'En retard';
+              
+              if (affectation.id_epreuve) {
+                statut = 'Remise';
+              } else if (dateLimite < now) {
+                statut = 'En retard';
+              } else {
+                statut = 'En attente de création';
+              }
+
+              return {
+                id_affectation: affectation.id_affectation_epreuve,
+                titre_epreuve: matiere?.nom_matiere 
+                  ? `Épreuve de ${matiere.nom_matiere}` 
+                  : 'Épreuve sans titre',
+                nom_matiere: matiere?.nom_matiere || 'Matière inconnue',
+                nom_session: nom_session,
+                date_limite_soumission: dateLimite,
+                statut: statut,
+                id_epreuve: affectation.id_epreuve
+              };
+            });
+            
+            this.filterEpreuvesARendre();
+            this.loading = false;
+          });
         } else {
-          this.error = response.message?.message || response.message || 'Une erreur est survenue lors du chargement des épreuves.';
-          this.epreuves = [];
+          this.error = 'Erreur lors du chargement des données.';
+          this.loading = false;
         }
       },
       error: (err) => {
         this.error = 'Désolé, une erreur technique est survenue lors du chargement des épreuves.';
-      },
-      complete: () => {
+        console.error(err);
         this.loading = false;
       }
     });
@@ -102,7 +138,9 @@ export class ShowEpreuveComponent implements OnInit {
     let tempEpreuves = [...this.epreuves];
 
     if (this.selectedSessionId !== null) {
-      tempEpreuves = tempEpreuves.filter(epreuve => epreuve.id_session === this.selectedSessionId);
+      tempEpreuves = tempEpreuves.filter(epreuve => 
+        this.sessions.some(s => s.id_session === this.selectedSessionId && s.nom === epreuve.nom_session)
+      );
     }
 
     if (this.selectedStatut !== null) {
@@ -112,9 +150,12 @@ export class ShowEpreuveComponent implements OnInit {
     if (this.searchTerm) {
       const lowerCaseSearchTerm = this.searchTerm.toLowerCase();
       tempEpreuves = tempEpreuves.filter(epreuve =>
-        epreuve.titre_epreuve.toLowerCase().includes(lowerCaseSearchTerm)
+        epreuve.titre_epreuve.toLowerCase().includes(lowerCaseSearchTerm) ||
+        epreuve.nom_matiere.toLowerCase().includes(lowerCaseSearchTerm) ||
+        epreuve.nom_session.toLowerCase().includes(lowerCaseSearchTerm)
       );
     }
+    
     this.filteredEpreuvesARendre = tempEpreuves;
   }
 
@@ -124,50 +165,10 @@ export class ShowEpreuveComponent implements OnInit {
   }
 
   showToast(title: string, message: string, type: 'success' | 'danger' | 'info'): void {
-    const toastElement = document.getElementById('epreuveARendreToast');
-    if (toastElement) {
-      const toastTitleElement = toastElement.querySelector('.toast-title');
-      const toastMessageElement = toastElement.querySelector('.toast-message');
-
-      if (toastTitleElement && toastMessageElement) {
-        toastTitleElement.textContent = title;
-        toastMessageElement.textContent = message;
-
-        const header = toastElement.querySelector('.toast-header-bg') as HTMLElement;
-        const body = toastElement.querySelector('.toast-body-bg') as HTMLElement;
-
-        header.classList.remove('bg-green-700', 'bg-red-700', 'bg-blue-700');
-        body.classList.remove('bg-green-800', 'bg-red-800', 'bg-blue-800');
-
-        if (type === 'success') {
-          header.classList.add('bg-green-700');
-          body.classList.add('bg-green-800');
-        } else if (type === 'danger') {
-          header.classList.add('bg-red-700');
-          body.classList.add('bg-red-800');
-        } else if (type === 'info') {
-          header.classList.add('bg-blue-700');
-          body.classList.add('bg-blue-800');
-        }
-
-        toastElement.classList.remove('opacity-0', 'pointer-events-none');
-        toastElement.classList.add('opacity-100');
-
-        if (this.toastTimeout) {
-          clearTimeout(this.toastTimeout);
-        }
-        this.toastTimeout = setTimeout(() => {
-          this.hideToast();
-        }, 3000);
-      }
-    }
+    
   }
 
   hideToast(): void {
-    const toastElement = document.getElementById('epreuveARendreToast');
-    if (toastElement) {
-      toastElement.classList.remove('opacity-100');
-      toastElement.classList.add('opacity-0', 'pointer-events-none');
-    }
+    
   }
 }

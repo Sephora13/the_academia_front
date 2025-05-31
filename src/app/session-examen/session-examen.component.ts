@@ -21,17 +21,17 @@ interface SessionExamenRead {
 }
 
 interface SessionExamenCreate {
-  nom: string;
-  date_debut: string;
-  date_fin: string;
-  statut: 'Planifiée' | 'En cours' | 'Terminée' | 'Annulée';
+  nom_session: string;
+  date_debut_session: string;
+  date_fin_session: string;
+  statut_session: string;
 }
 
 interface SessionExamenUpdate {
-  nom?: string;
-  date_debut?: string;
-  date_fin?: string;
-  statut?: 'Planifiée' | 'En cours' | 'Terminée' | 'Annulée';
+  nom_session?: string;
+  date_debut_session?: string;
+  date_fin_session?: string;
+  statut_session?: string;
 }
 
 @Component({
@@ -70,7 +70,7 @@ export class SessionExamenComponent implements OnInit {
       nom: ['', Validators.required],
       date_debut: ['', Validators.required],
       date_fin: ['', Validators.required],
-      statut: [null, Validators.required]
+      statut: ['Planifiée', Validators.required]
     });
   }
 
@@ -132,7 +132,9 @@ export class SessionExamenComponent implements OnInit {
   openAddSessionModal(): void {
     this.isEditMode = false;
     this.currentSessionId = null;
-    this.sessionForm.reset();
+    this.sessionForm.reset({
+      statut: 'Planifiée'
+    });
     this.showSessionModal = true;
   }
 
@@ -163,15 +165,16 @@ export class SessionExamenComponent implements OnInit {
   
     const formValue = this.sessionForm.value;
   
+    const apiPayload = {
+      nom_session: formValue.nom,
+      date_debut_session: formValue.date_debut,
+      date_fin_session: formValue.date_fin,
+      statut_session: formValue.statut
+    };
+
     if (this.isEditMode && this.currentSessionId !== null) {
-      const updateData: SessionExamenUpdate = {
-        nom: formValue.nom,
-        date_debut: formValue.date_debut,
-        date_fin: formValue.date_fin,
-        statut: formValue.statut
-      };
   
-      this.sessionService.mettreAJourSession(this.currentSessionId, updateData).subscribe({
+      this.sessionService.mettreAJourSession(this.currentSessionId, apiPayload).subscribe({
         next: (response) => {
           if (response.success) {
             this.showToast('Succès', 'Session modifiée avec succès !', 'success');
@@ -185,14 +188,7 @@ export class SessionExamenComponent implements OnInit {
         }
       });
     } else {
-      const createData: SessionExamenCreate = {
-        nom: formValue.nom,
-        date_debut: formValue.date_debut,
-        date_fin: formValue.date_fin,
-        statut: formValue.statut
-      };
-  
-      this.sessionService.creerSession(createData).subscribe({
+      this.sessionService.creerSession(apiPayload).subscribe({
         next: (response) => {
           if (response.success) {
             this.showToast('Succès', 'Session ajoutée avec succès !', 'success');

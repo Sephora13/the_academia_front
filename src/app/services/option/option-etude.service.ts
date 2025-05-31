@@ -9,6 +9,7 @@ interface OptionEtude {
   description?: string;
   created_at: string;
   updated_at: string;
+  id_filiere: number;
 }
 
 interface OptionEtudeCreate {
