@@ -1,5 +1,4 @@
-
-<body class="bg-gray-100 font-sans text-gray-900">
+<body class="bg-white font-sans  text-gray-900">
   <div *ngIf="webcamBlocked" class="overlay">
     <p>⚠️ Veuillez autoriser l'accès à votre webcam pour continuer.</p>
   </div>
@@ -31,7 +30,7 @@
     </header>
 
     <!-- Informations supplémentaires -->
-    <div class="flex justify-between items-center py-4 px-6 bg-gray-100 border-b border-gray-300 text-sm font-semibold">
+    <div  class="flex justify-between items-center py-4 px-6 bg-gray-100 border-b border-gray-300 text-sm font-semibold">
       <div class="text-left">
         <p class="text-gray-700">{{ examInfo.niveau }}</p>
       </div>
@@ -44,75 +43,77 @@
       </div>
     </div>
 
-    <!-- Main Content -->
-    <main class="p-6 space-y-8  overflow-y-auto">
-
-      <!-- Partie 1 : QCM -->
-      <section class="mb-8" *ngIf="partie1.length">
-        <h3 class="text-xl font-semibold mb-2 text-blue-700">Partie : Questions à Choix Multiple (QCM)</h3>
-        <div class="space-y-4">
-          <div *ngFor="let question of partie1">
-            <h4 class="font-semibold">{{ question.contenu }}</h4>
-            <div class="space-y-2">
-              <label *ngFor="let option of question.option" class="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  name="{{ question.id_question }}"
-                  [value]="option"
-                  (change)="selectOption(question.id_question.toString(), option)"
-                  [checked]="selectedOptions[question.id_question] === option"
-                />
-                <span>{{ option }}</span>
-              </label>
+    <div class="flex justify-center">
+          <!-- Main Content -->
+      <main id="main" class="p-6 space-y-8  overflow-y-auto max-w-5xl w-full bg-gray-100">
+        <!-- Partie 1 : QCM -->
+        <section class="mb-8" *ngIf="partie1.length">
+          <h3 class="text-xl font-semibold mb-2 text-blue-700">Partie : Questions à Choix Multiple (QCM)</h3>
+          <div class="space-y-4">
+            <div *ngFor="let question of partie1">
+              <h4 class="font-semibold">{{ question.contenu }}</h4>
+              <div class="space-y-2">
+                <label *ngFor="let option of question.option" class="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    name="{{ question.id_question }}"
+                    [value]="option"
+                    (change)="selectOption(question.id_question.toString(), option)"
+                    [checked]="selectedOptions[question.id_question] === option"
+                  />
+                  <span>{{ option }}</span>
+                </label>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <!-- Partie 2 : Écriture de Code -->
-      <section class="mb-8" *ngIf="partie2.length">
-        <h3 class="text-xl font-semibold mb-2 text-blue-700">Partie : Écriture de Code</h3>
-        <div class="space-y-4">
-          <div *ngFor="let question of partie2; let i = index">
-            <h4 class="font-semibold">{{ question.contenu }}</h4>
-            <div class="border rounded-lg overflow-hidden">
-              <div ace-editor class="h-40 app-ace-editor" #editor style="width: 100%; height: 250px;"></div>
+        <!-- Partie 2 : Écriture de Code -->
+        <section class="mb-8" *ngIf="partie2.length">
+          <h3 class="text-xl font-semibold mb-2 text-blue-700">Partie : Écriture de Code</h3>
+          <div class="space-y-4">
+            <div *ngFor="let question of partie2; let i = index">
+              <h4 class="font-semibold">{{ question.contenu }}</h4>
+              <div class="border rounded-lg overflow-hidden">
+                <div ace-editor class="h-40 app-ace-editor" #editor style="width: 100%; height: 250px;"></div>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <!-- Partie 3 : Réponses Courtes -->
-      <section class="mb-8" *ngIf="partie3.length">
-        <h3 class="text-xl font-semibold mb-2 text-blue-700">Partie : Questions à Réponse Courte</h3>
-        <div class="space-y-4">
-          <div *ngFor="let question of partie3; let i = index">
-            <h4 class="font-semibold">{{ question.contenu }}</h4>
-            <textarea
-              class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              rows="4"
-              placeholder="Votre réponse..."
-              (input)="saveShortAnswer(i, $event)"
-              (copy)="onBlockAction($event)" 
-              (cut)="onBlockAction($event)" 
-              (paste)="onBlockAction($event)">
-            </textarea>
+        <!-- Partie 3 : Réponses Courtes -->
+        <section class="mb-8" *ngIf="partie3.length">
+          <h3 class="text-xl font-semibold mb-2 text-blue-700">Partie : Questions à Réponse Courte</h3>
+          <div class="space-y-4">
+            <div *ngFor="let question of partie3; let i = index">
+              <h4 class="font-semibold">{{ question.contenu }}</h4>
+              <textarea
+                class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows="4"
+                placeholder="Votre réponse..."
+                (input)="saveShortAnswer(i, $event)"
+                (copy)="onBlockAction($event)" 
+                (cut)="onBlockAction($event)" 
+                (paste)="onBlockAction($event)">
+              </textarea>
+            </div>
           </div>
+        </section>
+
+        <!-- Bouton Soumettre -->
+        <div class="flex justify-end mt-4">
+          <button
+            class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-200 shadow-lg disabled:bg-gray-400 disabled:cursor-not-allowed"
+            [disabled]="loading"
+            (click)="submitExam()"
+          >
+            {{ loading ? 'Soumission en cours...' : 'Soumettre' }}
+          </button>
         </div>
-      </section>
 
-      <!-- Bouton Soumettre -->
-      <div class="flex justify-end mt-4">
-        <button
-          class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-200 shadow-lg disabled:bg-gray-400 disabled:cursor-not-allowed"
-          [disabled]="loading"
-          (click)="submitExam()"
-        >
-          {{ loading ? 'Soumission en cours...' : 'Soumettre' }}
-        </button>
-      </div>
+      </main>
 
-    </main>
-
+    </div>
+    
   <video class="display-none" #localVideo  muted playsinline></video>
 </body>
