@@ -6,8 +6,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { MakeEpreuveByIaService } from '../../services/professeur/make-epreuve-by-ia.service';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { AuthentificationService } from '../../services/authentification.service';
-import { AffectationEpreuveService } from '../../services/affectation-epreuve.service';
+import { AuthentificationService } from '../../services/authentification/authentification.service';
+import { AffectationEpreuveService } from '../../services/affectation/affectation-epreuve.service';
 
 @Component({
   selector: 'app-make-epreuve-manually',

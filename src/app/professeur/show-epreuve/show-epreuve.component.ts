@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { forkJoin } from 'rxjs';
-import { AuthentificationService } from '../../services/authentification.service';
-import { AffectationEpreuveService } from '../../services/affectation-epreuve.service';
-import { MatiereService } from '../../services/matiere.service';
-import { SessionExamensService } from '../../services/session-examens.service';
+import { AuthentificationService } from '../../services/authentification/authentification.service';
+import { AffectationEpreuveService } from '../../services/affectation/affectation-epreuve.service';
+import { MatiereService } from '../../services/matiere/matiere.service';
+import { SessionExamensService } from '../../services/session/session-examens.service';
 
 interface EpreuveARendre {
   id_affectation: number;

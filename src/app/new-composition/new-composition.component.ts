@@ -315,7 +315,7 @@ export class NewCompositionComponent implements AfterViewInit, OnInit {
           next: (correctionRes) => {
             const note = correctionRes?.note || correctionRes?.message?.note_finale;
             console.log("✅ Note finale :", note);
-            alert(`✅ Votre copie a été corrigée. Note : ${note}/20`);
+            //alert(`✅ Votre copie a été corrigée. Note : ${note}/20`);
             this.loading = false;
         
             // Redirection après 2 secondes vers le tableau de bord (à adapter)
