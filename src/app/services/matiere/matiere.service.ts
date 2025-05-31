@@ -9,6 +9,7 @@ export interface Matiere {
   description?: string;
   created_at: string;
   updated_at: string;
+  matieres_enseignees: number[]
 }
 
 export interface MatiereCreate {

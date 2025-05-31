@@ -61,7 +61,7 @@ export class CompositionService {
       reponses_code: string[],
       reponses_courtes: string[]
     }): Observable<any> {
-      const url = `${this.apiUrlMendel}/copies/soumettre-copie`;
+      const url = `${this.apiUrlMendel}/copies/soumettre_copie`;
       return this.httpClient.post<any>(url, copie);
     }
     

@@ -15,17 +15,17 @@ export interface SessionExamen {
 }
 
 export interface SessionExamenCreate {
-  nom: string;
-  date_debut: string;
-  date_fin: string;
-  statut: string;
+  nom_session: string;  
+  date_debut_session: string; 
+  date_fin_session: string; 
+  statut_session: string; 
 }
 
 export interface SessionExamenUpdate {
-  nom?: string;
-  date_debut?: string;
-  date_fin?: string;
-  statut?: string;
+  nom_session?: string;
+  date_debut_session?: string;
+  date_fin_session?: string;
+  statut_session?: string;
 }
 
 interface ApiResponse<T = any> {
