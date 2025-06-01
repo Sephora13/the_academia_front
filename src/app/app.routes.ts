@@ -41,6 +41,7 @@ import { PlanifierSessionComponent } from './planifier-session/planifier-session
 import { SuivreDepotComponent } from './suivre-depot/suivre-depot.component';
 import { ResultatsEpreuveComponent } from './resultats-epreuve/resultats-epreuve.component';
 import { TrackingComponent } from './tracking/tracking.component';
+import { ResultatsEpreuveDetailsComponent } from './resultats-epreuve-details/resultats-epreuve-details.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -83,8 +84,10 @@ export const routes: Routes = [
   { path: 'planifier_session/:id', component: PlanifierSessionComponent },
   { path: 'suivi_depots', component: SuivreDepotComponent },
   { path: 'resultats_epreuves', component: ResultatsEpreuveComponent },
-  {path: 'suivi_depots', component:SuivreDepotComponent},
-  {path: 'tracking', component:TrackingComponent},
+  { path: 'suivi_depots', component:SuivreDepotComponent},
+  { path: 'tracking', component:TrackingComponent},
+  { path: 'resultats-epreuve-details/:id', component: ResultatsEpreuveDetailsComponent},
+  
   //{ path: '**', redirectTo: 'signIn', pathMatch: 'full' },
   {
     path: 'professeur',

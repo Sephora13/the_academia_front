@@ -35,7 +35,7 @@
                             (change)="filterEpreuvesCorrigees()"
                         >
                             <option [ngValue]="null">Toutes les Sessions</option>
-                            <option *ngFor="let session of sessions" [ngValue]="session.id_session">
+                            <option *ngFor="let session of sessions" [ngValue]="session.id_session_examen">
                                 {{ session.nom }}
                             </option>
                         </select>
@@ -80,7 +80,7 @@
                             </span>
                         </div>
                         <div class="text-gray-300 text-sm space-y-2">
-                            <p><i class="far fa-calendar-alt mr-2 text-gray-400"></i>Session: <span class="font-medium">{{ epreuve.nom_session }}</span></p>
+                            <p><i class="far fa-calendar-alt mr-2 text-gray-400"></i>Session: <span class="font-medium">{{ getSessionName(epreuve.id_session) }}</span></p>
                             <p><i class="fas fa-book-open mr-2 text-gray-400"></i>Matière: <span class="font-medium">{{ epreuve.nom_matiere }}</span></p>
                             <p><i class="far fa-calendar-check mr-2 text-gray-400"></i>Date Composition: <span class="font-medium">{{ epreuve.date_composition | date:'dd/MM/yyyy' }}</span></p>
                             <p><i class="fas fa-chalkboard-teacher mr-2 text-gray-400"></i>Professeur: <span class="font-medium">{{ epreuve.nom_professeur }}</span></p>
