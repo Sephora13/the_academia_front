@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { CopieNumeriqueService } from './copie-numerique.service';
+import { CopieNumeriqueService } from '../copie-numerique.service';
 
 describe('CopieNumeriqueService', () => {
   let service: CopieNumeriqueService;

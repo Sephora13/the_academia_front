@@ -1,7 +1,7 @@
 <app-header></app-header>
 <app-dashboard-exam-service></app-dashboard-exam-service>
 
-<main id="main" class="p-6 bg-gray-900 min-h-screen text-gray-100">
+<main id="main" class="p-6 min-h-screen text-gray-100">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col sm:flex-row justify-between items-center mb-6">
             <div class="mb-4 sm:mb-0">
@@ -14,7 +14,7 @@
             </div>
             </div>
         <div class="w-full">
-            <div class="bg-gray-800 p-6 rounded-lg shadow-xl border border-gray-700 animate-slide-up">
+            <div class="p-6 rounded-lg shadow-xl border border-gray-700 animate-slide-up">
                 <h5 class="text-xl font-semibold text-gray-100 mb-2">Épreuves Corrigées</h5>
                 <p class="text-gray-400 mb-4">
                     Consultez les résultats des épreuves après correction. Cliquez sur une carte pour voir les notes des étudiants.
@@ -35,7 +35,7 @@
                             (change)="filterEpreuvesCorrigees()"
                         >
                             <option [ngValue]="null">Toutes les Sessions</option>
-                            <option *ngFor="let session of sessions" [ngValue]="session.id_session">
+                            <option *ngFor="let session of sessions" [ngValue]="session.id_session_examen">
                                 {{ session.nom }}
                             </option>
                         </select>
@@ -65,7 +65,7 @@
 
                 <div *ngIf="filteredEpreuvesCorrigees.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div *ngFor="let epreuve of filteredEpreuvesCorrigees"
-                         class="bg-gray-700 p-5 rounded-lg shadow-md border border-gray-600 hover:shadow-xl hover:border-blue-500 transform hover:-translate-y-1 transition duration-300 ease-in-out cursor-pointer animate-fade-in epreuve-card"
+                         class=" p-5 rounded-lg shadow-md border border-gray-600 hover:shadow-xl hover:border-blue-500 transform hover:-translate-y-1 transition duration-300 ease-in-out cursor-pointer animate-fade-in epreuve-card"
                          (click)="openResultsModal(epreuve)">
                         <div class="flex justify-between items-start mb-3">
                             <h6 class="text-lg font-bold text-blue-300">
@@ -80,7 +80,7 @@
                             </span>
                         </div>
                         <div class="text-gray-300 text-sm space-y-2">
-                            <p><i class="far fa-calendar-alt mr-2 text-gray-400"></i>Session: <span class="font-medium">{{ epreuve.nom_session }}</span></p>
+                            <p><i class="far fa-calendar-alt mr-2 text-gray-400"></i>Session: <span class="font-medium">{{ getSessionName(epreuve.id_session) }}</span></p>
                             <p><i class="fas fa-book-open mr-2 text-gray-400"></i>Matière: <span class="font-medium">{{ epreuve.nom_matiere }}</span></p>
                             <p><i class="far fa-calendar-check mr-2 text-gray-400"></i>Date Composition: <span class="font-medium">{{ epreuve.date_composition | date:'dd/MM/yyyy' }}</span></p>
                             <p><i class="fas fa-chalkboard-teacher mr-2 text-gray-400"></i>Professeur: <span class="font-medium">{{ epreuve.nom_professeur }}</span></p>
@@ -114,7 +114,7 @@
                     </div>
                     <div *ngIf="selectedEpreuveResults.length > 0" class="overflow-x-auto rounded-lg border border-gray-700">
                         <table class="min-w-full text-left divide-y divide-gray-700">
-                            <thead class="bg-gray-700 text-blue-300 uppercase text-sm">
+                            <thead class=" text-blue-300 uppercase text-sm">
                                 <tr>
                                     <th class="py-3 px-4">Nom de l'Étudiant</th>
                                     <th class="py-3 px-4 text-center">Note Obtenue</th>
