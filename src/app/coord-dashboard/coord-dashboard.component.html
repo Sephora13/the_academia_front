@@ -17,5 +17,102 @@
       </button>
     </div>
   </div>
+
+
+  <div class="dashboard-container p-4 space-y-6">
+    <!-- Statistiques globales -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="bg-blue-100 p-4 rounded-lg">
+        <h3 class="font-semibold">Étudiants connectés</h3>
+        <p class="text-2xl font-bold"></p>
+      </div>
+      <div class="bg-red-100 p-4 rounded-lg">
+        <h3 class="font-semibold">Alertes actives</h3>
+        <p class="text-2xl font-bold"></p>
+      </div>
+      <div class="bg-green-100 p-4 rounded-lg">
+        <h3 class="font-semibold">Durée moyenne</h3>
+        <p class="text-2xl font-bold"> min</p>
+      </div>
+      <div class="bg-yellow-100 p-4 rounded-lg">
+        <h3 class="font-semibold">% sans incident</h3>
+        <p class="text-2xl font-bold">%</p>
+      </div>
+    </div>
+  
+    <!-- Étudiants en composition -->
+    <div>
+      <h2 class="text-xl font-bold mb-2">Étudiants en composition</h2>
+      <table class="w-full border text-sm">
+        <thead class="bg-gray-100">
+          <tr>
+            <th>Nom</th>
+            <th>Matricule</th>
+            <th>Épreuve</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let student of students" [ngClass]="{'bg-green-50': student.status === 'en composition'}">
+            <td>{{ student.nom }}</td>
+            <td>{{ student.matricule }}</td>
+            <td>{{ student.epreuve }}</td>
+            <td>{{ student.status }}</td>
+            <td class="space-x-2">
+              <button class="text-yellow-600">Avertir</button>
+              <button class="text-red-600">Exclure</button>
+              <button  class="text-blue-600">Suspendre</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+    <!-- Alertes -->
+    <div>
+      <h2 class="text-xl font-bold mb-2">Alertes de sécurité</h2>
+      <ul class="space-y-2">
+        <li *ngFor="let alert of alerts" class="p-2 rounded border shadow-sm"
+            [ngClass]="{
+              'bg-red-200': alert.level === 'élevé',
+              'bg-yellow-200': alert.level === 'moyen',
+              'bg-green-100': alert.level === 'faible'
+            }">
+          <strong>{{ alert.studentNom }}</strong> - {{ alert.message }}
+          <span class="text-xs text-gray-600">({{ alert.timestamp | date:'short' }})</span>
+        </li>
+      </ul>
+    </div>
+  
+    <!-- Relectures vidéos -->
+    <div>
+      <h2 class="text-xl font-bold mb-2">Relectures vidéos</h2>
+      <ul class="list-disc pl-5">
+        <li *ngFor="let record of videoRecords">
+          {{ record.studentNom }} - {{ record.timestamp | date:'short' }}
+        </li>
+      </ul>
+    </div>
+  
+    <!-- Messagerie -->
+    <div>
+      <h2 class="text-xl font-bold mb-2">Messagerie</h2>
+      <div class="h-48 overflow-y-auto bg-gray-100 p-2 mb-2 rounded">
+        <div *ngFor="let msg of messages" [ngClass]="{ 'text-right': msg.fromAdmin }">
+          <span class="text-xs text-gray-500">{{ msg.timestamp | date:'shortTime' }}</span>
+          <p [ngClass]="{
+              'bg-blue-200 text-black p-2 rounded inline-block': msg.fromAdmin,
+              'bg-white p-2 rounded inline-block': !msg.fromAdmin
+            }">{{ msg.text }}</p>
+        </div>
+      </div>
+      <div class="flex space-x-2">
+        <input type="text"  class="flex-1 border p-2 rounded" placeholder="Votre message..." />
+        <button  class="bg-blue-500 text-white px-4 py-2 rounded">Envoyer</button>
+      </div>
+    </div>
+  </div>
+  
   
   

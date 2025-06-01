@@ -58,14 +58,14 @@ export class NewCompositionComponent implements AfterViewInit, OnInit, OnDestroy
 
   async ngOnInit() {
      // Bloquer clic droit
-     //document.addEventListener('contextmenu', this.preventDefaultEvent);
+     document.addEventListener('contextmenu', this.preventDefaultEvent);
 
      // Bloquer copier/coller
      document.addEventListener('copy', this.preventDefaultEvent);
      document.addEventListener('paste', this.preventDefaultEvent);
  
      // Détecter changement d'onglet
-     /*
+     
      document.addEventListener('visibilitychange', () => {
        if (document.visibilityState === 'hidden') {
          this.tabSwitchCount++;
@@ -77,7 +77,7 @@ export class NewCompositionComponent implements AfterViewInit, OnInit, OnDestroy
          }
        }
      });
-     */
+     
     this.loadExamInfo();
     this.loadQuestions();
     this.stopWebcam();
@@ -343,7 +343,7 @@ export class NewCompositionComponent implements AfterViewInit, OnInit, OnDestroy
           next: (correctionRes) => {
             const note = correctionRes?.note || correctionRes?.message?.note_finale;
             console.log("✅ Note finale :", note);
-            //alert(`✅ Votre copie a été corrigée. Note : ${note}/20`);
+            alert(`✅ Votre copie a été corrigée. Note : ${note}/20`);
             this.loading = false;
         
             // Redirection après 2 secondes vers le tableau de bord (à adapter)

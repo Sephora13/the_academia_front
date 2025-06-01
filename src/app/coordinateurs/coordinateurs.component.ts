@@ -13,6 +13,8 @@ import { Router } from '@angular/router';
 export class CoordinateursComponent  implements OnInit{
   currentSection = 'coordinators';
   loading: boolean = true;
+
+  
   coordinators = [
     { name: 'Emma ',prenom:'white', center: 'Gbegamey' },
     { name: 'Liam ', prenom:'Green', center: 'Porto Novo' }
