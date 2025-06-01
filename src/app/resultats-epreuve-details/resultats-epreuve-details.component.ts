@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
+
 
 import { CopieNumeriqueService } from '../services/copie/copie-numerique.service';
 import { EpreuveService } from '../services/epreuve/epreuve.service';
@@ -108,4 +111,87 @@ export class ResultatsEpreuveDetailsComponent implements OnInit {
   viewCopie(etudiantId: number): void {
     console.log(`Voir copie de l'étudiant ${etudiantId}`);
   }
+
+  exportToPDF(): void {
+    const doc = new jsPDF();
+  
+    // Dimensions de la page
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+  
+    // Filigrane : "ACADEMIA" centré et incliné
+    doc.saveGraphicsState();
+    doc.setFontSize(100);
+    doc.setTextColor(150);
+    doc.setTextColor(0, 0, 0, 0.05); // Simulation de l'opacité avec setTextColor(r,g,b,a)
+    doc.text(
+      'ACADEMIA',
+      pageWidth / 2,
+      pageHeight / 2,
+      {
+        angle: 45,
+        align: 'center',
+        baseline: 'middle'
+      }
+    );
+    doc.restoreGraphicsState();
+  
+    // En-tête : titre, session, professeur
+    const title = `Fiche de notes - ${this.epreuve?.titre || 'Epreuve'}`;
+    const sessionText = `Session : ${this.session?.nom_session || 'Non spécifiée'}`;
+    const professeurText = `Professeur : ${this.professeur?.nom || 'Inconnu'} ${this.professeur?.prenom || 'Inconnu'}`;
+  
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+    doc.setTextColor(40);
+    doc.text(title, 14, 20);
+  
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(12);
+    doc.text(sessionText, 14, 28);
+    doc.text(professeurText, 14, 34);
+  
+    // Tableau des résultats
+    const headers = [['Matricule', 'Nom', 'Note', 'Statut']];
+    const data = this.resultats.map(result => [
+      result.matricule_etudiant,
+      result.nom_etudiant,
+      result.note_obtenue.toFixed(2),
+      result.note_obtenue >= 10 ? 'Réussi' : 'Échec'
+    ]);
+  
+    autoTable(doc, {
+      startY: 40,
+      head: headers,
+      body: data,
+      headStyles: {
+        fillColor: [41, 128, 185],
+        textColor: 255,
+        fontStyle: 'bold'
+      },
+      styles: {
+        font: 'helvetica',
+        fontSize: 10,
+        cellPadding: 4,
+      },
+      alternateRowStyles: {
+        fillColor: [240, 240, 240]
+      },
+      margin: { top: 40 },
+      didDrawPage: (data) => {
+        const pageSize = doc.internal.pageSize;
+        const pageHeight = pageSize.height;
+        doc.setFontSize(10);
+        doc.setTextColor(150);
+        const pageNumber = doc.getCurrentPageInfo().pageNumber;
+        const totalPages = doc.getNumberOfPages();
+        doc.text(`Page ${pageNumber} / ${totalPages}`, pageWidth - 30, pageHeight - 10);
+      }
+    });
+  
+    const filename = `fiche_notes_${this.epreuve?.titre || 'epreuve'}.pdf`;
+    doc.save(filename);
+  }
+  
+    
 }
