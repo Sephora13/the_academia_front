@@ -5,6 +5,7 @@ import { forkJoin } from 'rxjs';
 import { EpreuveService } from '../services/epreuve/epreuve.service';
 import { AffectationEpreuveService } from '../services/affectation/affectation-epreuve.service';
 import { AuthentificationService } from '../services/authentification/authentification.service';
+import { CopieNumeriqueService } from '../services/copie/copie-numerique.service';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 
 @Component({
@@ -19,6 +20,7 @@ export class CompositionComponent implements OnInit, OnDestroy {
   compositions: any[] = [];
   currentTime: Date = new Date();
   timer: any;
+  existingCopies: any[] = [];
 
   loading = true;
   enableComposition = true;  // contrôle normal d'activation du bouton
@@ -29,13 +31,14 @@ export class CompositionComponent implements OnInit, OnDestroy {
     private epreuveService: EpreuveService,
     private affectationService: AffectationEpreuveService,
     private auth: AuthentificationService,
+    private copieService: CopieNumeriqueService
   ) {}
 
   ngOnInit() {
     this.user = this.auth.getUserInfo2();
     
     if (this.user?.id) {
-      this.loadCompositions();
+      this.loadExistingCopies();
     }
 
     // Mise à jour de l'heure toutes les minutes
@@ -47,6 +50,30 @@ export class CompositionComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.timer) clearInterval(this.timer);
+  }
+
+  loadExistingCopies() {
+    this.copieService.lireToutesLesCopies().subscribe({
+      next: (response) => {
+        if (response.success) {
+          // Filtrer les copies de l'utilisateur actuel
+          this.existingCopies = response.message.flat()
+            .filter((copie: any) => 
+              Number(copie.id_etudiant) === this.user?.id
+            );
+          
+          // Maintenant charger les compositions
+          this.loadCompositions();
+        } else {
+          this.loading = false;
+          console.error('Erreur de chargement des copies');
+        }
+      },
+      error: (error) => {
+        this.loading = false;
+        console.error('Erreur de chargement des copies:', error);
+      }
+    });
   }
 
   loadCompositions() {
@@ -92,14 +119,17 @@ export class CompositionComponent implements OnInit, OnDestroy {
                 status = 'active';
               }
 
+              const hasExistingCopy = this.existingCopies.some(
+                copy => Number(copy.id_epreuve) === epreuve.id_epreuve
+              );
+
               return {
                 id: epreuve.id_epreuve,
                 titre: epreuve.titre,
                 date: compositionDate,
                 status: status,
-                // Ici on active le bouton si status actif et enableComposition
-                // OU si forceEnable est activé (boutons forcés actifs)
-                canStart: (status === 'active' && this.enableComposition) || this.forceEnable
+                canStart: ((status === 'active' && this.enableComposition) || this.forceEnable) && !hasExistingCopy, // Ajout de la condition
+                hasExistingCopy: hasExistingCopy // Nouvelle propriété
               };
             })
             .filter((comp: any) => comp !== null && comp.status !== 'past');

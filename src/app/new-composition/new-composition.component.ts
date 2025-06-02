@@ -1,6 +1,8 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { AfterViewInit, Component, ElementRef,Inject, OnDestroy, OnInit, PLATFORM_ID, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, ElementRef,Inject, OnInit, PLATFORM_ID, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import * as ace from "ace-builds";
+import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthentificationService } from '../services/authentification/authentification.service';
@@ -16,19 +18,23 @@ import { SignalingService } from '../services/signaling/signaling.service';
   templateUrl: './new-composition.component.html',
   styleUrls: ['./new-composition.component.css']
 })
-export class NewCompositionComponent implements AfterViewInit, OnInit, OnDestroy {
+export class NewCompositionComponent implements AfterViewInit, OnInit {
   webcamBlocked = false;
   @ViewChild('localVideo') localVideo!: ElementRef<HTMLVideoElement>;
   private localStream!: MediaStream;
   private peerConnection!: RTCPeerConnection;
   private tabSwitchCount = 0;
+  showConfirmation = false;
+  showDownloadModal = false;
+  isGeneratingPdf = false;
+  pdfUrl: string | null = null;
 
   constructor(
     private httpClient: HttpClient,
     private route: ActivatedRoute,
     private auth: AuthentificationService,
     private compositionService: CompositionService,
-    private router: Router,
+    public router: Router,
     private signaling: SignalingService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
@@ -65,7 +71,6 @@ export class NewCompositionComponent implements AfterViewInit, OnInit, OnDestroy
      document.addEventListener('paste', this.preventDefaultEvent);
  
      // Détecter changement d'onglet
-     
      document.addEventListener('visibilitychange', () => {
        if (document.visibilityState === 'hidden') {
          this.tabSwitchCount++;
@@ -77,114 +82,9 @@ export class NewCompositionComponent implements AfterViewInit, OnInit, OnDestroy
          }
        }
      });
-     
-    this.loadExamInfo();
-    this.loadQuestions();
-    this.stopWebcam();
+     await this.loadExamInfo();
+     await this.loadQuestions();
   }
-
-
-  async ngAfterViewInit() {
-    if (!isPlatformBrowser(this.platformId)) return;
-
-      try {
-        this.signaling.setRole('meeting');
-
-        // 1. Récupération du flux local
-        this.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        this.localVideo.nativeElement.srcObject = this.localStream;
-        this.webcamBlocked = false;
-
-        // 2. Création du peerConnection
-        this.peerConnection = new RTCPeerConnection({
-          iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
-        });
-
-        // 3. Ajout des pistes
-        this.localStream.getTracks().forEach(track => {
-          this.peerConnection.addTrack(track, this.localStream);
-        });
-
-        // 4. Événement ICE
-        this.peerConnection.onicecandidate = (event) => {
-          if (event.candidate) {
-            console.log('[Meeting] Sending ICE candidate:', event.candidate);
-            this.signaling.sendCandidate(event.candidate);
-          }
-        };
-
-        // 5. Création et envoi de l'offre
-        const offer = await this.peerConnection.createOffer();
-        await this.peerConnection.setLocalDescription(offer);
-        this.signaling.sendOffer(offer);
-        console.log('[Meeting] Offer created and sent');
-
-        // 6. Réception de l'answer (après avoir envoyé l'offre)
-        this.signaling.answer$.subscribe(async answer => {
-          console.log('[Meeting] Answer received');
-          
-          if (this.peerConnection.signalingState === 'have-local-offer') {
-            try {
-              await this.peerConnection.setRemoteDescription(answer);
-              console.log('[Meeting] Remote description set');
-            } catch (err) {
-              console.error('[Meeting] Failed to set remote description:', err);
-            }
-          } else {
-            console.warn('[Meeting] Cannot set answer: Invalid state', this.peerConnection.signalingState);
-          }
-        });
-
-      } catch (error) {
-        console.error('[Meeting] Webcam non accessible :', error);
-        this.webcamBlocked = true;
-      }
-
-
-  
-    this.codeEditors.changes.subscribe(() => {
-      this.codeEditors.forEach((editorRef, index) => {
-        const aceEditor = ace.edit(editorRef.nativeElement);
-  
-        // ✅ Bloquer copier-coller dans l’éditeur
-        const textInput: HTMLTextAreaElement = aceEditor.textInput.getElement();
-  
-        textInput.addEventListener('copy', (e: ClipboardEvent) => {
-          e.preventDefault();
-          alert('Copie désactivée');
-        });
-  
-        textInput.addEventListener('paste', (e: ClipboardEvent) => {
-          e.preventDefault();
-          alert('Coller désactivé');
-        });
-  
-        textInput.addEventListener('cut', (e: ClipboardEvent) => {
-          e.preventDefault();
-          alert('Couper désactivé');
-        });
-  
-        // ✅ Configuration d'Ace
-        ace.config.set('basePath', 'https://unpkg.com/ace-builds@1.4.12/src-noconflict');
-        aceEditor.setOptions({
-          fontSize: "14px",
-          theme: 'ace/theme/twilight',
-          mode: 'ace/mode/javascript'
-        });
-  
-        aceEditor.session.setValue("");
-  
-        aceEditor.on("change", () => {
-          this.codeAnswers[index] = aceEditor.getValue();
-        });
-      });
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.stopWebcam()
-  }
-
 
   preventDefaultEvent(event: Event) {
     event.preventDefault();
@@ -240,7 +140,7 @@ export class NewCompositionComponent implements AfterViewInit, OnInit, OnDestroy
 
 
 
-  loadExamInfo(): void {
+  async loadExamInfo(): Promise<void>{
     this.loading = true;
     this.error = null;
   
@@ -264,7 +164,7 @@ export class NewCompositionComponent implements AfterViewInit, OnInit, OnDestroy
   }
   
 
-  loadQuestions(): void {
+  async loadQuestions(): Promise<void> {
     this.loading = true;
     this.compositionService.showQuesByEp(this.id_epreuve).subscribe({
       next: (response) => {
@@ -295,6 +195,84 @@ export class NewCompositionComponent implements AfterViewInit, OnInit, OnDestroy
     });
   }
 
+  async ngAfterViewInit() {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+  try {
+    this.signaling.setRole('meeting');
+
+    this.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    this.localVideo.nativeElement.srcObject = this.localStream;
+    this.webcamBlocked = false; // L'accès est autorisé
+
+    this.peerConnection = new RTCPeerConnection({
+      iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+    });
+
+    this.localStream.getTracks().forEach(track => {
+      this.peerConnection.addTrack(track, this.localStream);
+    });
+
+    this.peerConnection.onicecandidate = (event) => {
+      if (event.candidate) {
+        console.log('[Meeting] Sending ICE candidate:', event.candidate);
+        this.signaling.sendCandidate(event.candidate);
+      }
+    };
+
+    this.signaling.answer$.subscribe(async answer => {
+      console.log('[Meeting] Answer received');
+      await this.peerConnection.setRemoteDescription(answer);
+    });
+
+    const offer = await this.peerConnection.createOffer();
+    await this.peerConnection.setLocalDescription(offer);
+    this.signaling.sendOffer(offer);
+  } catch (error) {
+    console.error('[Meeting] Webcam non accessible :', error);
+    this.webcamBlocked = true; // Webcam bloquée
+  }
+
+  
+    this.codeEditors.changes.subscribe(() => {
+      this.codeEditors.forEach((editorRef, index) => {
+        const aceEditor = ace.edit(editorRef.nativeElement);
+  
+        // ✅ Bloquer copier-coller dans l’éditeur
+        const textInput: HTMLTextAreaElement = aceEditor.textInput.getElement();
+  
+        textInput.addEventListener('copy', (e: ClipboardEvent) => {
+          e.preventDefault();
+          alert('Copie désactivée');
+        });
+  
+        textInput.addEventListener('paste', (e: ClipboardEvent) => {
+          e.preventDefault();
+          alert('Coller désactivé');
+        });
+  
+        textInput.addEventListener('cut', (e: ClipboardEvent) => {
+          e.preventDefault();
+          alert('Couper désactivé');
+        });
+  
+        // ✅ Configuration d'Ace
+        ace.config.set('basePath', 'https://unpkg.com/ace-builds@1.4.12/src-noconflict');
+        aceEditor.setOptions({
+          fontSize: "14px",
+          theme: 'ace/theme/twilight',
+          mode: 'ace/mode/javascript'
+        });
+  
+        aceEditor.session.setValue("");
+  
+        aceEditor.on("change", () => {
+          this.codeAnswers[index] = aceEditor.getValue();
+        });
+      });
+    });
+  }
+
   selectOption(questionId: number, option: string) {
     this.selectedOptions[questionId] = option;
   }
@@ -306,80 +284,163 @@ export class NewCompositionComponent implements AfterViewInit, OnInit, OnDestroy
     }
   }
 
-  submitExam() {
-    if (this.loading) return; // Empêche les clics multiples
-  
-    this.user = this.auth.getUserInfo2();
-    if (!this.user) {
-      console.log("Utilisateur non authentifié.");
-      return;
-    }
-  
-    this.loading = true;
-  
-    const payloadCopie = {
-      id_etudiant: this.user.id,
-      id_epreuve: this.id_epreuve,
-      reponses_qcm: this.selectedOptions,
-      reponses_code: this.codeAnswers,
-      reponses_courtes: this.shortAnswers
-    };
-  
-    console.log("Soumission de la copie numérique :", payloadCopie);
-  
-    this.compositionService.soumettreCopie(payloadCopie).subscribe({
-      next: (res) => {
-        console.log("✅ Copie soumise avec succès", res);
-  
-        const idCopie = res?.id_copie_numerique;
-        if (!idCopie) {
-          console.error("❌ ID de la copie non reçu.");
-          this.loading = false;
-          return;
-        }
-  
-        console.log("⏳ Correction en cours...");
-        this.compositionService.corrigerCopie(idCopie).subscribe({
-          next: (correctionRes) => {
-            const note = correctionRes?.note || correctionRes?.message?.note_finale;
-            console.log("✅ Note finale :", note);
-            alert(`✅ Votre copie a été corrigée. Note : ${note}/20`);
-            this.loading = false;
-        
-            // Redirection après 2 secondes vers le tableau de bord (à adapter)
-            setTimeout(() => {
-              this.router.navigate(['/composition']);
-            }, 2000);
-          },
-          error: (err) => {
-            console.error("❌ Erreur de correction :", err);
-            if (err.error?.detail) {
-              console.log("🧾 Détail de l'erreur :", err.error.detail);
-            }            
-            alert("❌ Erreur lors de la correction.");
-            this.loading = false;
-          }
-        });
-        
-      },
-      error: (err) => {
-        console.error("❌ Erreur soumission copie :", err);
-        if (err.error?.detail) {
-          console.log("🧾 Détail de l'erreur :", err.error.detail);
-        }
-        alert("❌ Échec de la soumission.");
-        this.loading = false;
-      }
-    });
+  // Modifiez la méthode submitExam() pour générer le PDF avant d'afficher la modal
+submitExam() {
+  if (this.loading) return;
+  this.showConfirmation = false;
+  this.loading = true;
+
+  this.user = this.auth.getUserInfo2();
+  if (!this.user) {
+    console.log("Utilisateur non authentifié.");
+    return;
   }
 
-  //methode pour arrêter la webcam
-  stopWebcam() {
-    if (this.localStream) {
-      this.localStream.getTracks().forEach(track => track.stop());
+  const payloadCopie = {
+    id_etudiant: this.user.id,
+    id_epreuve: this.id_epreuve,
+    reponses_qcm: this.selectedOptions,
+    reponses_code: this.codeAnswers,
+    reponses_courtes: this.shortAnswers
+  };
+
+  this.compositionService.soumettreCopie(payloadCopie).subscribe({
+    next: (res) => {
+      const idCopie = res?.id_copie_numerique;
+      if (!idCopie) {
+        console.error("❌ ID de la copie non reçu.");
+        this.loading = false;
+        return;
+      }
+
+      this.compositionService.corrigerCopie(idCopie).subscribe({
+        next: async (correctionRes) => {
+          const note = correctionRes?.note || correctionRes?.message?.note_finale;
+          console.log("✅ Note finale :", note);
+          
+          // Générer le PDF avant d'afficher la modal
+          await this.generateExamPdf();
+          
+          this.loading = false;
+          this.showDownloadModal = true; // Afficher la modal APRES génération PDF
+        },
+        error: (err) => {
+          console.error("❌ Erreur de correction :", err);
+          this.loading = false;
+          // Afficher quand même la modal en cas d'erreur de correction
+          this.downloadExamPdf().finally(() => {
+            this.showDownloadModal = true;
+          });
+        }
+      });
+    },
+    error: (err) => {
+      console.error("❌ Erreur soumission copie :", err);
+      this.loading = false;
+    }
+  });
+}
+
+  async downloadExamPdf() {
+    this.isGeneratingPdf = true;
+    
+    try {
+      const data = document.getElementById('main-content')!;
+      const canvas = await html2canvas(data);
+      const imgData = canvas.toDataURL('image/png');
+      
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      this.pdfUrl = pdf.output('bloburl').toString();
+
+      
+    } catch (error) {
+      console.error('Erreur génération PDF:', error);
+      alert('Erreur lors de la génération du PDF');
+    } finally {
+      this.isGeneratingPdf = false;
     }
   }
   
+  async generateExamPdf() {
+    this.isGeneratingPdf = true;
+    
+    try {
+      const doc = new jsPDF();
+      
+      // En-tête
+      doc.setFontSize(20);
+      doc.text(this.examInfo.titre, 105, 15, { align: 'center' });
+      doc.setFontSize(14);
+      doc.text(`${this.examInfo.niveau} - Durée: ${this.examInfo.duree}`, 105, 25, { align: 'center' });
+      
+      let yPosition = 40;
+      
+      // Partie 1 : QCM
+      if (this.partie1.length > 0) {
+        doc.setFontSize(16);
+        doc.text("Questions à Choix Multiple (QCM)", 14, yPosition);
+        yPosition += 10;
+        
+        doc.setFontSize(12);
+        this.partie1.forEach((question, index) => {
+          doc.text(`${index + 1}. ${question.contenu}`, 16, yPosition);
+          yPosition += 8;
+          
+          question.option.forEach((option: string, optIndex: number) => {
+            doc.text(`   ${String.fromCharCode(97 + optIndex)}) ${option}`, 20, yPosition);
+            yPosition += 7;
+          });
+          
+          yPosition += 5; // Espace entre les questions
+        });
+      }
+      
+      // Partie 2 : Code
+      if (this.partie2.length > 0) {
+        doc.setFontSize(16);
+        doc.text("Écriture de Code", 14, yPosition);
+        yPosition += 10;
+        
+        doc.setFontSize(12);
+        this.partie2.forEach((question, index) => {
+          doc.text(`${index + 1}. ${question.contenu}`, 16, yPosition);
+          yPosition += 10;
+        });
+      }
+      
+      // Partie 3 : Réponses Courtes
+      if (this.partie3.length > 0) {
+        doc.setFontSize(16);
+        doc.text("Questions à Réponse Courte", 14, yPosition);
+        yPosition += 10;
+        
+        doc.setFontSize(12);
+        this.partie3.forEach((question, index) => {
+          doc.text(`${index + 1}. ${question.contenu}`, 16, yPosition);
+          yPosition += 10;
+        });
+      }
+      
+      // Pied de page
+      doc.setFontSize(10);
+      doc.text("© Academia - Tous droits réservés", 105, 280, { align: 'center' });
+      
+      this.pdfUrl = doc.output('bloburl').toString();
+      
+    } catch (error) {
+      console.error('Erreur génération PDF:', error);
+      const doc = new jsPDF();
+      doc.text("Erreur de génération du sujet", 10, 10);
+      this.pdfUrl = doc.output('bloburl').toString();
+    } finally {
+      this.isGeneratingPdf = false;
+    }
+  }
   
   //empêcher le copier-coller dans le text-area
   onBlockAction(event: ClipboardEvent): void {
@@ -397,5 +458,11 @@ export class NewCompositionComponent implements AfterViewInit, OnInit, OnDestroy
       return `Erreur serveur (${err.status}): ${err.error?.message || err.error?.detail || err.statusText}`;
     }
     return 'Erreur inconnue.';
+  }
+
+  ngOnDestroy() {
+    if (this.pdfUrl) {
+      URL.revokeObjectURL(this.pdfUrl);
+    }
   }
 }
