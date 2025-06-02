@@ -1,81 +1,150 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnInit, AfterViewInit, HostListener, OnDestroy } from '@angular/core';
+import * as echarts from 'echarts';
 import { CoordinateurSideComponent } from '../coordinateur-side/coordinateur-side.component';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-
-export interface Student {
-  nom: string;
-  matricule: string;
-  epreuve: string;
-  status: 'en composition' | 'terminé';
-}
-
-export interface Alert {
-  studentNom: string;
-  message: string;
-  timestamp: Date;
-  level: 'faible' | 'moyen' | 'élevé';
-}
-
-export interface VideoRecord {
-  studentNom: string;
-  timestamp: Date;
-}
-
-export interface Message {
-  text: string;
-  timestamp: Date;
-  fromAdmin: boolean;
-}
-
-
 @Component({
   selector: 'app-coord-dashboard',
   imports: [CoordinateurSideComponent, FormsModule, CommonModule],
   templateUrl: './coord-dashboard.component.html',
   styleUrl: './coord-dashboard.component.css'
 })
-export class CoordDashboardComponent implements OnDestroy {
+export class CoordDashboardComponent implements OnDestroy, OnInit, AfterViewInit {
    hours = 0;
   minutes = 5;
   seconds = 0;
   running = false;
   private intervalId: any = null;
   
+  ngOnInit(): void {}
 
-  students: Student[] = [
-    { nom: 'Alice Dupont', matricule: 'A123', epreuve: 'Mathématiques', status: 'en composition' },
-    { nom: 'Bob Martin', matricule: 'B456', epreuve: 'Physique', status: 'terminé' },
-    { nom: 'Claire Lefevre', matricule: 'C789', epreuve: 'Informatique', status: 'en composition' },
-    { nom: 'David Bernard', matricule: 'D012', epreuve: 'Chimie', status: 'en composition' },
-  ];
+  ngAfterViewInit(): void {
+    this.initProgressChart();
+    this.initAlertsChart();
+    this.initTableInteractions();
+  }
 
-  alerts: Alert[] = [
-    { studentNom: 'Alice Dupont', message: 'Changement d\'onglet détecté', timestamp: new Date(Date.now() - 600000), level: 'moyen' },
-    { studentNom: 'Claire Lefevre', message: 'Inactivité prolongée', timestamp: new Date(Date.now() - 1200000), level: 'élevé' },
-    { studentNom: 'David Bernard', message: 'Tentative de copier-coller', timestamp: new Date(Date.now() - 300000), level: 'faible' }
-  ];
-
-  videoRecords: VideoRecord[] = [
-    { studentNom: 'Alice Dupont', timestamp: new Date(Date.now() - 86400000) },
-    { studentNom: 'Claire Lefevre', timestamp: new Date(Date.now() - 172800000) },
-  ];
-
-  messages: Message[] = [];
-
-  getStats() {
-    return {
-      connectedStudents: this.students.length,
-      activeAlerts: this.alerts.length,
-      avgSessionDuration: 45,
-      incidentFreePercent: 75
+  initProgressChart(): void {
+    const chartDom = document.getElementById('progressChart')!;
+    const myChart = echarts.init(chartDom);
+    const option = {
+      animation: false,
+      tooltip: {
+        trigger: "axis",
+        backgroundColor: "rgba(255, 255, 255, 0.9)",
+        textStyle: { color: "#1f2937" },
+      },
+      grid: { top: 10, right: 10, bottom: 30, left: 50 },
+      xAxis: {
+        type: "category",
+        data: ["10:00", "10:30", "11:00", "11:30", "12:00", "12:30"],
+        axisLine: { lineStyle: { color: "#e5e7eb" } },
+        axisLabel: { color: "#1f2937" },
+      },
+      yAxis: {
+        type: "value",
+        axisLine: { show: false },
+        axisLabel: { color: "#1f2937" },
+        splitLine: { lineStyle: { color: "#e5e7eb" } },
+      },
+      series: [
+        {
+          name: "En composition",
+          type: "line",
+          smooth: true,
+          symbol: "none",
+          data: [5, 15, 28, 32, 32, 30],
+          lineStyle: { width: 3, color: "rgba(87, 181, 231, 1)" },
+          areaStyle: {
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              { offset: 0, color: "rgba(87, 181, 231, 0.3)" },
+              { offset: 1, color: "rgba(87, 181, 231, 0.1)" },
+            ]),
+          },
+        },
+        {
+          name: "Terminé",
+          type: "line",
+          smooth: true,
+          symbol: "none",
+          data: [0, 0, 2, 3, 5, 7],
+          lineStyle: { width: 3, color: "rgba(141, 211, 199, 1)" },
+          areaStyle: {
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              { offset: 0, color: "rgba(141, 211, 199, 0.3)" },
+              { offset: 1, color: "rgba(141, 211, 199, 0.1)" },
+            ]),
+          },
+        },
+      ],
     };
+    myChart.setOption(option);
   }
 
-  sendMessage(text: string): void {
-    this.messages.push({ text, timestamp: new Date(), fromAdmin: true });
+  initAlertsChart(): void {
+    const chartDom = document.getElementById('alertsChart')!;
+    const myChart = echarts.init(chartDom);
+    const option = {
+      animation: false,
+      tooltip: {
+        trigger: "item",
+        backgroundColor: "rgba(255, 255, 255, 0.9)",
+        textStyle: { color: "#1f2937" },
+      },
+      legend: {
+        bottom: "0%",
+        left: "center",
+        textStyle: { color: "#1f2937" },
+      },
+      series: [{
+        name: "Types d'alertes",
+        type: "pie",
+        radius: ["40%", "70%"],
+        center: ["50%", "45%"],
+        avoidLabelOverlap: false,
+        itemStyle: {
+          borderRadius: 8,
+          borderColor: "#fff",
+          borderWidth: 2,
+        },
+        label: { show: false },
+        emphasis: {
+          label: { show: true, fontSize: "12", fontWeight: "bold" },
+        },
+        labelLine: { show: false },
+        data: [
+          { value: 12, name: "Changement d'onglet", itemStyle: { color: "rgba(252, 141, 98, 1)" } },
+          { value: 8, name: "Copier-coller", itemStyle: { color: "rgba(251, 191, 114, 1)" } },
+          { value: 5, name: "Inactivité", itemStyle: { color: "rgba(141, 211, 199, 1)" } },
+          { value: 3, name: "Déconnexion", itemStyle: { color: "rgba(87, 181, 231, 1)" } },
+        ],
+      }],
+    };
+    myChart.setOption(option);
   }
 
+  initTableInteractions(): void {
+    const tableRows = document.querySelectorAll("tbody tr");
+    tableRows.forEach((row) => {
+      row.addEventListener("mouseenter", () => {
+        if (!row.classList.contains("bg-red-50")) {
+          row.classList.add("bg-gray-50");
+        }
+      });
+      row.addEventListener("mouseleave", () => {
+        if (!row.classList.contains("bg-red-50")) {
+          row.classList.remove("bg-gray-50");
+        }
+      });
+    });
+  }
+  
+
+  @HostListener('window:resize')
+  onResize(): void {
+    echarts.getInstanceByDom(document.getElementById('progressChart')!)?.resize();
+    echarts.getInstanceByDom(document.getElementById('alertsChart')!)?.resize();
+  }
   startTimer() {
     if (this.running) return;
 

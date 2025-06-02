@@ -64,14 +64,9 @@ export class CoordinateurSideComponent {
     });
   }
 
-  composition(){
-    this.router.navigate(['/composition_admin'])
-  }
-  
   dashboard(){
-    this.router.navigate(['/exam_service'])
+    this.router.navigate(['/coordinator_side'])
   }
-
   tracking(){
     this.router.navigate(['/tracking'])
   }

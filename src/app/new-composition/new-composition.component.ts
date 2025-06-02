@@ -58,14 +58,14 @@ export class NewCompositionComponent implements AfterViewInit, OnInit, OnDestroy
 
   async ngOnInit() {
      // Bloquer clic droit
-     document.addEventListener('contextmenu', this.preventDefaultEvent);
+     //document.addEventListener('contextmenu', this.preventDefaultEvent);
 
      // Bloquer copier/coller
      document.addEventListener('copy', this.preventDefaultEvent);
      document.addEventListener('paste', this.preventDefaultEvent);
  
      // Détecter changement d'onglet
-     
+     /*
      document.addEventListener('visibilitychange', () => {
        if (document.visibilityState === 'hidden') {
          this.tabSwitchCount++;
@@ -76,8 +76,9 @@ export class NewCompositionComponent implements AfterViewInit, OnInit, OnDestroy
            this.router.navigate(['/student_side']);
          }
        }
+         
      });
-     
+     */
     this.loadExamInfo();
     this.loadQuestions();
     this.stopWebcam();
