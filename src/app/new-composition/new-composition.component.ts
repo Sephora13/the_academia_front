@@ -82,8 +82,8 @@ export class NewCompositionComponent implements AfterViewInit, OnInit {
          }
        }
      });
-    this.loadExamInfo();
-    this.loadQuestions();
+     await this.loadExamInfo();
+     await this.loadQuestions();
   }
 
   preventDefaultEvent(event: Event) {
@@ -140,7 +140,7 @@ export class NewCompositionComponent implements AfterViewInit, OnInit {
 
 
 
-  loadExamInfo(): void {
+  async loadExamInfo(): Promise<void>{
     this.loading = true;
     this.error = null;
   
@@ -164,7 +164,7 @@ export class NewCompositionComponent implements AfterViewInit, OnInit {
   }
   
 
-  loadQuestions(): void {
+  async loadQuestions(): Promise<void> {
     this.loading = true;
     this.compositionService.showQuesByEp(this.id_epreuve).subscribe({
       next: (response) => {
@@ -284,74 +284,62 @@ export class NewCompositionComponent implements AfterViewInit, OnInit {
     }
   }
 
-  submitExam() {
-    if (this.loading) return; // Empêche les clics multiples
-    this.showConfirmation = false;
-    this.loading = true;
-  
-    this.user = this.auth.getUserInfo2();
-    if (!this.user) {
-      console.log("Utilisateur non authentifié.");
-      return;
-    }
-  
-    this.loading = true;
-  
-    const payloadCopie = {
-      id_etudiant: this.user.id,
-      id_epreuve: this.id_epreuve,
-      reponses_qcm: this.selectedOptions,
-      reponses_code: this.codeAnswers,
-      reponses_courtes: this.shortAnswers
-    };
-  
-    console.log("Soumission de la copie numérique :", payloadCopie);
-  
-    this.compositionService.soumettreCopie(payloadCopie).subscribe({
-      next: (res) => {
-        console.log("✅ Copie soumise avec succès", res);
-  
-        const idCopie = res?.id_copie_numerique;
-        if (!idCopie) {
-          console.error("❌ ID de la copie non reçu.");
-          this.loading = false;
-          return;
-        }
-  
-        console.log("⏳ Correction en cours...");
-        this.compositionService.corrigerCopie(idCopie).subscribe({
-          next: (correctionRes) => {
-            const note = correctionRes?.note || correctionRes?.message?.note_finale;
-            console.log("✅ Note finale :", note);
-            //alert(`✅ Votre copie a été corrigée. Note : ${note}/20`);
-            this.loading = false;
-            this.showDownloadModal = true;
-            // Redirection après 2 secondes vers le tableau de bord (à adapter)
-            setTimeout(() => {
-              this.router.navigate(['/composition']);
-            }, 2000);
-          },
-          error: (err) => {
-            console.error("❌ Erreur de correction :", err);
-            if (err.error?.detail) {
-              console.log("🧾 Détail de l'erreur :", err.error.detail);
-            }            
-            alert("❌ Erreur lors de la correction.");
-            this.loading = false;
-          }
-        });
-        
-      },
-      error: (err) => {
-        console.error("❌ Erreur soumission copie :", err);
-        if (err.error?.detail) {
-          console.log("🧾 Détail de l'erreur :", err.error.detail);
-        }
-        alert("❌ Échec de la soumission.");
-        this.loading = false;
-      }
-    });
+  // Modifiez la méthode submitExam() pour générer le PDF avant d'afficher la modal
+submitExam() {
+  if (this.loading) return;
+  this.showConfirmation = false;
+  this.loading = true;
+
+  this.user = this.auth.getUserInfo2();
+  if (!this.user) {
+    console.log("Utilisateur non authentifié.");
+    return;
   }
+
+  const payloadCopie = {
+    id_etudiant: this.user.id,
+    id_epreuve: this.id_epreuve,
+    reponses_qcm: this.selectedOptions,
+    reponses_code: this.codeAnswers,
+    reponses_courtes: this.shortAnswers
+  };
+
+  this.compositionService.soumettreCopie(payloadCopie).subscribe({
+    next: (res) => {
+      const idCopie = res?.id_copie_numerique;
+      if (!idCopie) {
+        console.error("❌ ID de la copie non reçu.");
+        this.loading = false;
+        return;
+      }
+
+      this.compositionService.corrigerCopie(idCopie).subscribe({
+        next: async (correctionRes) => {
+          const note = correctionRes?.note || correctionRes?.message?.note_finale;
+          console.log("✅ Note finale :", note);
+          
+          // Générer le PDF avant d'afficher la modal
+          await this.generateExamPdf();
+          
+          this.loading = false;
+          this.showDownloadModal = true; // Afficher la modal APRES génération PDF
+        },
+        error: (err) => {
+          console.error("❌ Erreur de correction :", err);
+          this.loading = false;
+          // Afficher quand même la modal en cas d'erreur de correction
+          this.downloadExamPdf().finally(() => {
+            this.showDownloadModal = true;
+          });
+        }
+      });
+    },
+    error: (err) => {
+      console.error("❌ Erreur soumission copie :", err);
+      this.loading = false;
+    }
+  });
+}
 
   async downloadExamPdf() {
     this.isGeneratingPdf = true;
@@ -373,6 +361,82 @@ export class NewCompositionComponent implements AfterViewInit, OnInit {
     } catch (error) {
       console.error('Erreur génération PDF:', error);
       alert('Erreur lors de la génération du PDF');
+    } finally {
+      this.isGeneratingPdf = false;
+    }
+  }
+  
+  async generateExamPdf() {
+    this.isGeneratingPdf = true;
+    
+    try {
+      const doc = new jsPDF();
+      
+      // En-tête
+      doc.setFontSize(20);
+      doc.text(this.examInfo.titre, 105, 15, { align: 'center' });
+      doc.setFontSize(14);
+      doc.text(`${this.examInfo.niveau} - Durée: ${this.examInfo.duree}`, 105, 25, { align: 'center' });
+      
+      let yPosition = 40;
+      
+      // Partie 1 : QCM
+      if (this.partie1.length > 0) {
+        doc.setFontSize(16);
+        doc.text("Questions à Choix Multiple (QCM)", 14, yPosition);
+        yPosition += 10;
+        
+        doc.setFontSize(12);
+        this.partie1.forEach((question, index) => {
+          doc.text(`${index + 1}. ${question.contenu}`, 16, yPosition);
+          yPosition += 8;
+          
+          question.option.forEach((option: string, optIndex: number) => {
+            doc.text(`   ${String.fromCharCode(97 + optIndex)}) ${option}`, 20, yPosition);
+            yPosition += 7;
+          });
+          
+          yPosition += 5; // Espace entre les questions
+        });
+      }
+      
+      // Partie 2 : Code
+      if (this.partie2.length > 0) {
+        doc.setFontSize(16);
+        doc.text("Écriture de Code", 14, yPosition);
+        yPosition += 10;
+        
+        doc.setFontSize(12);
+        this.partie2.forEach((question, index) => {
+          doc.text(`${index + 1}. ${question.contenu}`, 16, yPosition);
+          yPosition += 10;
+        });
+      }
+      
+      // Partie 3 : Réponses Courtes
+      if (this.partie3.length > 0) {
+        doc.setFontSize(16);
+        doc.text("Questions à Réponse Courte", 14, yPosition);
+        yPosition += 10;
+        
+        doc.setFontSize(12);
+        this.partie3.forEach((question, index) => {
+          doc.text(`${index + 1}. ${question.contenu}`, 16, yPosition);
+          yPosition += 10;
+        });
+      }
+      
+      // Pied de page
+      doc.setFontSize(10);
+      doc.text("© Academia - Tous droits réservés", 105, 280, { align: 'center' });
+      
+      this.pdfUrl = doc.output('bloburl').toString();
+      
+    } catch (error) {
+      console.error('Erreur génération PDF:', error);
+      const doc = new jsPDF();
+      doc.text("Erreur de génération du sujet", 10, 10);
+      this.pdfUrl = doc.output('bloburl').toString();
     } finally {
       this.isGeneratingPdf = false;
     }
