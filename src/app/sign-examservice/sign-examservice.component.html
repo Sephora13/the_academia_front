@@ -30,15 +30,39 @@
               <input type="checkbox" name="remember-me" id="remember-me" class="agree-term" />
               <label for="remember-me" class="label-agree-term text-white ml-2 text-sm"><span><span></span></span>Remember me</label>
             </div>
-            <!-- Submit Button -->
-            <div class="form-group form-button mb-6">
-              <div *ngIf="isLoading" class="flex justify-center items-center my-4">
-              
-                <div class="loader border-t-2 rounded-full border-gray-500 bg-gray-300 animate-spin
-                aspect-square w-8 flex justify-center items-center text-yellow-700"></div>
+            <!-- Submit Button with Loader Inside -->
+              <div class="form-group form-button mb-6">
+                <button
+                  type="submit"
+                  [disabled]="isLoading"
+                  class="w-full py-3 rounded-md bg-gradient-to-r from-green-400 to-blue-500 text-white font-bold text-lg transition-transform transform hover:scale-105 hover:shadow-lg focus:outline-none flex items-center justify-center space-x-2"
+                >
+                  <svg
+                    *ngIf="isLoading"
+                    class="animate-spin h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      class="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      stroke-width="4"
+                    ></circle>
+                    <path
+                      class="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                    ></path>
+                  </svg>
+                  <span *ngIf="!isLoading">Log in</span>
+                  <span *ngIf="isLoading">Connexion...</span>
+                </button>
               </div>
-              <input type="submit" [disabled]="isLoading"  name="signin" id="signin" class="form-submit w-full py-3 rounded-md bg-gradient-to-r from-green-400 to-blue-500 text-white font-bold text-lg transition-transform transform hover:scale-105 hover:shadow-lg focus:outline-none" value="Log in" />
-            </div>
+
           </form>
         </div>
       </div>

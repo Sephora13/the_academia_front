@@ -23,6 +23,20 @@ export class ExamServiceComponent implements OnInit {
   successRate = 78;
   averageScore = 14.5;
   studentsPassed = 420;
+  nbrcopie = 172;
+  notifNonLues = 2;
+
+  notifications = [
+    { message: 'Corrigée des epreuves reçu.', date: new Date() },
+    { message: 'Nouvelles reclamations.', date: new Date(Date.now() - 3600000) },
+    { message: 'Les statistiques sont disponibles".', date: new Date(Date.now() - 7200000) }
+  ];
+
+  upcomingExams = [
+    { name: 'Session 3', date: '15 Mai 2025' },
+    { name: 'Session 4', date: '22 Mai 2025' }
+  ];
+
 
   examSessions = [
     { session: 'Janvier 2024', average: 13.8, passRate: 75 },

@@ -24,6 +24,7 @@ export class SignUpComponent {
   classe = '';
   password = '';
   confirmPassword = '';
+  isLoading: boolean = false;
 
   constructor(
     private auth : AuthentificationService,
@@ -35,7 +36,7 @@ export class SignUpComponent {
       alert("Veuillez remplir tous les champs.");
       return;
     }
-  
+    this.isLoading=true;
     if (this.password !== this.confirmPassword) {
       alert("Les mots de passe ne correspondent pas.");
       return;
@@ -57,12 +58,14 @@ export class SignUpComponent {
         console.log ('inscription reussi')
         alert('Inscription réussie. Un code d\'activation a été envoyé par email.');
         this.router.navigate(['/activate_account'], { queryParams: { email: this.email } });
+        this.isLoading=true;
       } else {
         alert(response.message);
       }
     } catch (error) {
       console.error('Erreur lors de l’inscription :', error);
       alert("Erreur lors de l’inscription.");
+      this.isLoading=true;
     }
   }
   
