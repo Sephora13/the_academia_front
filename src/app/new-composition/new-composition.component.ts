@@ -1,6 +1,8 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { AfterViewInit, Component, ElementRef,Inject, OnInit, PLATFORM_ID, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import * as ace from "ace-builds";
+import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthentificationService } from '../services/authentification/authentification.service';
@@ -22,13 +24,17 @@ export class NewCompositionComponent implements AfterViewInit, OnInit {
   private localStream!: MediaStream;
   private peerConnection!: RTCPeerConnection;
   private tabSwitchCount = 0;
+  showConfirmation = false;
+  showDownloadModal = false;
+  isGeneratingPdf = false;
+  pdfUrl: string | null = null;
 
   constructor(
     private httpClient: HttpClient,
     private route: ActivatedRoute,
     private auth: AuthentificationService,
     private compositionService: CompositionService,
-    private router: Router,
+    public router: Router,
     private signaling: SignalingService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
@@ -280,6 +286,8 @@ export class NewCompositionComponent implements AfterViewInit, OnInit {
 
   submitExam() {
     if (this.loading) return; // Empêche les clics multiples
+    this.showConfirmation = false;
+    this.loading = true;
   
     this.user = this.auth.getUserInfo2();
     if (!this.user) {
@@ -317,7 +325,7 @@ export class NewCompositionComponent implements AfterViewInit, OnInit {
             console.log("✅ Note finale :", note);
             //alert(`✅ Votre copie a été corrigée. Note : ${note}/20`);
             this.loading = false;
-        
+            this.showDownloadModal = true;
             // Redirection après 2 secondes vers le tableau de bord (à adapter)
             setTimeout(() => {
               this.router.navigate(['/composition']);
@@ -344,6 +352,31 @@ export class NewCompositionComponent implements AfterViewInit, OnInit {
       }
     });
   }
+
+  async downloadExamPdf() {
+    this.isGeneratingPdf = true;
+    
+    try {
+      const data = document.getElementById('main-content')!;
+      const canvas = await html2canvas(data);
+      const imgData = canvas.toDataURL('image/png');
+      
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      this.pdfUrl = pdf.output('bloburl').toString();
+
+      
+    } catch (error) {
+      console.error('Erreur génération PDF:', error);
+      alert('Erreur lors de la génération du PDF');
+    } finally {
+      this.isGeneratingPdf = false;
+    }
+  }
   
   //empêcher le copier-coller dans le text-area
   onBlockAction(event: ClipboardEvent): void {
@@ -361,5 +394,11 @@ export class NewCompositionComponent implements AfterViewInit, OnInit {
       return `Erreur serveur (${err.status}): ${err.error?.message || err.error?.detail || err.statusText}`;
     }
     return 'Erreur inconnue.';
+  }
+
+  ngOnDestroy() {
+    if (this.pdfUrl) {
+      URL.revokeObjectURL(this.pdfUrl);
+    }
   }
 }
