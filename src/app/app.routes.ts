@@ -43,6 +43,7 @@ import { ResultatsEpreuveComponent } from './resultats-epreuve/resultats-epreuve
 import { TrackingComponent } from './tracking/tracking.component';
 import { ResultatsEpreuveDetailsComponent } from './resultats-epreuve-details/resultats-epreuve-details.component';
 
+
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'home', component: HomeComponent },
@@ -87,6 +88,7 @@ export const routes: Routes = [
   { path: 'suivi_depots', component:SuivreDepotComponent},
   { path: 'tracking', component:TrackingComponent},
   { path: 'resultats-epreuve-details/:id', component: ResultatsEpreuveDetailsComponent},
+  
   
   //{ path: '**', redirectTo: 'signIn', pathMatch: 'full' },
   {

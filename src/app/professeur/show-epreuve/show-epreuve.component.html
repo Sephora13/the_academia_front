@@ -107,25 +107,35 @@
                                      {{ epreuve.nom_session }}
                                  </div>
                              </div>
-  
-                             <!-- Actions -->
-                             <div class="pt-4 border-t border-gray-700/30">
-                                 <div *ngIf="epreuve.statut === 'En attente de création'" 
-                                      class="flex justify-end">
-                                     <button 
-                                             class="px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg text-sm flex items-center transition-all group/button">
-                                         <i class="fas fa-plus-circle mr-2 transition-transform group-hover/button:rotate-90"></i>
-                                         Commencer
-                                     </button>
-                                 </div>
-                                 <div *ngIf="epreuve.statut !== 'En attente de création'" 
-                                      class="text-xs text-gray-500 italic">
-                                     {{ epreuve.statut === 'Remise' 
-                                        ? 'Soumis le ' + (epreuve.date_limite_soumission | date:'dd/MM/yyyy') 
-                                        : 'En retard' }}
-                                 </div>
-                             </div>
-                         </div>
+                             <!-- ... code existant ... -->
+                            <div class="pt-4 border-t border-gray-700/30">
+                                <!-- Bouton Voir les résultats (si épreuve composée) -->
+                                <div *ngIf="epreuve.id_epreuve && epreuve.hasCompositions" 
+                                    class="mb-2">
+                                <button (click)="viewResults(epreuve.id_epreuve)"
+                                        class="w-full px-4 py-2 bg-purple-600/20 hover:bg-purple-600/30 text-purple-400 rounded-lg text-sm flex items-center justify-center transition-all group/button">
+                                    <i class="fas fa-chart-line mr-2"></i>
+                                    Voir les résultats
+                                </button>
+                                </div>
+                            
+                                <div *ngIf="epreuve.statut === 'En attente de création'" 
+                                    class="flex justify-end">
+                                <button (click)="goToCreateEpreuve(epreuve.id_affectation)"
+                                        class="px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg text-sm flex items-center transition-all group/button">
+                                    <i class="fas fa-plus-circle mr-2 transition-transform group-hover/button:rotate-90"></i>
+                                    Commencer
+                                </button>
+                                </div>
+                                <div *ngIf="epreuve.statut !== 'En attente de création'" 
+                                    class="text-xs text-gray-500 italic">
+                                {{ epreuve.statut === 'Remise' 
+                                    ? 'Soumis le ' + (epreuve.date_limite_soumission | date:'dd/MM/yyyy') 
+                                    : 'En retard' }}
+                                </div>
+                            </div>
+                            <!-- ... code existant ... -->
+                           </div>
                     </div>
                 </div>
             </div>
