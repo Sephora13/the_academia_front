@@ -1,46 +1,96 @@
 <app-sidebar></app-sidebar>
 
-<div id="compose" class=" text-gray-100 min-h-screen p-10 flex items-center justify-center">
-  <div class="w-full max-w-6xl bg-[#1f2937] rounded-2xl shadow-2xl p-10 border border-gray-700">
-    <div class="flex items-center justify-between mb-8">
-      <h1 class="text-4xl font-bold text-indigo-400">📊 Résultats des Examens</h1>
-      <span class="text-sm text-gray-400">Année académique 2024</span>
-    </div>
+<main id="main" class="p-6 min-h-screen text-gray-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-6">
+            <div class="mb-4 sm:mb-0">
+                <h4 class="text-3xl font-bold text-blue-400 animate-fade-in-down">Mes Résultats d'Épreuves</h4>
+                <ol class="flex text-sm text-gray-400 mt-1">
+                    <li class="mr-2"><a routerLink="/dashboard-etudiant" class="hover:text-blue-300 transition duration-200">Tableau de Bord Étudiant</a></li>
+                    <li class="mr-2">/</li>
+                    <li class="text-blue-400">Mes Résultats</li>
+                </ol>
+            </div>
+        </div>
+        <div class="w-full">
+            <div class="p-6 rounded-lg shadow-xl border border-gray-700 animate-slide-up">
+                <h5 class="text-xl font-semibold text-gray-100 mb-2">Historique de mes Compositions</h5>
+                <p class="text-gray-400 mb-4">
+                    Consultez vos notes et accédez aux corrections de vos épreuves.
+                </p>
 
-    <div class="overflow-x-auto rounded-xl border border-gray-600">
-      <table class="min-w-full divide-y divide-gray-700 text-sm">
-        <thead class="bg-indigo-700 text-indigo-100">
-          <tr>
-            <th class="p-4 text-left font-semibold">Matière</th>
-            <th class="p-4 text-left font-semibold">Date</th>
-            <th class="p-4 text-left font-semibold">Note</th>
-            <th class="p-4 text-left font-semibold">Statut</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-800">
-          <tr
-            *ngFor="let result of results"
-            class="hover:bg-indigo-800/60 transition duration-300"
-          >
-            <td class="p-4">{{ result.subject }}</td>
-            <td class="p-4">{{ result.date | date: 'dd/MM/yyyy' }}</td>
-            <td class="p-4 font-bold text-white">{{ result.score }}/20</td>
-            <td class="p-4">
-              <span
-                [ngClass]="{
-                  'bg-green-600 text-green-100 px-3 py-1 rounded-full font-semibold text-xs': result.passed,
-                  'bg-red-600 text-red-100 px-3 py-1 rounded-full font-semibold text-xs': !result.passed
-                }"
-              >
-                {{ result.passed ? '✅ Validé' : '❌ Non validé' }}
-              </span>
-            </td>
-          </tr>
-          <tr *ngIf="results.length === 0">
-            <td colspan="4" class="p-4 text-center text-gray-400">Aucun résultat disponible.</td>
-          </tr>
-        </tbody>
-      </table>
+                <div *ngIf="isLoading" class="text-center py-12">
+                    <i class="fas fa-spinner fa-spin text-2xl text-blue-400"></i>
+                    <p class="mt-2">Chargement de vos résultats...</p>
+                </div>
+
+                <div *ngIf="!isLoading">
+                    <div class="flex flex-col md:flex-row gap-4 mb-6">
+                        <div class="flex-grow flex">
+                            <input type="text" class="flex-grow px-4 py-2 bg-gray-700 border border-gray-600 rounded-l-lg text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Rechercher (matière, session, note)..." [(ngModel)]="searchTerm" (input)="filterResultats()">
+                            <button class="px-4 py-2 bg-gray-600 text-gray-100 rounded-r-lg hover:bg-gray-700 transition duration-300" type="button" (click)="filterResultats()">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                        <div class="relative w-full md:w-1/3 lg:w-1/4">
+                            <select
+                                id="sessionFilter"
+                                class="block w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none pr-8"
+                                [(ngModel)]="selectedSessionId"
+                                (change)="filterResultats()"
+                            >
+                                <option [ngValue]="null">Toutes les Sessions</option>
+                                <option *ngFor="let session of sessions" [ngValue]="session.id_session">
+                                    {{ session.nom }}
+                                </option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div *ngIf="filteredResultats.length === 0" class="text-center py-8 text-gray-400">
+                        Aucun résultat trouvé pour l'instant.
+                    </div>
+
+                    <div *ngIf="filteredResultats.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div *ngFor="let resultat of filteredResultats"
+                            class="bg-gray-700 p-5 rounded-lg shadow-md border border-gray-600 hover:shadow-xl hover:border-blue-500 transform hover:-translate-y-1 transition duration-300 ease-in-out resultat-card animate-fade-in">
+                            <div class="flex justify-between items-start mb-3">
+                                <h6 class="text-lg font-bold text-blue-300">
+                                    <i class="fas fa-graduation-cap mr-2 text-blue-400"></i>{{ resultat.nom_matiere }}
+                                </h6>
+                                <span class="text-2xl font-extrabold" [ngClass]="getNoteColorClass(resultat.note)">
+                                    {{ resultat.note | number:'1.1-1' }}/20
+                                </span>
+                            </div>
+                            <div class="text-gray-300 text-sm space-y-2">
+                                <p><i class="far fa-calendar-alt mr-2 text-gray-400"></i>Session: <span class="font-medium">{{ resultat.nom_session }}</span></p>
+                                <p><i class="far fa-clock mr-2 text-gray-400"></i>Date de Composition: <span class="font-medium">{{ resultat.date_composition | date:'dd/MM/yyyy HH:mm' }}</span></p>
+                            </div>
+                            <div class="flex justify-end mt-4 pt-3 border-t border-gray-600">
+                                <button class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition duration-300"
+                                        
+                                        title="Voir la correction de cette épreuve">
+                                    <i class="fas fa-eye mr-2"></i> Voir la correction
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="resultatsEtudiantToast" class="fixed top-4 right-4 z-[1000] w-full max-w-sm rounded-lg shadow-lg transition-opacity duration-300 ease-out opacity-0 pointer-events-none">
+            <div class="flex items-center justify-between p-3 border-b border-gray-700 rounded-t-lg toast-header-bg">
+                <strong class="font-bold text-blue-300 toast-title"></strong>
+                <button type="button" class="text-gray-400 hover:text-gray-100 text-xl" (click)="hideToast()" aria-label="Close">
+                    &times;
+                </button>
+            </div>
+            <div class="p-3 text-gray-200 toast-body-bg rounded-b-lg">
+                <span class="toast-message"></span>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
+</main>

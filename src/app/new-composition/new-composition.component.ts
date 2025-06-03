@@ -1,6 +1,8 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { AfterViewInit, Component, ElementRef,Inject, OnDestroy, OnInit, PLATFORM_ID, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, ElementRef,Inject, OnInit, PLATFORM_ID, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import * as ace from "ace-builds";
+import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthentificationService } from '../services/authentification/authentification.service';
@@ -16,19 +18,23 @@ import { SignalingService } from '../services/signaling/signaling.service';
   templateUrl: './new-composition.component.html',
   styleUrls: ['./new-composition.component.css']
 })
-export class NewCompositionComponent implements AfterViewInit, OnInit, OnDestroy {
+export class NewCompositionComponent implements AfterViewInit, OnInit {
   webcamBlocked = false;
   @ViewChild('localVideo') localVideo!: ElementRef<HTMLVideoElement>;
   private localStream!: MediaStream;
   private peerConnection!: RTCPeerConnection;
   private tabSwitchCount = 0;
+  showConfirmation = false;
+  showDownloadModal = false;
+  isGeneratingPdf = false;
+  pdfUrl: string | null = null;
 
   constructor(
     private httpClient: HttpClient,
     private route: ActivatedRoute,
     private auth: AuthentificationService,
     private compositionService: CompositionService,
-    private router: Router,
+    public router: Router,
     private signaling: SignalingService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
@@ -142,29 +148,66 @@ export class NewCompositionComponent implements AfterViewInit, OnInit, OnDestroy
       }
 
 
-  
-    this.codeEditors.changes.subscribe(() => {
+      // Écoute les changements dans la liste des éditeurs
+      this.codeEditors.changes.subscribe(() => {
+        setTimeout(() => {
+          console.log('[ACE] codeEditors ready (par changes):', this.codeEditors.length);
+          this.initEditors();
+        }, 0);
+      });
+
+      // Cas où les éditeurs sont déjà présents dès l'initialisation
+      setTimeout(() => {
+        if (this.codeEditors.length > 0) {
+          console.log('[ACE] Initialisation immédiate');
+          this.initEditors();
+        }
+      }, 0);
+    }
+
+    initEditors() {
       this.codeEditors.forEach((editorRef, index) => {
-        const aceEditor = ace.edit(editorRef.nativeElement);
-  
-        // ✅ Bloquer copier-coller dans l’éditeur
-        const textInput: HTMLTextAreaElement = aceEditor.textInput.getElement();
-  
-        textInput.addEventListener('copy', (e: ClipboardEvent) => {
-          e.preventDefault();
-          alert('Copie désactivée');
+        const el = editorRef.nativeElement;
+
+        // Évite d'initialiser plusieurs fois le même éditeur
+        if (!el || el.getAttribute('data-ace-initialized') === 'true') return;
+
+        el.setAttribute('data-ace-initialized', 'true');
+
+        console.log('[ACE] Initialisation éditeur:', index);
+
+        const aceEditor = ace.edit(el);
+        aceEditor.resize();
+
+        //  Bloquer copier-coller dans l’éditeur
+        aceEditor.commands.addCommand({
+          name: "disablePaste",
+          bindKey: { win: "Ctrl-V", mac: "Cmd-V" },
+          exec: () => {
+            alert("Coller désactivé");
+          },
+          readOnly: false // s'exécute même si l'éditeur est en lecture seule
         });
-  
-        textInput.addEventListener('paste', (e: ClipboardEvent) => {
-          e.preventDefault();
-          alert('Coller désactivé');
+        
+        aceEditor.commands.addCommand({
+          name: "disableCopy",
+          bindKey: { win: "Ctrl-C", mac: "Cmd-C" },
+          exec: () => {
+            alert("Copie désactivée");
+          },
+          readOnly: true
         });
-  
-        textInput.addEventListener('cut', (e: ClipboardEvent) => {
-          e.preventDefault();
-          alert('Couper désactivé');
+        
+        aceEditor.commands.addCommand({
+          name: "disableCut",
+          bindKey: { win: "Ctrl-X", mac: "Cmd-X" },
+          exec: () => {
+            alert("Couper désactivé");
+          },
+          readOnly: false
         });
-  
+        
+
         // ✅ Configuration d'Ace
         ace.config.set('basePath', 'https://unpkg.com/ace-builds@1.4.12/src-noconflict');
         aceEditor.setOptions({
@@ -172,18 +215,15 @@ export class NewCompositionComponent implements AfterViewInit, OnInit, OnDestroy
           theme: 'ace/theme/twilight',
           mode: 'ace/mode/javascript'
         });
-  
+
         aceEditor.session.setValue("");
-  
+
         aceEditor.on("change", () => {
           this.codeAnswers[index] = aceEditor.getValue();
         });
       });
-    });
-  }
 
-  ngOnDestroy(): void {
-    this.stopWebcam()
+      
   }
 
 
@@ -241,7 +281,7 @@ export class NewCompositionComponent implements AfterViewInit, OnInit, OnDestroy
 
 
 
-  loadExamInfo(): void {
+  async loadExamInfo(): Promise<void>{
     this.loading = true;
     this.error = null;
   
@@ -265,7 +305,7 @@ export class NewCompositionComponent implements AfterViewInit, OnInit, OnDestroy
   }
   
 
-  loadQuestions(): void {
+  async loadQuestions(): Promise<void> {
     this.loading = true;
     this.compositionService.showQuesByEp(this.id_epreuve).subscribe({
       next: (response) => {
@@ -296,6 +336,14 @@ export class NewCompositionComponent implements AfterViewInit, OnInit, OnDestroy
     });
   }
 
+
+  //methode pour arrêter la webcam
+  stopWebcam() {
+    if (this.localStream) {
+      this.localStream.getTracks().forEach(track => track.stop());
+    }
+  }
+
   selectOption(questionId: number, option: string) {
     this.selectedOptions[questionId] = option;
   }
@@ -307,80 +355,163 @@ export class NewCompositionComponent implements AfterViewInit, OnInit, OnDestroy
     }
   }
 
-  submitExam() {
-    if (this.loading) return; // Empêche les clics multiples
-  
-    this.user = this.auth.getUserInfo2();
-    if (!this.user) {
-      console.log("Utilisateur non authentifié.");
-      return;
-    }
-  
-    this.loading = true;
-  
-    const payloadCopie = {
-      id_etudiant: this.user.id,
-      id_epreuve: this.id_epreuve,
-      reponses_qcm: this.selectedOptions,
-      reponses_code: this.codeAnswers,
-      reponses_courtes: this.shortAnswers
-    };
-  
-    console.log("Soumission de la copie numérique :", payloadCopie);
-  
-    this.compositionService.soumettreCopie(payloadCopie).subscribe({
-      next: (res) => {
-        console.log("✅ Copie soumise avec succès", res);
-  
-        const idCopie = res?.id_copie_numerique;
-        if (!idCopie) {
-          console.error("❌ ID de la copie non reçu.");
-          this.loading = false;
-          return;
-        }
-  
-        console.log("⏳ Correction en cours...");
-        this.compositionService.corrigerCopie(idCopie).subscribe({
-          next: (correctionRes) => {
-            const note = correctionRes?.note || correctionRes?.message?.note_finale;
-            console.log("✅ Note finale :", note);
-            alert(`✅ Votre copie a été corrigée. Note : ${note}/20`);
-            this.loading = false;
-        
-            // Redirection après 2 secondes vers le tableau de bord (à adapter)
-            setTimeout(() => {
-              this.router.navigate(['/composition']);
-            }, 2000);
-          },
-          error: (err) => {
-            console.error("❌ Erreur de correction :", err);
-            if (err.error?.detail) {
-              console.log("🧾 Détail de l'erreur :", err.error.detail);
-            }            
-            alert("❌ Erreur lors de la correction.");
-            this.loading = false;
-          }
-        });
-        
-      },
-      error: (err) => {
-        console.error("❌ Erreur soumission copie :", err);
-        if (err.error?.detail) {
-          console.log("🧾 Détail de l'erreur :", err.error.detail);
-        }
-        alert("❌ Échec de la soumission.");
-        this.loading = false;
-      }
-    });
+  // Modifiez la méthode submitExam() pour générer le PDF avant d'afficher la modal
+submitExam() {
+  if (this.loading) return;
+  this.showConfirmation = false;
+  this.loading = true;
+
+  this.user = this.auth.getUserInfo2();
+  if (!this.user) {
+    console.log("Utilisateur non authentifié.");
+    return;
   }
 
-  //methode pour arrêter la webcam
-  stopWebcam() {
-    if (this.localStream) {
-      this.localStream.getTracks().forEach(track => track.stop());
+  const payloadCopie = {
+    id_etudiant: this.user.id,
+    id_epreuve: this.id_epreuve,
+    reponses_qcm: this.selectedOptions,
+    reponses_code: this.codeAnswers,
+    reponses_courtes: this.shortAnswers
+  };
+
+  this.compositionService.soumettreCopie(payloadCopie).subscribe({
+    next: (res) => {
+      const idCopie = res?.id_copie_numerique;
+      if (!idCopie) {
+        console.error("❌ ID de la copie non reçu.");
+        this.loading = false;
+        return;
+      }
+
+      this.compositionService.corrigerCopie(idCopie).subscribe({
+        next: async (correctionRes) => {
+          const note = correctionRes?.note || correctionRes?.message?.note_finale;
+          console.log("✅ Note finale :", note);
+          
+          // Générer le PDF avant d'afficher la modal
+          await this.generateExamPdf();
+          
+          this.loading = false;
+          this.showDownloadModal = true; // Afficher la modal APRES génération PDF
+        },
+        error: (err) => {
+          console.error("❌ Erreur de correction :", err);
+          this.loading = false;
+          // Afficher quand même la modal en cas d'erreur de correction
+          this.downloadExamPdf().finally(() => {
+            this.showDownloadModal = true;
+          });
+        }
+      });
+    },
+    error: (err) => {
+      console.error("❌ Erreur soumission copie :", err);
+      this.loading = false;
+    }
+  });
+}
+
+  async downloadExamPdf() {
+    this.isGeneratingPdf = true;
+    
+    try {
+      const data = document.getElementById('main-content')!;
+      const canvas = await html2canvas(data);
+      const imgData = canvas.toDataURL('image/png');
+      
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      this.pdfUrl = pdf.output('bloburl').toString();
+
+      
+    } catch (error) {
+      console.error('Erreur génération PDF:', error);
+      alert('Erreur lors de la génération du PDF');
+    } finally {
+      this.isGeneratingPdf = false;
     }
   }
   
+  async generateExamPdf() {
+    this.isGeneratingPdf = true;
+    
+    try {
+      const doc = new jsPDF();
+      
+      // En-tête
+      doc.setFontSize(20);
+      doc.text(this.examInfo.titre, 105, 15, { align: 'center' });
+      doc.setFontSize(14);
+      doc.text(`${this.examInfo.niveau} - Durée: ${this.examInfo.duree}`, 105, 25, { align: 'center' });
+      
+      let yPosition = 40;
+      
+      // Partie 1 : QCM
+      if (this.partie1.length > 0) {
+        doc.setFontSize(16);
+        doc.text("Questions à Choix Multiple (QCM)", 14, yPosition);
+        yPosition += 10;
+        
+        doc.setFontSize(12);
+        this.partie1.forEach((question, index) => {
+          doc.text(`${index + 1}. ${question.contenu}`, 16, yPosition);
+          yPosition += 8;
+          
+          question.option.forEach((option: string, optIndex: number) => {
+            doc.text(`   ${String.fromCharCode(97 + optIndex)}) ${option}`, 20, yPosition);
+            yPosition += 7;
+          });
+          
+          yPosition += 5; // Espace entre les questions
+        });
+      }
+      
+      // Partie 2 : Code
+      if (this.partie2.length > 0) {
+        doc.setFontSize(16);
+        doc.text("Écriture de Code", 14, yPosition);
+        yPosition += 10;
+        
+        doc.setFontSize(12);
+        this.partie2.forEach((question, index) => {
+          doc.text(`${index + 1}. ${question.contenu}`, 16, yPosition);
+          yPosition += 10;
+        });
+      }
+      
+      // Partie 3 : Réponses Courtes
+      if (this.partie3.length > 0) {
+        doc.setFontSize(16);
+        doc.text("Questions à Réponse Courte", 14, yPosition);
+        yPosition += 10;
+        
+        doc.setFontSize(12);
+        this.partie3.forEach((question, index) => {
+          doc.text(`${index + 1}. ${question.contenu}`, 16, yPosition);
+          yPosition += 10;
+        });
+      }
+      
+      // Pied de page
+      doc.setFontSize(10);
+      doc.text("© Academia - Tous droits réservés", 105, 280, { align: 'center' });
+      
+      this.pdfUrl = doc.output('bloburl').toString();
+      
+    } catch (error) {
+      console.error('Erreur génération PDF:', error);
+      const doc = new jsPDF();
+      doc.text("Erreur de génération du sujet", 10, 10);
+      this.pdfUrl = doc.output('bloburl').toString();
+    } finally {
+      this.isGeneratingPdf = false;
+    }
+  }
   
   //empêcher le copier-coller dans le text-area
   onBlockAction(event: ClipboardEvent): void {
@@ -398,5 +529,12 @@ export class NewCompositionComponent implements AfterViewInit, OnInit, OnDestroy
       return `Erreur serveur (${err.status}): ${err.error?.message || err.error?.detail || err.statusText}`;
     }
     return 'Erreur inconnue.';
+  }
+
+  ngOnDestroy() {
+    this.stopWebcam()
+    if (this.pdfUrl) {
+      URL.revokeObjectURL(this.pdfUrl);
+    }
   }
 }

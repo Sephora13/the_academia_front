@@ -90,3 +90,7 @@ animation-delay: -1.0s;
 .content{
   
 }
+
+#main-content{
+  margin-left: 15rem;
+}
