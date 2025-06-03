@@ -7,6 +7,7 @@ import { AuthentificationService } from '../../services/authentification/authent
 import { AffectationEpreuveService } from '../../services/affectation/affectation-epreuve.service';
 import { MatiereService } from '../../services/matiere/matiere.service';
 import { SessionExamensService } from '../../services/session/session-examens.service';
+import { CopieNumeriqueService } from '../../services/copie/copie-numerique.service';
 
 interface EpreuveARendre {
   id_affectation: number;
@@ -16,6 +17,7 @@ interface EpreuveARendre {
   date_limite_soumission: Date;
   statut: 'En attente de création' | 'Remise' | 'En retard';
   id_epreuve?: number;
+  hasCompositions?: boolean;
 }
 
 interface SessionExamen {
@@ -42,13 +44,15 @@ export class ShowEpreuveComponent implements OnInit {
   loading = true;
   error: string | null = null;
   private toastTimeout: any;
+  epreuvesComposees: Set<number> = new Set();
 
   constructor(
     private router: Router,
     private auth: AuthentificationService,
     private affectationService: AffectationEpreuveService,
     private matiereService: MatiereService,
-    private sessionService: SessionExamensService
+    private sessionService: SessionExamensService,
+    private copieService: CopieNumeriqueService
   ) {}
 
   ngOnInit(): void {
@@ -62,11 +66,44 @@ export class ShowEpreuveComponent implements OnInit {
     }
   }
 
-  loadEpreuves(idProfesseur: number): void {
-    this.loading = true;
-    this.error = null;
+  // Dans loadEpreuves() du composant ShowEpreuveComponent
+loadEpreuves(idProfesseur: number): void {
+  this.loading = true;
+  this.error = null;
 
-    // Charger les données nécessaires
+  this.copieService.lireToutesLesCopies().subscribe({
+    next: (copiesResponse) => {
+      console.log('Copies response:', copiesResponse); // Ajout pour débogage
+      
+      if (copiesResponse.success) {
+        // Correction ici: la réponse contient un tableau de tableaux
+        const allCopies = copiesResponse.message.flat(); 
+        
+        // Créer un Set des IDs d'épreuves qui ont des copies
+        allCopies.forEach((copie: any) => {
+          if (copie.id_epreuve) {
+            this.epreuvesComposees.add(Number(copie.id_epreuve));
+          }
+        });
+        
+        console.log('Epreuves composées (IDs):', this.epreuvesComposees);
+        
+        // Maintenant charger les autres données
+        this.loadEpreuvesData(idProfesseur);
+      } else {
+        this.error = 'Erreur lors du chargement des copies';
+        this.loading = false;
+      }
+    },
+    error: (err) => {
+      console.error('Erreur de chargement des copies:', err);
+      this.error = 'Erreur de chargement des copies';
+      this.loading = false;
+    }
+  });
+}
+
+  loadEpreuvesData(idProfesseur: number): void {
     forkJoin({
       affectations: this.affectationService.listerParProfesseur(idProfesseur),
       matieres: this.matiereService.lireMatieres(),
@@ -78,12 +115,10 @@ export class ShowEpreuveComponent implements OnInit {
           const matieres = results.matieres.message;
           this.sessions = results.sessions.message;
 
-          // Préparer les promesses pour les noms de session
           const sessionPromises = affectations.map((affectation: any) => 
             this.sessionService.getSession(affectation.id_session_examen).toPromise()
           );
 
-          // Résoudre toutes les promesses de session
           Promise.all(sessionPromises).then(sessionResponses => {
             this.epreuves = affectations.map((affectation: any, index: number) => {
               const sessionResponse = sessionResponses[index];
@@ -92,9 +127,13 @@ export class ShowEpreuveComponent implements OnInit {
                 ? sessionResponse.message.nom_session 
                 : 'Session inconnue';
 
-              // Calculer le statut
               const now = new Date();
               const dateLimite = new Date(affectation.date_limite_soumission_prof);
+              const hasCompositions = affectation.id_epreuve 
+              ? this.epreuvesComposees.has(Number(affectation.id_epreuve)) 
+              : false;
+
+              console.log(`Epreuve ${affectation.id_epreuve} - hasCompositions:`, hasCompositions);
               let statut: 'En attente de création' | 'Remise' | 'En retard';
               
               if (affectation.id_epreuve) {
@@ -114,10 +153,11 @@ export class ShowEpreuveComponent implements OnInit {
                 nom_session: nom_session,
                 date_limite_soumission: dateLimite,
                 statut: statut,
-                id_epreuve: affectation.id_epreuve
+                id_epreuve: affectation.id_epreuve,
+                hasCompositions
               };
             });
-            
+            console.log('Toutes les épreuves:', this.epreuves);
             this.filterEpreuvesARendre();
             this.loading = false;
           });
@@ -170,5 +210,9 @@ export class ShowEpreuveComponent implements OnInit {
 
   hideToast(): void {
     
+  }
+
+  viewResults(id_epreuve: number): void {
+    this.router.navigate(['professeur/resultats-compo-prof', id_epreuve]);
   }
 }
