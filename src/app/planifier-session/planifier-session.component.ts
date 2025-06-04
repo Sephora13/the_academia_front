@@ -135,16 +135,23 @@ export class PlanifierSessionComponent implements OnInit {
         this.profSrv.recuProf()
       ]).toPromise();
   
-      if (!result) {
-        throw new Error('Résultat indéfini');
-      }
+      if (!result) throw new Error('Résultat indéfini');
   
       const [filieresRes, optionsRes, matieresRes, profsRes] = result;
   
-      this.filieres    = filieresRes?.message ?? [];
+      this.filieres = filieresRes?.message ?? [];
       this.options = Array.isArray(optionsRes?.message) ? optionsRes.message : [];
-      this.matieres    = matieresRes?.message ?? [];
-      this.professeurs = profsRes ?? [];
+      this.matieres = matieresRes?.message ?? [];
+      
+      // Correction du mapping des professeurs
+      this.professeurs = (profsRes ?? []).map((p: any) => ({
+        id: p.id,
+        nom: p.nom,
+        prenom: p.prenom,
+        email: p.email,
+        classe: p.classe, // Utilisation de 'classe'
+        matiere: p.matiere
+      }));
   
     } catch (err) {
       console.error(err);
@@ -200,7 +207,7 @@ export class PlanifierSessionComponent implements OnInit {
     this.matieres.find(m => m.id_matiere === id)?.nom_matiere || 'Inconnu';
 
   private getProfName = (id: number) => {
-    const p = this.professeurs.find(pr => pr.id_professeur === id);
+    const p = this.professeurs.find(pr => pr.id === id);
     return p ? `${p.prenom} ${p.nom}` : 'Inconnu';
   };
 
@@ -228,29 +235,27 @@ export class PlanifierSessionComponent implements OnInit {
 
   get filteredMatieres() {
     const idProf = this.affectationForm.get('id_professeur')?.value;
-    const prof = this.professeurs.find(p => p.id_professeur === idProf);
+    const prof = this.professeurs.find(p => p.id === idProf);
   
-    if (!prof || !prof.matieres || prof.matieres.length === 0) return [];
+    if (!prof || !prof.matiere) return [];
   
-    // On récupère les noms des matières dans le prof (string[])
-    const matiereNoms = prof.matieres.map((nom: string) => nom.toLowerCase());
-  
-    // On filtre les matières officielles en comparant les noms
-    return this.matieres.filter(m =>
-      matiereNoms.includes(m.nom_matiere.toLowerCase())
+    // Normalisation de la chaîne
+    const matiereNom = prof.matiere.trim().toLowerCase();
+    return this.matieres.filter(m => 
+      m.nom_matiere.trim().toLowerCase() === matiereNom
     );
   }
   
-
   get filteredProfesseurs() {
     const idOption = this.affectationForm.get('id_option_etude')?.value;
     const option = this.options.find(o => o.id_option_etude === idOption);
     if (!option) return [];
   
-    const nomOption = option.nom_option.toLowerCase();
-  
+    // Normalisation de la chaîne
+    const nomOption = option.nom_option.trim().toLowerCase();
+    
     return this.professeurs.filter(p =>
-      (p.filiere || []).some((nom: string) => nom.toLowerCase() === nomOption)
+      p.classe.trim().toLowerCase() === nomOption
     );
   }
   

@@ -174,30 +174,34 @@
                 </select>
                 </div>
 
-                <!-- Professeur (filtré) -->
+                <!-- Professeur -->
                 <div>
                     <label class="block text-gray-300 text-sm font-bold mb-2">Professeur</label>
                     <select formControlName="id_professeur"
-                            [disabled]="!affectationForm.get('id_matiere')!.value"
+                            [disabled]="!affectationForm.get('id_option_etude')?.value"
                             class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg
-                                    text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                        <option [ngValue]="null" disabled>Choisir un professeur</option>
-                        <option *ngFor="let p of filteredProfesseurs"
-                                [ngValue]="p.id_professeur">{{ p.prenom }} {{ p.nom }}</option>
+                                text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    <option [ngValue]="null" disabled>Choisir un professeur</option>
+                    <option *ngFor="let p of filteredProfesseurs" 
+                            [ngValue]="p.id"> <!-- Utilisation de p.id -->
+                        {{ p.prenom }} {{ p.nom }}
+                    </option>
                     </select>
                 </div>
-
-                <!-- Matière (filtrée) -->
+                
+                <!-- Matière -->
                 <div>
-                <label class="block text-gray-300 text-sm font-bold mb-2">Matière</label>
-                <select formControlName="id_matiere"
-                        [disabled]="!affectationForm.get('id_option_etude')!.value"
-                        class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg
+                    <label class="block text-gray-300 text-sm font-bold mb-2">Matière</label>
+                    <select formControlName="id_matiere"
+                            [disabled]="!affectationForm.get('id_professeur')?.value"
+                            class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg
                                 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                     <option [ngValue]="null" disabled>Choisir une matière</option>
-                    <option *ngFor="let m of filteredMatieres"
-                            [ngValue]="m.id_matiere">{{ m.nom_matiere }}</option>
-                </select>
+                    <option *ngFor="let m of filteredMatieres" 
+                            [ngValue]="m.id_matiere">
+                        {{ m.nom_matiere }}
+                    </option>
+                    </select>
                 </div>
 
                 <!-- Dates & heures -->
