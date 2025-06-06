@@ -5,3 +5,6 @@
 .left-pd {
   padding-left: 16rem; /* car sidebar 64px x 4 => 256px = 16rem */
 }
+#sidebar {
+  z-index: 1000;
+}
