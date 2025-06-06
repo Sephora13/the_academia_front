@@ -1,3 +1,4 @@
+// dashboard-prof.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
@@ -8,6 +9,15 @@ import { MatiereService } from '../../services/matiere/matiere.service';
 import { SessionExamensService } from '../../services/session/session-examens.service';
 import { OptionEtudeService } from '../../services/option/option-etude.service';
 import { EpreuveService } from '../../services/epreuve/epreuve.service';
+
+interface EpreuveARendre {
+  id_affectation: number;
+  titre_epreuve: string;
+  nom_session: string;
+  nom_matiere: string;
+  date_limite_soumission: Date;
+  statut: 'En attente' | 'Remise' | 'En retard';
+}
 
 @Component({
   selector: 'app-professeur-dashboard',
@@ -25,7 +35,7 @@ export class ProfesseurDashboardComponent implements OnInit {
   examsToSubmitCount = 0;
   overdueExamsCount = 0;
   correctionsPending = 0;
-  examsToSubmit: any[] = [];
+  examsToSubmit: EpreuveARendre[] = [];
   recentExams: any[] = [];
   isLoading = true;
 
@@ -54,51 +64,51 @@ export class ProfesseurDashboardComponent implements OnInit {
       }
       
       const affectations = affectationsResponse.message;
-      this.examsToSubmitCount = affectations.length;
-      
-      // Traitement des affectations
       const now = new Date();
-      this.overdueExamsCount = 0;
-      const examsToSubmitTemp = [];
       
-      for (const affectation of affectations) {
-        // Récupérer les détails supplémentaires
-        const [matiere, session, option] = await Promise.all([
+      // Filtrer les affectations sans épreuve (non rendues)
+      const affectationsSansEpreuve = affectations.filter(a => !a.id_epreuve);
+      this.examsToSubmitCount = affectationsSansEpreuve.length;
+      
+      // Traitement des affectations non rendues
+      const examsToSubmitTemp: EpreuveARendre[] = [];
+      this.overdueExamsCount = 0;
+      
+      for (const affectation of affectationsSansEpreuve) {
+        const [matiere, session] = await Promise.all([
           this.matiereService.lireMatiere(affectation.id_matiere).toPromise(),
-          this.sessionService.getSession(affectation.id_session_examen).toPromise(),
-          this.optionService.lireOption(affectation.id_option_etude).toPromise()
+          this.sessionService.getSession(affectation.id_session_examen).toPromise()
         ]);
         
         const dateLimite = new Date(affectation.date_limite_soumission_prof);
-        const isOverdue = dateLimite < now && !affectation.id_epreuve;
+        const statut = dateLimite < now ? 'En retard' : 'En attente';
         
-        if (isOverdue) this.overdueExamsCount++;
+        if (statut === 'En retard') this.overdueExamsCount++;
         
         examsToSubmitTemp.push({
-          id: affectation.id_affectation_epreuve,
-          title: matiere?.message.nom_matiere || 'Matière inconnue',
-          session: session?.message.nom_session || 'Session inconnue',
-          option: (typeof option?.message === 'object' && 'nom_option' in option.message)
-  ? (option.message as any).nom_option
-  : 'Option inconnue',
-
-          dueDate: dateLimite,
-          isOverdue
+          id_affectation: affectation.id_affectation_epreuve,
+          titre_epreuve: matiere?.message.nom_matiere || 'Matière inconnue',
+          nom_session: session?.message.nom_session || 'Session inconnue',
+          nom_matiere: matiere?.message.nom_matiere || 'Matière inconnue',
+          date_limite_soumission: dateLimite,
+          statut
         });
       }
       
-      // Trier et limiter à 3 éléments
+      // Trier par date limite et limiter à 3
       this.examsToSubmit = examsToSubmitTemp
-        .sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime())
+        .sort((a, b) => a.date_limite_soumission.getTime() - b.date_limite_soumission.getTime())
         .slice(0, 3);
       
-      // Récupération des examens créés (limité à 3)
+      // Récupération des examens créés
       const examsResponse = await this.epreuveService.lireEpreuvesParProfesseur(this.user.id).toPromise();
       this.createdExamsCount = examsResponse?.message?.length || 0;
+      
+      // Dernières épreuves créées (limité à 3)
       this.recentExams = (examsResponse?.message || [])
-      .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-      .slice(0, 3);
-
+        .sort((a: any, b: any) => 
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        .slice(0, 3);
       
       this.isLoading = false;
     } catch (err) {
@@ -111,8 +121,8 @@ export class ProfesseurDashboardComponent implements OnInit {
     this.router.navigate(['/create-exam']);
   }
 
-  viewCreatedExams(): void {
-    this.router.navigate(['/view-created-exams']);
+  viewExamsToSubmit(): void {
+    this.router.navigate(['professeur/epreuve_a_rendre']);
   }
 
   viewExamDetails(examId: number): void {

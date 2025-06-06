@@ -43,3 +43,6 @@
   display: flex;
 }
 
+#sidebar {
+  z-index: 1000;
+}

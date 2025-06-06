@@ -1,10 +1,10 @@
+<!-- dashboard-prof.component.html -->
 <div id="main" class="transition-all duration-300 p-4">
-
   <div class="max-w-7xl mx-auto p-4">
     <h2 class="text-2xl font-bold mb-6 dark:text-white">Tableau de Bord - Professeur</h2>
     
     <!-- Statistiques -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
       <div class="bg-blue-500 text-white p-6 rounded-lg text-center">
         <p class="text-sm uppercase">Épreuves créées</p>
         <p class="text-3xl font-bold">{{ createdExamsCount }}</p>
@@ -18,11 +18,6 @@
       <div class="bg-red-500 text-white p-6 rounded-lg text-center">
         <p class="text-sm uppercase">En retard</p>
         <p class="text-3xl font-bold">{{ overdueExamsCount }}</p>
-      </div>
-      
-      <div class="bg-green-500 text-white p-6 rounded-lg text-center">
-        <p class="text-sm uppercase">Corrigées</p>
-        <p class="text-3xl font-bold">{{ correctionsPending }}</p>
       </div>
     </div>
     
@@ -40,20 +35,24 @@
       <ul *ngIf="!isLoading" class="space-y-4">
         <li *ngFor="let exam of examsToSubmit" 
             class="p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer"
-            (click)="goToCreateEpreuve(exam.id)">
+            (click)="goToCreateEpreuve(exam.id_affectation)">
           <div class="flex justify-between items-center">
             <div>
-              <h4 class="font-bold dark:text-white">{{ exam.title }}</h4>
+              <h4 class="font-bold dark:text-white">{{ exam.titre_epreuve }}</h4>
               <p class="text-sm text-gray-600 dark:text-gray-300">
-                {{ exam.session }} - {{ exam.option }}
+                {{ exam.nom_session }} - {{ exam.nom_matiere }}
               </p>
             </div>
             <div class="text-right">
-              <p class="text-sm" [ngClass]="{'text-red-500': exam.isOverdue, 'text-yellow-500': !exam.isOverdue}">
-                {{ exam.dueDate | date:'dd/MM/yyyy' }}
+              <p class="text-sm" [ngClass]="{'text-red-500': exam.statut === 'En retard', 'text-yellow-500': exam.statut === 'En attente'}">
+                {{ exam.date_limite_soumission | date:'dd/MM/yyyy' }}
               </p>
-              <span *ngIf="exam.isOverdue" class="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full">
-                En retard
+              <span [ngClass]="{
+                  'bg-yellow-100 text-yellow-800': exam.statut === 'En attente',
+                  'bg-red-100 text-red-800': exam.statut === 'En retard'
+                }" 
+                class="text-xs px-2 py-1 rounded-full">
+                {{ exam.statut }}
               </span>
             </div>
           </div>
@@ -65,8 +64,8 @@
       </ul>
       
       <div class="mt-4 text-right">
-        <button (click)="viewCreatedExams()" class="text-blue-500 hover:text-blue-700">
-          Voir toutes les épreuves →
+        <button (click)="viewExamsToSubmit()" class="text-blue-500 hover:text-blue-700">
+          Voir toutes les épreuves à rendre →
         </button>
       </div>
     </div>
@@ -102,12 +101,6 @@
         </li>
       </ul>
       
-      <div class="mt-6 text-center">
-        <button (click)="createNewExam()" 
-                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
-          <i class="fas fa-plus mr-2"></i>Créer une nouvelle épreuve
-        </button>
-      </div>
     </div>
   </div>
 </div>

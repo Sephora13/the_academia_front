@@ -8,6 +8,7 @@ export interface CopieNumerique {
   id_etudiant: number;
   id_epreuve: number;
   date_soumission: string;
+  note_finale?: number | null;
   created_at: string;
   updated_at: string;
 }
