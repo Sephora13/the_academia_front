@@ -1,104 +1,113 @@
-<div  id="main"class="transition-all duration-300 ">
+<div id="main" class="transition-all duration-300 p-4">
 
-  <div class="mb-8 mt-8 mr-8 welcome">
-    <h1 class="text-2xl md:text-3xl font-bold text-gray-500">
-      Bonjour, {{ user?.nom }} {{user?.prenom}} !
-    </h1>
-  </div>
-
-  <div class="flex flex-wrap -mx-4 mb-10">
-
-    <!-- Épreuves créées -->
-    <div class="w-full lg:w-6/12 xl:w-3/12 px-4" (click)="consulterEpreuvesCrees()">
-      <div class="relative flex flex-col min-w-0 break-words bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg mb-6 xl:mb-0 shadow-lg cursor-pointer">
-        <div class="flex-auto p-4">
-          <div class="flex flex-wrap">
-            <div class="relative w-full pr-4 max-w-full flex-grow flex-1">
-              <h5 class="uppercase font-bold text-xs">Épreuves créées</h5>
-              <span class="font-bold text-xl">{{ createdExamsCount }}</span>
-            </div>
-            <div class="relative w-auto pl-4 flex-initial">
-              <div class="p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-white text-indigo-600">
-                <i class="fas fa-file-alt"></i>
-              </div>
-            </div>
-          </div>
-          <p class="text-sm text-white mt-4"><span class="text-white/80">Suivi des épreuves générées</span></p>
-        </div>
+  <div class="max-w-7xl mx-auto p-4">
+    <h2 class="text-2xl font-bold mb-6 dark:text-white">Tableau de Bord - Professeur</h2>
+    
+    <!-- Statistiques -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div class="bg-blue-500 text-white p-6 rounded-lg text-center">
+        <p class="text-sm uppercase">Épreuves créées</p>
+        <p class="text-3xl font-bold">{{ createdExamsCount }}</p>
+      </div>
+      
+      <div class="bg-yellow-500 text-white p-6 rounded-lg text-center">
+        <p class="text-sm uppercase">À rendre</p>
+        <p class="text-3xl font-bold">{{ examsToSubmitCount }}</p>
+      </div>
+      
+      <div class="bg-red-500 text-white p-6 rounded-lg text-center">
+        <p class="text-sm uppercase">En retard</p>
+        <p class="text-3xl font-bold">{{ overdueExamsCount }}</p>
+      </div>
+      
+      <div class="bg-green-500 text-white p-6 rounded-lg text-center">
+        <p class="text-sm uppercase">Corrigées</p>
+        <p class="text-3xl font-bold">{{ correctionsPending }}</p>
       </div>
     </div>
-  
-    <!-- Nombres de copies -->
-    <div class="w-full lg:w-6/12 xl:w-3/12 px-4" (click)="verifierCorrections()">
-      <div class="relative flex flex-col min-w-0 break-words bg-white dark:bg-gray-800 rounded-lg mb-6 xl:mb-0 shadow-lg cursor-pointer">
-        <div class="flex-auto p-4">
-          <div class="flex flex-wrap">
-            <div class="relative w-full pr-4 max-w-full flex-grow flex-1">
-              <h5 class="uppercase font-bold text-xs text-gray-500 dark:text-gray-400">Nombres de copies</h5>
-              <span class="font-bold text-xl dark:text-white">{{ nbrcopie }}</span>
+    
+    <!-- Épreuves à rendre -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8">
+      <h3 class="text-xl font-semibold mb-4 dark:text-white">
+        <i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>
+        Épreuves à rendre
+      </h3>
+      
+      <div *ngIf="isLoading" class="text-center py-4">
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+      
+      <ul *ngIf="!isLoading" class="space-y-4">
+        <li *ngFor="let exam of examsToSubmit" 
+            class="p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer"
+            (click)="goToCreateEpreuve(exam.id)">
+          <div class="flex justify-between items-center">
+            <div>
+              <h4 class="font-bold dark:text-white">{{ exam.title }}</h4>
+              <p class="text-sm text-gray-600 dark:text-gray-300">
+                {{ exam.session }} - {{ exam.option }}
+              </p>
             </div>
-            <div class="relative w-auto pl-4 flex-initial">
-              <div class="p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-orange-500 text-white">
-                <i class="fas fa-copy"></i>
-              </div>
+            <div class="text-right">
+              <p class="text-sm" [ngClass]="{'text-red-500': exam.isOverdue, 'text-yellow-500': !exam.isOverdue}">
+                {{ exam.dueDate | date:'dd/MM/yyyy' }}
+              </p>
+              <span *ngIf="exam.isOverdue" class="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full">
+                En retard
+              </span>
             </div>
           </div>
-          <p class="text-sm text-gray-500 dark:text-gray-400 mt-4"><span class="text-green-500">Activité de correction</span></p>
-        </div>
-      </div>
-    </div>
-  
-    <!-- Notifications non lues -->
-    <div class="w-full lg:w-6/12 xl:w-3/12 px-4" (click)="gererReclamations()">
-      <div class="relative flex flex-col min-w-0 break-words bg-white dark:bg-gray-800 rounded-lg mb-6 xl:mb-0 shadow-lg cursor-pointer">
-        <div class="flex-auto p-4">
-          <div class="flex flex-wrap">
-            <div class="relative w-full pr-4 max-w-full flex-grow flex-1">
-              <h5 class="uppercase font-bold text-xs text-gray-500 dark:text-gray-400">Notifications non lues</h5>
-              <span class="font-bold text-xl dark:text-white">{{ notifNonLues }}</span>
-            </div>
-            <div class="relative w-auto pl-4 flex-initial">
-              <div class="p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-red-500 text-white">
-                <i class="fas fa-bell"></i>
-              </div>
-            </div>
-          </div>
-          <p class="text-sm text-gray-500 dark:text-gray-400 mt-4"><span class="text-red-400">Réclamations en attente</span></p>
-        </div>
-      </div>
-    </div>
-  
-  </div>
-  
-
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md">
-      <h2 class="text-lg md:text-xl font-semibold mb-4 dark:text-white">Notifications</h2>
-      <ul class="space-y-4">
-        <li *ngFor="let notification of notifications" class="flex items-start gap-3">
-          <div class="w-2.5 h-2.5 bg-red-500 rounded-full mt-1"></div>
-          <p class="text-gray-700 dark:text-gray-300 text-sm">{{ notification.message }}
-            <span class="text-xs text-gray-500 dark:text-gray-400">({{ notification.date | date:'shortTime' }})</span>
-          </p>
         </li>
-        <li *ngIf="notifications.length === 0" class="text-gray-500 dark:text-gray-400 text-sm">
-          Aucune nouvelle notification.
+        
+        <li *ngIf="examsToSubmit.length === 0" class="text-center py-4 text-gray-500 dark:text-gray-400">
+          Aucune épreuve à rendre pour le moment
         </li>
       </ul>
+      
+      <div class="mt-4 text-right">
+        <button (click)="viewCreatedExams()" class="text-blue-500 hover:text-blue-700">
+          Voir toutes les épreuves →
+        </button>
+      </div>
     </div>
-
-    <!-- Carte Prochains sessions -->
-    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md">
-      <h2 class="text-lg md:text-xl font-semibold mb-4 dark:text-white">Prochaines sessions</h2>
-      <ul class="space-y-4">
-        <li *ngFor="let exam of upcomingExams" class="flex justify-between items-center text-gray-700 dark:text-gray-300 text-sm">
-          <span>{{ exam.name }}</span>
-          <span class="text-xs">{{ exam.date }}</span>
+    
+    <!-- Dernières épreuves créées -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+      <h3 class="text-xl font-semibold mb-4 dark:text-white">
+        <i class="fas fa-history text-blue-500 mr-2"></i>
+        Dernières épreuves créées
+      </h3>
+      
+      <ul *ngIf="!isLoading" class="space-y-4">
+        <li *ngFor="let exam of recentExams" 
+            class="p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer"
+            (click)="viewExamDetails(exam.id_epreuve)">
+          <div class="flex justify-between items-center">
+            <div>
+              <h4 class="font-bold dark:text-white">{{ exam.titre }}</h4>
+              <p class="text-sm text-gray-600 dark:text-gray-300">
+                Créée le {{ exam.created_at | date:'dd/MM/yyyy' }}
+              </p>
+            </div>
+            <div>
+              <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                {{ exam.statut }}
+              </span>
+            </div>
+          </div>
+        </li>
+        
+        <li *ngIf="recentExams.length === 0" class="text-center py-4 text-gray-500 dark:text-gray-400">
+          Aucune épreuve créée
         </li>
       </ul>
+      
+      <div class="mt-6 text-center">
+        <button (click)="createNewExam()" 
+                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+          <i class="fas fa-plus mr-2"></i>Créer une nouvelle épreuve
+        </button>
+      </div>
     </div>
   </div>
-
-
 </div>
