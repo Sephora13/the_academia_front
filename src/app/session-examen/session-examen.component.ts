@@ -1,10 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { Observable, forkJoin, map } from 'rxjs';
 import { Router } from '@angular/router';
 import { SessionExamensService } from '../services/session/session-examens.service';
-
+import { FiliereService } from '../services/filiere/filiere.service';
+import { OptionEtudeService } from '../services/option/option-etude.service';
+import { MatiereService } from '../services/matiere/matiere.service';
+import { AffectationEpreuveService } from '../services/affectation/affectation-epreuve.service';
+import { GetPasswordService } from '../services/get_info/get-password.service';
 // Déclarations pour les composants parents
 import { HeaderComponent } from '../header/header.component';
 import { DashboardExamServiceComponent } from '../dashboard-exam-service/dashboard-exam-service.component';
@@ -34,6 +38,31 @@ interface SessionExamenUpdate {
   statut_session?: string;
 }
 
+interface Filiere {
+  id_filiere: number;
+  nom_filiere: string;
+}
+
+interface OptionEtude {
+  id_option_etude: number;
+  nom_option: string;
+  id_filiere: number;
+}
+
+interface Professeur {
+  id: number;
+  nom: string;
+  prenom: string;
+  email: string;
+  classe: string;
+  matiere: string;
+}
+
+interface Matiere {
+  id_matiere: number;
+  nom_matiere: string;
+}
+
 @Component({
   selector: 'app-session-examen',
   standalone: true,
@@ -51,6 +80,7 @@ export class SessionExamenComponent implements OnInit {
   sessions: SessionExamenRead[] = [];
   filteredSessions: SessionExamenRead[] = [];
   sessionForm: FormGroup;
+  affectationForm: FormGroup;
   isEditMode: boolean = false;
   currentSessionId: number | null = null;
   searchTerm: string = '';
@@ -59,12 +89,28 @@ export class SessionExamenComponent implements OnInit {
   selectedCreationYear: number | null = null;
   availableCreationYears: number[] = [];
   showSessionModal: boolean = false;
+  showAffectationModal: boolean = false;
   private toastTimeout: any;
+
+  // Données pour l'affectation
+  filieres: Filiere[] = [];
+  options: OptionEtude[] = [];
+  professeurs: Professeur[] = [];
+  matieres: Matiere[] = [];
+  filteredOptions: OptionEtude[] = [];
+  filteredProfesseurs: Professeur[] = [];
+  filteredMatieres: Matiere[] = [];
+  currentSessionIdForAffectation: number | null = null;
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private sessionService: SessionExamensService
+    private sessionService: SessionExamensService,
+    private filiereService: FiliereService,
+    private optionService: OptionEtudeService,
+    private matiereService: MatiereService,
+    private affectationService: AffectationEpreuveService,
+    private getPasswordService: GetPasswordService
   ) {
     this.sessionForm = this.fb.group({
       nom: ['', Validators.required],
@@ -72,10 +118,23 @@ export class SessionExamenComponent implements OnInit {
       date_fin: ['', Validators.required],
       statut: ['Planifiée', Validators.required]
     });
+
+    this.affectationForm = this.fb.group({
+      filiere: ['', Validators.required],
+      option_etude: ['', Validators.required],
+      professeur: ['', Validators.required],
+      matiere: ['', Validators.required],
+      date_examen: ['', Validators.required],
+      heure_debut: ['', Validators.required],
+      duree: [2, [Validators.required, Validators.min(1)]],
+      date_limite: ['', Validators.required],
+      commentaire: ['']
+    });
   }
 
   ngOnInit(): void {
     this.loadSessions();
+    this.loadDataForAffectation();
   }
 
   loadSessions(): void {
@@ -104,6 +163,35 @@ export class SessionExamenComponent implements OnInit {
     });
   }
 
+  loadDataForAffectation(): void {
+    forkJoin({
+      filieres: this.filiereService.lireFilieres().pipe(map(response => response.message as Filiere[])),
+      options: this.optionService.lireOptions().pipe(map(response => response.message as unknown as OptionEtude[])),
+      professeurs: this.getPasswordService.recuProf().pipe(
+        map((profs: any[]) => profs.map(p => ({
+          id: p.id,
+          nom: p.nom,
+          prenom: p.prenom,
+          email: p.email,
+          classe: p.classe,
+          matiere: p.matiere
+        })))
+      ),
+      matieres: this.matiereService.lireMatieres().pipe(map(response => response.message as Matiere[]))
+    }).subscribe({
+      next: (results) => {
+        this.filieres = results.filieres;
+        this.options = results.options;
+        this.professeurs = results.professeurs;
+        this.matieres = results.matieres;
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des données:', err);
+        this.showToast('Erreur', 'Impossible de charger les données pour l\'affectation', 'danger');
+      }
+    });
+  }
+
   filterSessions(): void {
     let tempSessions = [...this.sessions];
 
@@ -119,8 +207,8 @@ export class SessionExamenComponent implements OnInit {
 
     // Filtrer par terme de recherche
     if (this.searchTerm) {
-      tempSessions = tempSessions.filter(session =>
-        session.nom.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+      tempSessions = tempSessions.filter(session => 
+        session.nom.toLowerCase().includes(this.searchTerm.toLowerCase()) || 
         session.statut.toLowerCase().includes(this.searchTerm.toLowerCase())
       );
     }
@@ -155,7 +243,86 @@ export class SessionExamenComponent implements OnInit {
     this.showSessionModal = true;
   }
 
-  // Dans la méthode saveSession()
+  openAffectationModal(sessionId: number): void {
+    this.currentSessionIdForAffectation = sessionId;
+    this.affectationForm.reset();
+    this.showAffectationModal = true;
+  }
+
+  onFiliereChange(): void {
+    const filiereId = this.affectationForm.get('filiere')?.value;
+    this.filteredOptions = this.options.filter(option => option.id_filiere === filiereId);
+    this.affectationForm.get('option_etude')?.reset();
+    this.affectationForm.get('professeur')?.reset();
+    this.affectationForm.get('matiere')?.reset();
+  }
+
+  onOptionChange(): void {
+    const optionId = this.affectationForm.get('option_etude')?.value;
+    const selectedOption = this.options.find(o => o.id_option_etude === optionId);
+    
+    if (selectedOption) {
+      // Filtre insensible à la casse avec trim()
+      this.filteredProfesseurs = this.professeurs.filter(
+        prof => prof.classe.trim().toLowerCase() === selectedOption.nom_option.trim().toLowerCase()
+      );
+    }
+    
+    this.affectationForm.get('professeur')?.reset();
+    this.affectationForm.get('matiere')?.reset();
+  }
+  
+  onProfesseurChange(): void {
+    const professeurId = this.affectationForm.get('professeur')?.value;
+    const selectedProfesseur = this.professeurs.find(p => p.id === professeurId);
+    
+    if (selectedProfesseur) {
+      // Filtre insensible à la casse avec trim()
+      this.filteredMatieres = this.matieres.filter(
+        matiere => matiere.nom_matiere.trim().toLowerCase() === selectedProfesseur.matiere.trim().toLowerCase()
+      );
+    }
+    
+    this.affectationForm.get('matiere')?.reset();
+  }
+
+  saveAffectation(): void {
+    if (this.affectationForm.invalid || !this.currentSessionIdForAffectation) {
+      return;
+    }
+
+    const formValue = this.affectationForm.value;
+    const affectationData = {
+      id_session_examen: this.currentSessionIdForAffectation,
+      id_matiere: formValue.matiere,
+      id_option_etude: formValue.option_etude,
+      id_professeur: formValue.professeur,
+      date_limite_soumission_prof: formValue.date_limite,
+      date_examen_etudiant: formValue.date_examen,
+      heure_debut_examen: formValue.heure_debut + ':00', // Ajouter les secondes
+      duree_examen_prevue: formValue.duree,
+      id_epreuve: null,
+      statut_affectation: "assignee",
+      commentaires_service_examens: formValue.commentaire || null,
+      assigned_by: undefined
+    };
+
+    this.affectationService.creerAffectation(affectationData).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.showToast('Succès', 'Affectation créée avec succès !', 'success');
+          this.showAffectationModal = false;
+        } else {
+          this.showToast('Erreur', 'Erreur lors de la création de l\'affectation', 'danger');
+        }
+      },
+      error: (err) => {
+        console.error('Erreur lors de la création de l\'affectation:', err);
+        this.showToast('Erreur', 'Impossible de créer l\'affectation', 'danger');
+      }
+    });
+  }
+
   saveSession(): void {
     if (this.sessionForm.invalid) {
       this.sessionForm.markAllAsTouched();

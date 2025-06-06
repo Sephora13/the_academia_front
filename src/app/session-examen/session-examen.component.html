@@ -167,6 +167,105 @@
             </div>
         </div>
 
+        <!-- Modal d'affectation d'épreuve -->
+        <div *ngIf="showAffectationModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+            <div class="bg-gray-800 p-6 rounded-lg shadow-2xl w-11/12 md:w-2/3 lg:w-1/2 transform scale-95 animate-scale-in">
+                <div class="flex justify-between items-center pb-4 border-b border-gray-700 mb-4">
+                    <h5 class="text-xl font-semibold text-blue-300">
+                        Affecter une Épreuve à la Session
+                    </h5>
+                    <button type="button" class="text-gray-400 hover:text-gray-100 text-2xl" (click)="showAffectationModal = false" aria-label="Close">
+                        &times;
+                    </button>
+                </div>
+                <div class="modal-body max-h-[70vh] overflow-y-auto">
+                    <form [formGroup]="affectationForm" (ngSubmit)="saveAffectation()">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <!-- Filière -->
+                            <div>
+                                <label class="block text-gray-300 text-sm font-bold mb-2">Filière</label>
+                                <select formControlName="filiere" (change)="onFiliereChange()" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Sélectionnez une filière</option>
+                                    <option *ngFor="let filiere of filieres" [value]="filiere.id_filiere">{{ filiere.nom_filiere }}</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Option d'étude -->
+                            <div>
+                                <label class="block text-gray-300 text-sm font-bold mb-2">Option d'étude</label>
+                                <select formControlName="option_etude" (change)="onOptionChange()" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" [disabled]="!affectationForm.get('filiere')?.value">
+                                    <option value="">Sélectionnez une option</option>
+                                    <option *ngFor="let option of filteredOptions" [value]="option.id_option_etude">{{ option.nom_option }}</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Professeur -->
+                            <div>
+                                <label class="block text-gray-300 text-sm font-bold mb-2">Professeur</label>
+                                <select formControlName="professeur" (change)="onProfesseurChange()" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" [disabled]="!affectationForm.get('option_etude')?.value">
+                                    <option value="">Sélectionnez un professeur</option>
+                                    <option *ngFor="let prof of filteredProfesseurs" [value]="prof.id">{{ prof.nom }} {{ prof.prenom }}</option>
+                                </select>
+                            </div>
+                            <!-- Dans la modal d'affectation -->
+                            <div *ngIf="filteredProfesseurs.length === 0 && affectationForm.get('option_etude')?.value" 
+                            class="text-red-400 text-xs mt-1">
+                            Aucun professeur trouvé pour cette option
+                            </div>
+                            
+                            <!-- Matière -->
+                            <div>
+                                <label class="block text-gray-300 text-sm font-bold mb-2">Matière</label>
+                                <select formControlName="matiere" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" [disabled]="!affectationForm.get('professeur')?.value">
+                                    <option value="">Sélectionnez une matière</option>
+                                    <option *ngFor="let matiere of filteredMatieres" [value]="matiere.id_matiere">{{ matiere.nom_matiere }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <!-- Date d'examen -->
+                            <div>
+                                <label class="block text-gray-300 text-sm font-bold mb-2">Date de l'examen</label>
+                                <input type="date" formControlName="date_examen" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            </div>
+                            
+                            <!-- Heure de début -->
+                            <div>
+                                <label class="block text-gray-300 text-sm font-bold mb-2">Heure de début</label>
+                                <input type="time" formControlName="heure_debut" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            </div>
+                            
+                            <!-- Durée -->
+                            <div>
+                                <label class="block text-gray-300 text-sm font-bold mb-2">Durée (heures)</label>
+                                <input type="number" formControlName="duree" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" min="1" required>
+                            </div>
+                            
+                            <!-- Date limite de soumission -->
+                            <div>
+                                <label class="block text-gray-300 text-sm font-bold mb-2">Date limite de soumission</label>
+                                <input type="date" formControlName="date_limite" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            </div>
+                        </div>
+                        
+                        <!-- Commentaire -->
+                        <div class="mb-4">
+                            <label class="block text-gray-300 text-sm font-bold mb-2">Commentaire</label>
+                            <textarea formControlName="commentaire" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="flex justify-end pt-4 border-t border-gray-700 mt-4">
+                            <button type="button" class="px-4 py-2 bg-gray-600 text-white rounded-lg font-semibold hover:bg-gray-700 transition duration-300 mr-2" (click)="showAffectationModal = false">Annuler</button>
+                            <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition duration-300" [disabled]="affectationForm.invalid">
+                                Affecter l'épreuve
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         <div id="sessionExamenToast" class="fixed top-4 right-4 z-[1000] w-full max-w-sm rounded-lg shadow-lg transition-opacity duration-300 ease-out opacity-0 pointer-events-none">
             <div class="flex items-center justify-between p-3 border-b border-gray-700 rounded-t-lg toast-header-bg">
                 <strong class="font-bold text-blue-300 toast-title"></strong>
